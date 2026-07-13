@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  GESTOR_CENTRAL        // Administrador Central (SMA)
+  SECRETARIA_CEDENTE    // Responsável pelo Almoxarifado que possui itens ociosos
+  SECRETARIA_REQUISITANTE // Servidor que busca e requisita reuso
+}
+
+enum EstadoConservacao {
+  NOVO       // Adquirido há < 1 ano, sem uso
+  BOM        // Em perfeitas condições, > 1 ano
+  REGULAR    // Requer reparos simples
+  PESSIMO    // Requer reparações importantes
+  SUCATA     // Inservível, aproveitamento de peças
+}
+
+enum StatusRequisicao {
+  RASCUNHO
+  SUBMETIDA
+  EM_ANALISE
+  APROVADA
+  TRANSFERIDA
+}
+
+model Usuario {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  nome          String
+  matricula     String   @unique
+  email         String   @unique
+  role          Role     @default(SECRETARIA_REQUISITANTE)
+  secretariaId  String   @db.ObjectId
+  secretaria    Secretaria @relation(fields: [secretariaId], references: [id])
+  requisicoes   Requisicao[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Secretaria {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  nome        String   @unique // ex: "Secretaria Municipal de Educação"
+  sigla       String   @unique // ex: "SME"
+  usuarios    Usuario[]
+  produtos    Produto[]
+  requisicoesCedidas Requisicao[] @relation("CedenteRelation")
+}
+
+model Produto {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  codigoPatrimonio  String?           @unique // Apenas para bens permanentes tombados
+  codigoCATMAT      String?           // Alinhamento com a taxonomia federal do Compras.gov.br
+  nome              String
+  descricao         String
+  categoria         String            // ex: "Mobiliário", "Informática", "Escritório"
+  estadoConservacao EstadoConservacao @default(BOM)
+  quantidadeFisica  Int               // Saldo real físico em estoque
+  quantidadeReservada Int             @default(0) // Reserva virtual temporária em análise
+  secretariaId      String            @db.ObjectId
+  secretaria        Secretaria        @relation(fields: [secretariaId], references: [id])
+  fotoUrl           String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  itemsRequisicao   ItemRequisicao[]
+}
+
+model Requisicao {
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  codigo         String           @unique // ID externo amigável (UUID)
+  status         StatusRequisicao @default(RASCUNHO)
+  requisitanteId String           @db.ObjectId
+  requisitante   Usuario          @relation(fields: [requisitanteId], references: [id])
+  cedenteId      String           @db.ObjectId
+  cedente        Secretaria       @relation("CedenteRelation", fields: [cedenteId], references: [id])
+  justificativaGeral String?
+  motivoRejeicao String?          // Rejeição estruturada (Requisito obrigatório de controle)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  itens          ItemRequisicao[]
+}
+
+model ItemRequisicao {
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  requisicaoId  String     @db.ObjectId
+  requisicao    Requisicao @relation(fields: [requisicaoId], references: [id])
+  produtoId     String     @db.ObjectId
+  produto       Produto    @relation(fields: [produtoId], references: [id])
+  quantidade    Int
+  justificativaItem String?
+}
