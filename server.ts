@@ -5,6 +5,14 @@ import { createServer as createViteServer } from 'vite';
 import { PrismaClient, EstadoConservacao, StatusRequisicao } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 
+// Correção automática da URL do MongoDB caso o usuário tenha esquecido de colocar o nome do banco
+let dbUrl = process.env.DATABASE_URL || '';
+if (dbUrl && dbUrl.includes('.net/?')) {
+  process.env.DATABASE_URL = dbUrl.replace('.net/?', '.net/bolsa_materiais?');
+} else if (dbUrl && dbUrl.endsWith('.net/')) {
+  process.env.DATABASE_URL = dbUrl + 'bolsa_materiais';
+}
+
 const prisma = new PrismaClient();
 
 async function startServer() {
