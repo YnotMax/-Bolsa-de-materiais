@@ -19,7 +19,9 @@ export default function App() {
     return localStorage.getItem('bolsa_active_tab') || 'vitrine';
   });
 
-  // State-persistent products list representing current inventory
+  // [CONTRIBUIÇÃO PARCEIROS]: O estado atual inicializa com MOCK_PRODUTOS via localStorage.
+  // TODO: Conectar este estado com o endpoint real do backend (GET /api/products) para 
+  // consumir os dados diretamente do MongoDB / Prisma.
   const [produtos, setProdutos] = useState<Produto[]>(() => {
     const saved = localStorage.getItem('bolsa_produtos');
     return saved ? JSON.parse(saved) : MOCK_PRODUTOS;
@@ -31,7 +33,9 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Requisitions history state
+  // [CONTRIBUIÇÃO PARCEIROS]: O histórico de requisições também é mockado.
+  // TODO: Trocar para o endpoint (POST /api/requests e futuramente GET /api/requests)
+  // para persistir o histórico e aplicar o Workflow de Aprovação de fato no banco.
   const [requisicoes, setRequisicoes] = useState<Requisicao[]>(() => {
     const saved = localStorage.getItem('bolsa_requisicoes');
     if (saved) return JSON.parse(saved);
