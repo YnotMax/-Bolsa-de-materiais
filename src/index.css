@@ -1,5 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Noto+Sans:wght@400;500;600;700&display=swap');
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Raleway:wght@400;500;600;700&display=swap');
+
+@layer govbr, theme, base, components, utilities;
+
+@import "@govbr-ds/core/dist/core.min.css" layer(govbr);
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 
 @theme {
   --font-sans: "Noto Sans", ui-sans-serif, system-ui, sans-serif;
