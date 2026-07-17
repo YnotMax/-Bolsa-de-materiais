@@ -10,11 +10,8 @@
   --font-sans: "Noto Sans", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Libre Franklin", sans-serif;
 
-  --color-primary: #002f5a;
-  --color-primary-dark: #001c3a;
-  --color-gov-blue: #002f5a;
-  --color-gov-blue-dark: #003366;
-  --color-gov-blue-vivid: #1351B4;
+  --color-primary: #1351b4;
+  --color-primary-dark: #0c326f;
   
   --color-secondary: #006d35;
   --color-on-secondary: #ffffff;
