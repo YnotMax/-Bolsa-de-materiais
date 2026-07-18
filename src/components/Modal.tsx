@@ -60,7 +60,7 @@ export default function Modal({ open, onClose, title, children, footer }: ModalP
 
   return (
     <>
-      <div className="br-scrim active" onClick={onClose} />
+      <div className="br-scrim foco active" onClick={onClose} />
       <div
         ref={modalRef}
         className="br-modal medium"
