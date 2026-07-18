@@ -187,6 +187,7 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
                     onClick={(e) => {
                       e.preventDefault();
                       setTab(item.id);
+                      menuRef.current?.classList.remove('active');
                     }}
                   >
                     <span className="icon"><Icon className="h-4 w-4" aria-hidden="true" /></span>
