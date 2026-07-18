@@ -26,6 +26,8 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
   const headerRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const dsInitialized = useRef(false);
+  const menuTriggerRef = useRef<HTMLButtonElement>(null);
+  const searchTriggerRef = useRef<HTMLButtonElement>(null);
   const [searchValue, setSearchValue] = useState('');
 
   useEffect(() => {
@@ -37,6 +39,64 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
     // to stop StrictMode's dev-only double-invoke from constructing two live instances.
     new BRHeader('header', headerRef.current);
     new BRMenu('menu', menuRef.current);
+  }, []);
+
+  // BRHeader/BRMenu toggle open/closed state via direct DOM class mutations from
+  // multiple paths (click, Escape, scrim, X button, item-click). Mirroring that with
+  // React state would desync from whichever path the library itself handles, so instead
+  // we observe the actual DOM state and reflect it onto the trigger buttons'
+  // aria-expanded. This MutationObserver is created and owned entirely by this
+  // component (not by BRHeader/BRMenu), so its cleanup is real and safe on unmount.
+  useEffect(() => {
+    const menuEl = menuRef.current;
+    const menuTrigger = menuTriggerRef.current;
+    const searchEl = headerRef.current?.querySelector('.header-search');
+    const searchTrigger = searchTriggerRef.current;
+    if (!menuEl || !menuTrigger || !searchEl || !searchTrigger) return;
+
+    menuTrigger.setAttribute('aria-expanded', menuEl.classList.contains('active') ? 'true' : 'false');
+    searchTrigger.setAttribute('aria-expanded', searchEl.classList.contains('active') ? 'true' : 'false');
+
+    const menuObserver = new MutationObserver(() => {
+      menuTrigger.setAttribute('aria-expanded', menuEl.classList.contains('active') ? 'true' : 'false');
+    });
+    menuObserver.observe(menuEl, { attributes: true, attributeFilter: ['class'] });
+
+    const searchObserver = new MutationObserver(() => {
+      searchTrigger.setAttribute('aria-expanded', searchEl.classList.contains('active') ? 'true' : 'false');
+    });
+    searchObserver.observe(searchEl, { attributes: true, attributeFilter: ['class'] });
+
+    return () => {
+      menuObserver.disconnect();
+      searchObserver.disconnect();
+    };
+  }, []);
+
+  // BRMenu's own JS (verified from source in Task 1's review) handles Escape and
+  // Arrow-key navigation but never constrains Tab within the open off-canvas panel — a
+  // keyboard user could Tab past the last menu item onto page content hidden behind the
+  // scrim. This traps Tab/Shift+Tab within the open menu.
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const menuEl = menuRef.current;
+      if (e.key !== 'Tab' || !menuEl || !menuEl.classList.contains('active')) return;
+      const focusable = menuEl.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const handleSearchSubmit = (e: FormEvent) => {
@@ -75,7 +135,7 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
             </div>
             <div className="header-actions">
               <div className="header-search-trigger">
-                <button className="br-button circle" type="button" aria-label="Abrir Busca" data-toggle="search" data-target=".header-search">
+                <button ref={searchTriggerRef} className="br-button circle" type="button" aria-label="Abrir Busca" data-toggle="search" data-target=".header-search">
                   <Search className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
@@ -97,12 +157,12 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
           <div className="header-bottom">
             <div className="header-menu">
               <div className="header-menu-trigger">
-                <button className="br-button circle" type="button" aria-label="Abrir menu de navegação" aria-controls="main-navigation" data-toggle="menu" data-target="#main-navigation">
+                <button ref={menuTriggerRef} className="br-button circle" type="button" aria-label="Abrir menu de navegação" aria-controls="main-navigation" data-toggle="menu" data-target="#main-navigation">
                   <Menu className="h-5 w-5" aria-hidden="true" />
                 </button>
               </div>
               <div className="header-info">
-                <div className="header-title">Bolsa de Materiais</div>
+                <h1 className="header-title" style={{ margin: 0, fontWeight: 'inherit' }}>Bolsa de Materiais</h1>
                 <div className="header-subtitle">Reaproveitamento entre almoxarifados municipais</div>
               </div>
             </div>
@@ -144,7 +204,7 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
                     <span>{item.label}</span>
                     {item.id === 'carrinho' && cartCount > 0 && (
                       <span
-                        className="bg-red-500 text-white text-[11px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center ml-1"
+                        className="bg-error text-on-error text-[11px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center ml-1"
                         aria-label={cartLabel}
                       >
                         {cartCount}
@@ -194,7 +254,7 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
                     <span className="content">{item.label}</span>
                     {item.id === 'carrinho' && cartCount > 0 && (
                       <span
-                        className="bg-red-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full ml-2"
+                        className="bg-error text-on-error text-[11px] font-bold px-2 py-0.5 rounded-full ml-2"
                         aria-label={cartLabel}
                       >
                         {cartCount}
@@ -205,7 +265,7 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
               })}
             </nav>
           </div>
-          <div className="menu-scrim" data-dismiss="menu" tabIndex={0} />
+          <div className="menu-scrim" data-dismiss="menu" />
         </div>
       </div>
     </>

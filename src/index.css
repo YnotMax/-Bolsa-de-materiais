@@ -29,6 +29,8 @@
   --color-state-regular: #FFCC00;
   --color-state-pessimo: #D93B3B;
   --color-state-sucata: #737373;
+  --color-error: #dc2626;
+  --color-on-error: #ffffff;
 }
 
 body {
