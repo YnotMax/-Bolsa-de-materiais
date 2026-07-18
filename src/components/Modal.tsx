@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useId, useRef, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 interface ModalProps {
@@ -63,7 +64,7 @@ export default function Modal({ open, onClose, title, children, footer }: ModalP
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div
       // z-2001: @govbr-ds/core's sticky header uses --z-index-layer-2 (2000), but its own
       // scrim is hardcoded to 999 - an internal DS-gov inconsistency. Must stay above 2000.
@@ -93,6 +94,7 @@ export default function Modal({ open, onClose, title, children, footer }: ModalP
         <div className="br-modal-body">{children}</div>
         {footer && <div className="br-modal-footer justify-content-end">{footer}</div>}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
