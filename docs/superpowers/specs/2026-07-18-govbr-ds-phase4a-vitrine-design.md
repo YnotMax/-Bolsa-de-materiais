@@ -28,11 +28,24 @@ it (hand-rolled modal with zero ARIA, emoji-as-icons, `animate-bounce`). Search/
 
 1. **Product cards**: outer `<article>` gets `br-card hover` added to its existing classes (keeping
    Tailwind layout utilities per the Phase 1 cascade-layer rule — DS-gov owns element defaults,
-   Tailwind owns layout). Conservation-state badge (`getEstadoBadge`) switches from the ad hoc
-   `bg-state-{estado} text-white` span to `<Tag variant="status" tone={...} label={...} />` — the
-   existing `--color-state-*` tokens map onto `Tag`'s `tone` prop (see Task breakdown below for the
-   exact mapping, since `Tag`'s `tone` union is `'danger' | 'success' | 'warning'`, narrower than
-   the app's 5 conservation states).
+   Tailwind owns layout).
+
+   **Correction found while writing the implementation plan**: the spec originally called for
+   routing the conservation-state badge through `<Tag variant="status">`. Checked against the
+   verified reference markup (`components/tag/examples/tag-status.html`) again at this point:
+   DS-gov's `status` tag is a small, unlabeled colored *dot* meant to sit next to separate text
+   (`<span class="br-tag status bg-success"></span><span>Online</span>`) — it does not render a
+   labeled pill. Vitrine's badge is a labeled pill overlaid on the product photo ("Bom", "Novo (Sem
+   uso)", etc. — real information, not decorative), a different UI shape `Tag`'s `status` variant
+   wasn't built for. Forcing it in would mean bolting a separate text label next to the dot and
+   restructuring the corner-badge visual entirely — out of proportion to what this task needs.
+   **Resolution**: keep the existing labeled-pill structure, but drive its background with
+   DS-gov's own verified utility classes (`bg-danger`/`bg-success`/`bg-warning`, confirmed present
+   in `core.min.css`, plus `bg-gray-40` for `SUCATA` — same verified classes Tag's `status` variant
+   itself would have used internally) instead of the app's ad hoc `--color-state-*` Tailwind
+   classes. `Tag`'s `status` variant stays built and available (Phase 3 delivered it with no
+   guaranteed consumer), unconsumed by this task — a future compact list/dot-indicator view is a
+   more natural fit for it than this card badge.
 2. **Buttons**: "Ver Detalhes", "Reservar Item"/"Adicionado", category shortcut pills, "Carregar
    Mais Itens Ociosos", "Resetar Busca", "Limpar" (filter sidebar), "Limpar Todos os Filtros"
    (empty state), and the modal's "Voltar ao Catálogo"/"Reservar Item" footer buttons all become
@@ -71,33 +84,23 @@ it (hand-rolled modal with zero ARIA, emoji-as-icons, `animate-bounce`). Search/
 - Any change to `MOCK_PRODUTOS`/`MOCK_CATEGORIAS`/`MOCK_SECRETARIAS`/`types.ts`.
 - Carrinho/WorkflowManager/AvisosCompras/Relatorios — separate Phase 4 sub-phases.
 
-## Tag Tone Mapping
+## Conservation-State Color Mapping
 
-`Tag`'s `status`/`count` variants type `tone` as `'danger' | 'success' | 'warning'` (Phase 3's
-scope only needed 3 tones for the cart badge). Vitrine's 5 conservation states need a mapping
-decided during implementation:
+Vitrine's `getEstadoBadge` currently returns a `--color-state-*`-backed Tailwind class per state.
+Per the correction above, this becomes a mapping to DS-gov's own verified utility classes instead
+(`Tag` is not used here — see correction above):
 
-| Estado | Current color | Tag `tone` |
+| Estado | Current color | DS-gov utility class |
 |---|---|---|
-| NOVO | `--color-state-novo` (#008844) | `success` |
-| BOM | `--color-state-bom` (#168821) | `success` |
-| REGULAR | `--color-state-regular` (#FFCC00) | `warning` |
-| PESSIMO | `--color-state-pessimo` (#D93B3B) | `danger` |
-| SUCATA | `--color-state-sucata` (#737373) | *(no matching tone — see below)* |
+| NOVO | `--color-state-novo` (#008844) | `bg-success` |
+| BOM | `--color-state-bom` (#168821) | `bg-success` |
+| REGULAR | `--color-state-regular` (#FFCC00) | `bg-warning` |
+| PESSIMO | `--color-state-pessimo` (#D93B3B) | `bg-danger` |
+| SUCATA | `--color-state-sucata` (#737373) | `bg-gray-40` |
 
-`SUCATA`'s gray doesn't map to any of `Tag`'s 3 tones. Since `Tag`'s `tone` union was scoped to
-Phase 3's one known consumer (the cart badge, which only ever needed danger), this reveals the
-type is too narrow for a second consumer with 5 states. **Resolution, verified against the
-installed package**: there is no `bg-neutral`/`bg-gray` *tone* class family specific to `br-tag` —
-`Tag`'s existing `bg-${tone}` string interpolation relies on DS-gov's general-purpose color
-utilities (`.bg-danger`, `.bg-success`, `.bg-warning`, confirmed in `core.min.css`), and that same
-file also defines a full `.bg-gray-{1,2,3,4,5,10,20,...,90}` grayscale utility ramp (confirmed
-present). `Tag`'s `tone` union gets widened to add `'neutral'`, but — because `'neutral'` isn't
-itself a real class name — `Tag`'s internal class construction changes from pure string
-interpolation to a small lookup mapping `'neutral'` → the literal class `bg-gray-40` (a
-mid-scale gray, visually close to the current `--color-state-sucata: #737373`); the other three
-tones keep interpolating directly since `bg-danger`/`bg-success`/`bg-warning` already are real
-class names.
+`bg-danger`/`bg-success`/`bg-warning` and the full `bg-gray-{1,2,3,4,5,10,20,...,90}` grayscale
+ramp are all confirmed present in `@govbr-ds/core`'s compiled `core.min.css` — real classes, not
+guessed.
 
 ## Verification
 
