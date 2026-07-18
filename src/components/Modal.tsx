@@ -65,6 +65,8 @@ export default function Modal({ open, onClose, title, children, footer }: ModalP
 
   return (
     <div
+      // z-2001: @govbr-ds/core's sticky header uses --z-index-layer-2 (2000), but its own
+      // scrim is hardcoded to 999 - an internal DS-gov inconsistency. Must stay above 2000.
       className="br-scrim foco active z-2001"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
