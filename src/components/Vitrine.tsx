@@ -123,8 +123,11 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
     <div className="flex flex-col gap-6">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-5 right-5 z-50 bg-emerald-700 text-white px-5 py-3.5 rounded-lg shadow-xl border border-emerald-500 flex items-center gap-2 animate-bounce">
-          <Check className="h-5 w-5 bg-emerald-900 rounded-full p-0.5 text-emerald-300" />
+        <div
+          role="status"
+          className="fixed bottom-5 right-5 z-50 bg-secondary text-on-secondary px-5 py-3.5 rounded-lg shadow-xl border border-secondary flex items-center gap-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-reduce:animate-none duration-300"
+        >
+          <Check className="h-5 w-5 bg-secondary-container rounded-full p-0.5 text-on-secondary-container" aria-hidden="true" />
           <span className="font-medium text-sm">{toastMessage}</span>
         </div>
       )}
