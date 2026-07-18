@@ -722,6 +722,98 @@ git commit -m "fix: address Shell-scope audit findings (aria-expanded, focus tra
 
 ## Post-Task-3 Checkpoint (not a coded task)
 
-- [ ] Re-run `/impeccable audit` if useful to confirm the score improvement, but this is optional
-  — the fixes above are individually verifiable via Step 7, not dependent on a re-audit to prove
-  they work.
+- [x] Task 3's reviewer found a real, pre-existing layout bug while verifying the `<h1>` change:
+  at ≥1280px, `header-title` wraps to 4 lines. Root cause (verified against
+  `node_modules/@govbr-ds/core/dist/core.css`): DS-gov's own `.header-menu { flex: 1; }` has
+  `flex-basis: 0%`, which combined with the default `min-width: auto` on flex items means the
+  browser freezes `.header-menu` at its *content's* minimum width during the flexbox shrink
+  algorithm instead of letting it shrink normally — a well-known flexbox gotcha, not a DS-gov bug
+  as such. It only manifests now because Task 1/2's added persistent desktop `<nav>` (~900px for 5
+  buttons) plus DS-gov's own always-visible-at-≥1280px `.header-search` (`min-width: 385px`)
+  together exceed the `container-lg`'s available width at that breakpoint, forcing the shrink
+  algorithm to engage. Filed as Task 4.
+
+---
+
+### Task 4: Fix header-title wrapping at wide viewports
+
+**Files:**
+- Modify: `src/components/Header.tsx`
+
+**Interfaces:**
+- Consumes: nothing new.
+- Produces: nothing new consumed by other tasks.
+
+- [ ] **Step 1: Let `.header-menu` actually shrink, and truncate its text instead of wrapping**
+
+The standard, well-known fix for the `flex-basis: 0%` + default `min-width: auto` gotcha is to
+give the flex item an explicit `min-width: 0` (Tailwind's `min-w-0` utility) so the browser can
+shrink it below its content's intrinsic width, combined with text truncation so an actually-narrow
+title reads as a clean ellipsis instead of wrapping across multiple lines. This only adds Tailwind
+utility classes to elements `Header.tsx` already renders — it does not touch DS-gov's own CSS
+files or override `.header-menu`'s `flex: 1` rule, consistent with the cascade-layer strategy from
+Phase 1 (Tailwind utilities always win over DS-gov defaults on the same element).
+
+In `src/components/Header.tsx`, find:
+
+```tsx
+              <div className="header-info">
+                <h1 className="header-title" style={{ margin: 0, fontWeight: 'inherit' }}>Bolsa de Materiais</h1>
+                <div className="header-subtitle">Reaproveitamento entre almoxarifados municipais</div>
+              </div>
+```
+
+Change to:
+
+```tsx
+              <div className="header-info min-w-0">
+                <h1 className="header-title truncate" style={{ margin: 0, fontWeight: 'inherit' }}>Bolsa de Materiais</h1>
+                <div className="header-subtitle truncate">Reaproveitamento entre almoxarifados municipais</div>
+              </div>
+```
+
+Also find the `header-menu` div wrapping this block (the one containing `header-menu-trigger` and
+`header-info`):
+
+```tsx
+            <div className="header-menu">
+```
+
+Change to:
+
+```tsx
+            <div className="header-menu min-w-0">
+```
+
+`min-w-0` on both the outer `header-menu` and the inner `header-info` is necessary because
+`min-width: 0` only overrides the *direct* flex item's default — without it on `header-info` too,
+`header-info`'s own content (the `<h1>`/`<div>` text) would still force `header-menu` back to a
+content-driven minimum through the nested block, defeating the outer override.
+
+- [ ] **Step 2: Type-check and build**
+
+Run: `npm run lint` — expected: no errors.
+Run: `npm run build` — expected: succeeds.
+
+- [ ] **Step 3: Visual verification at the specific width that broke**
+
+Run: `npm run dev`. Resize the browser to ≥1280px (the width the reviewer identified as where
+`.header-search` becomes permanently visible and the squeeze occurs). Confirm "Bolsa de Materiais"
+and its subtitle now render on a single line each — truncated with an ellipsis if the viewport is
+narrow enough to still be tight, never wrapped across multiple lines. Confirm the desktop nav row
+and header-search remain fully visible and functional (this fix must not push either of them out
+of view or break their own layout). Also re-check at 375px and 700px (already-verified-working
+widths from Task 1-3) to confirm this change doesn't regress smaller viewports.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add src/components/Header.tsx
+git commit -m "fix: prevent header-title wrapping at wide viewports"
+```
+
+## Post-Task-4 Checkpoint (not a coded task)
+
+- [ ] Optional: re-run `/impeccable audit` for a final Phase 2 score, but not required — Task 4's
+  fix is a layout-only change verifiable directly per Step 3, and the accessibility findings from
+  the Phase 2 audit were already resolved and verified in Task 3.
