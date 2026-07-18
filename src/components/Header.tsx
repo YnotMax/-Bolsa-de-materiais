@@ -7,6 +7,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Package2, ShoppingCart, BarChart3, ShieldAlert, FileText, Menu, X, Landmark, UserCheck, Search } from 'lucide-react';
 import BRHeader from '@govbr-ds/core/dist/components/header/header.js';
 import BRMenu from '@govbr-ds/core/dist/components/menu/menu.js';
+import Tag from './Tag';
 
 interface HeaderProps {
   currentTab: string;
@@ -207,11 +208,8 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
                     <Icon className="h-4 w-4" aria-hidden="true" />
                     <span>{item.label}</span>
                     {item.id === 'carrinho' && cartCount > 0 && (
-                      <span
-                        className="bg-error text-on-error text-[11px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center ml-1"
-                        aria-label={cartLabel}
-                      >
-                        {cartCount}
+                      <span className="ml-1">
+                        <Tag variant="count" tone="danger" count={cartCount} label={cartLabel} />
                       </span>
                     )}
                   </button>
@@ -258,11 +256,8 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
                     <span className="icon"><Icon className="h-4 w-4" aria-hidden="true" /></span>
                     <span className="content">{item.label}</span>
                     {item.id === 'carrinho' && cartCount > 0 && (
-                      <span
-                        className="bg-error text-on-error text-[11px] font-bold px-2 py-0.5 rounded-full ml-2"
-                        aria-label={cartLabel}
-                      >
-                        {cartCount}
+                      <span className="ml-2">
+                        <Tag variant="count" tone="danger" count={cartCount} label={cartLabel} />
                       </span>
                     )}
                   </a>
