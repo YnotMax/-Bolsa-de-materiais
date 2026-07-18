@@ -155,15 +155,15 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
             </div>
           </div>
           <div className="header-bottom">
-            <div className="header-menu">
+            <div className="header-menu min-w-0">
               <div className="header-menu-trigger">
                 <button ref={menuTriggerRef} className="br-button circle" type="button" aria-label="Abrir menu de navegação" aria-controls="main-navigation" data-toggle="menu" data-target="#main-navigation">
                   <Menu className="h-5 w-5" aria-hidden="true" />
                 </button>
               </div>
-              <div className="header-info">
-                <h1 className="header-title" style={{ margin: 0, fontWeight: 'inherit' }}>Bolsa de Materiais</h1>
-                <div className="header-subtitle">Reaproveitamento entre almoxarifados municipais</div>
+              <div className="header-info min-w-0">
+                <h1 className="header-title truncate" style={{ margin: 0, fontWeight: 'inherit' }}>Bolsa de Materiais</h1>
+                <div className="header-subtitle truncate">Reaproveitamento entre almoxarifados municipais</div>
               </div>
             </div>
             <div className="header-search">
