@@ -10,10 +10,11 @@ interface InputProps extends ComponentPropsWithoutRef<'input'> {
   id: string;
   helperText?: string;
   icon?: ReactNode;
+  state?: 'success' | 'danger' | 'warning' | 'info';
 }
 
-export default function Input({ label, id, helperText, icon, className, ...rest }: InputProps) {
-  const classes = ['br-input', icon ? 'has-icon' : '', className].filter(Boolean).join(' ');
+export default function Input({ label, id, helperText, icon, state, className, ...rest }: InputProps) {
+  const classes = ['br-input', icon ? 'has-icon' : '', state ?? '', className].filter(Boolean).join(' ');
 
   return (
     <div className={classes}>
