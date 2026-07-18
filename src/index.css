@@ -33,6 +33,21 @@
   --color-on-error: #ffffff;
 }
 
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-toast-in {
+  animation: toast-in 300ms ease-out;
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-on-background);

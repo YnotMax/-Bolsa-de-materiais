@@ -125,7 +125,7 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
       {toastMessage && (
         <div
           role="status"
-          className="fixed bottom-5 right-5 z-50 bg-secondary text-on-secondary px-5 py-3.5 rounded-lg shadow-xl border border-secondary flex items-center gap-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-reduce:animate-none duration-300"
+          className="fixed bottom-5 right-5 z-50 bg-secondary text-on-secondary px-5 py-3.5 rounded-lg shadow-xl border border-secondary flex items-center gap-2 motion-safe:animate-toast-in motion-reduce:animate-none"
         >
           <Check className="h-5 w-5 bg-secondary-container rounded-full p-0.5 text-on-secondary-container" aria-hidden="true" />
           <span className="font-medium text-sm">{toastMessage}</span>
