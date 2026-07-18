@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { ShoppingCart, Trash2, ShieldAlert, ArrowLeft, Send, CheckCircle2, UserCheck, Minus, Plus } from 'lucide-react';
+import { ShoppingCart, Trash2, ArrowLeft, Send, UserCheck, Minus, Plus } from 'lucide-react';
 import { CartItem, RequisitanteData } from '../types';
 import { MOCK_SECRETARIAS, getEstadoInfo } from '../data';
 import Button from './Button';
@@ -150,6 +150,7 @@ export default function Carrinho({
                       <Button
                         variant="tertiary"
                         circle
+                        className="text-danger"
                         onClick={() => onRemoveItem(item.produto.id)}
                         aria-label="Remover item"
                         id={`btn-remove-${item.produto.id}`}
@@ -199,9 +200,8 @@ export default function Carrinho({
                         value={item.justificativa}
                         onChange={(e) => onUpdateJustificativa(item.produto.id, e.target.value)}
                         counterText={`Mínimo 10 caracteres (restam: ${Math.max(0, 10 - item.justificativa.length)})`}
-                        className={`resize-none h-16 ${
-                          item.justificativa.trim().length >= 10 ? '' : 'border-amber-300 focus:ring-amber-500'
-                        }`}
+                        state={item.justificativa.trim().length >= 10 ? undefined : 'warning'}
+                        textareaClassName="resize-none h-16"
                         required
                       />
                     </div>
