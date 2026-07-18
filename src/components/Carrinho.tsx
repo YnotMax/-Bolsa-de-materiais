@@ -4,9 +4,10 @@
  */
 
 import React, { useState } from 'react';
-import { ShoppingCart, Trash2, ShieldAlert, ArrowLeft, Send, CheckCircle2, UserCheck, AlertTriangle } from 'lucide-react';
+import { ShoppingCart, Trash2, ShieldAlert, ArrowLeft, Send, CheckCircle2, UserCheck, AlertTriangle, Minus, Plus } from 'lucide-react';
 import { CartItem, RequisitanteData } from '../types';
 import { MOCK_SECRETARIAS, getEstadoInfo } from '../data';
+import Button from './Button';
 
 interface CarrinhoProps {
   cartItems: CartItem[];
@@ -97,13 +98,9 @@ export default function Carrinho({
               Navegue na nossa vitrine virtual para encontrar materiais e móveis ociosos em outras unidades administrativas.
             </p>
           </div>
-          <button
-            onClick={onGoToVitrine}
-            className="px-6 py-3 bg-primary text-white font-bold text-sm rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2 shadow"
-          >
-            <ArrowLeft className="h-4 w-4" />
+          <Button variant="primary" onClick={onGoToVitrine} icon={<ArrowLeft className="h-4 w-4" aria-hidden="true" />}>
             Navegar no Catálogo
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -146,39 +143,43 @@ export default function Carrinho({
                           Cedente: <strong className="text-gray-700">{item.produto.secretariaOrigem}</strong>
                         </p>
                       </div>
-                      <button
+                      <Button
+                        variant="tertiary"
+                        circle
                         onClick={() => onRemoveItem(item.produto.id)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-colors flex-shrink-0"
-                        title="Remover item"
+                        aria-label="Remover item"
                         id={`btn-remove-${item.produto.id}`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                        icon={<Trash2 className="h-4 w-4" aria-hidden="true" />}
+                      />
                     </div>
 
                     {/* Quantidade Editor */}
                     <div className="flex items-center gap-4 bg-gray-50 p-2 rounded-lg border border-gray-150 w-fit">
                       <span className="text-xs text-gray-500 font-bold px-1">Quantidade:</span>
                       <div className="flex items-center border border-gray-300 rounded bg-white">
-                        <button
+                        <Button
+                          variant="tertiary"
+                          size="small"
+                          circle
                           type="button"
                           onClick={() => onUpdateQuantity(item.produto.id, -1)}
-                          className="px-2.5 py-1 text-gray-600 hover:bg-gray-100 transition-colors font-bold"
                           disabled={item.quantidadeSolicitada <= 1}
-                        >
-                          -
-                        </button>
+                          aria-label="Diminuir quantidade"
+                          icon={<Minus className="h-3.5 w-3.5" aria-hidden="true" />}
+                        />
                         <span className="w-10 text-center text-sm font-bold text-primary font-mono">
                           {item.quantidadeSolicitada}
                         </span>
-                        <button
+                        <Button
+                          variant="tertiary"
+                          size="small"
+                          circle
                           type="button"
                           onClick={() => onUpdateQuantity(item.produto.id, 1)}
-                          className="px-2.5 py-1 text-gray-600 hover:bg-gray-100 transition-colors font-bold"
                           disabled={item.quantidadeSolicitada >= item.produto.quantidade}
-                        >
-                          +
-                        </button>
+                          aria-label="Aumentar quantidade"
+                          icon={<Plus className="h-3.5 w-3.5" aria-hidden="true" />}
+                        />
                       </div>
                       <span className="text-xs text-gray-400">
                         Máx: {item.produto.quantidade} un.
@@ -331,27 +332,25 @@ export default function Carrinho({
 
               {/* Botões de Submissão */}
               <div className="flex flex-col gap-2 mt-2 pt-2 border-t border-gray-100">
-                <button
+                <Button
                   type="submit"
+                  variant="primary"
                   disabled={!isFormValid}
-                  className={`w-full py-4 px-6 rounded-lg font-bold text-sm flex items-center justify-center gap-2 shadow-md transition-all ${
-                    isFormValid
-                      ? 'bg-secondary hover:bg-secondary/90 text-white hover:shadow-lg'
-                      : 'bg-gray-200 text-gray-400 border border-gray-300 cursor-not-allowed'
-                  }`}
                   id="btn-submit-requisition"
+                  className="w-full justify-center"
+                  icon={<Send className="h-4 w-4" aria-hidden="true" />}
                 >
-                  <Send className="h-4 w-4" />
                   Submeter Requisição de Remanejamento
-                </button>
+                </Button>
 
-                <button
+                <Button
                   type="button"
+                  variant="tertiary"
                   onClick={onGoToVitrine}
-                  className="w-full py-3 px-6 bg-white border border-gray-200 text-primary hover:bg-gray-50 font-bold text-xs rounded-lg transition-colors"
+                  className="w-full justify-center"
                 >
                   Continuar Procurando Bens
-                </button>
+                </Button>
               </div>
 
             </form>
