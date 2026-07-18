@@ -814,6 +814,115 @@ git commit -m "fix: prevent header-title wrapping at wide viewports"
 
 ## Post-Task-4 Checkpoint (not a coded task)
 
-- [ ] Optional: re-run `/impeccable audit` for a final Phase 2 score, but not required — Task 4's
-  fix is a layout-only change verifiable directly per Step 3, and the accessibility findings from
-  the Phase 2 audit were already resolved and verified in Task 3.
+- [x] Final whole-branch code review (Phase 1 + Phase 2, 17 commits): **Ready to merge: Yes.**
+  Two Important findings, both explicitly framed as non-blocking follow-ups, not regressions:
+  focus isn't restored to the hamburger trigger when the mobile menu closes (via any of its close
+  paths — X button, Escape, scrim, or the item-click fix from Task 1), and the mobile off-canvas
+  menu items don't show an active-state indicator matching the desktop nav's `aria-current`/
+  `primary` treatment. User chose to fix both now rather than defer. Task 5 below.
+
+---
+
+### Task 5: Restore focus on menu close, add active-state parity to mobile nav items
+
+**Files:**
+- Modify: `src/components/Header.tsx`
+
+**Interfaces:**
+- Consumes: `menuRef`, `menuTriggerRef`, `NAV_ITEMS`, `currentTab` — all already exist in this
+  file from Tasks 1-3.
+- Produces: nothing new consumed elsewhere.
+
+- [ ] **Step 1: Restore focus to the hamburger when the menu closes, via any path**
+
+The menu can close four ways (X button, Escape, scrim click, or the mobile item-click handler
+from Task 1's fix) — DS-gov's own `_closeMenu()` never restores focus after any of them, and
+neither does this codebase's own item-click fix. Rather than hooking each path individually (three
+of the four are entirely inside `BRMenu`'s private methods, with no exposed callback), extend the
+existing `aria-expanded` `MutationObserver` from Task 3 — it already fires on every close,
+regardless of cause, since it watches the DOM class directly.
+
+Find the existing `menuObserver` inside the aria-expanded `useEffect` (added in Task 3):
+
+```tsx
+    const menuObserver = new MutationObserver(() => {
+      menuTrigger.setAttribute('aria-expanded', menuEl.classList.contains('active') ? 'true' : 'false');
+    });
+```
+
+Change to:
+
+```tsx
+    const menuObserver = new MutationObserver(() => {
+      const isActive = menuEl.classList.contains('active');
+      menuTrigger.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+      if (!isActive) {
+        menuTrigger.focus();
+      }
+    });
+```
+
+This only runs inside the observer's mutation callback (i.e. on an actual class-attribute change
+after `.observe()` starts) — it does not fire on the initial synchronous `aria-expanded` set a few
+lines above `.observe()`, so it won't steal focus on page load.
+
+- [ ] **Step 2: Add active-state parity to mobile menu items**
+
+In the mobile `<nav className="menu-body" role="tree">` block, the `.map(NAV_ITEMS)` currently
+renders each item without reflecting whether it's the active tab. Find the `.menu-item` `<a>`
+element and change it from:
+
+```tsx
+                  <a
+                    key={item.id}
+                    className="menu-item"
+                    href="#"
+                    role="treeitem"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setTab(item.id);
+                      menuRef.current?.classList.remove('active');
+                    }}
+                  >
+```
+
+to:
+
+```tsx
+                  <a
+                    key={item.id}
+                    className={`menu-item ${currentTab === item.id ? 'active' : ''}`}
+                    href="#"
+                    role="treeitem"
+                    aria-current={currentTab === item.id ? 'page' : undefined}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setTab(item.id);
+                      menuRef.current?.classList.remove('active');
+                    }}
+                  >
+```
+
+`active` is DS-gov's own convention for indicating current/expanded state within `.menu-item`
+elements (used elsewhere in the library's own markup for expanded drop-menu items) — it's a real,
+CSS-backed class in `core.min.css`, not a name invented for this fix.
+
+- [ ] **Step 3: Type-check, build, and verify**
+
+Run: `npm run lint` — expected: no errors.
+Run: `npm run build` — expected: succeeds.
+Run: `npm run dev` and verify:
+- Open the mobile menu, close it via each of the four paths (X button, Escape key, scrim click,
+  clicking a nav item) — confirm keyboard focus lands back on the hamburger button every time
+  (check `document.activeElement` or simply Tab afterward and confirm the next stop is logical,
+  not stuck on a hidden element).
+- Open the mobile menu while on a given tab (e.g. Carrinho) — confirm that tab's `.menu-item`
+  visually indicates it's active (distinguishable from the other four) and carries
+  `aria-current="page"`.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add src/components/Header.tsx
+git commit -m "fix: restore focus on menu close, add active-state to mobile nav items"
+```
