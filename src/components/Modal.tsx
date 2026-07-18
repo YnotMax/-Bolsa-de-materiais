@@ -65,7 +65,7 @@ export default function Modal({ open, onClose, title, children, footer }: ModalP
 
   return (
     <div
-      className="br-scrim foco active"
+      className="br-scrim foco active z-2001"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
