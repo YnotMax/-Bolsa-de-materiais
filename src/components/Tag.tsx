@@ -10,7 +10,7 @@ type TagProps =
 export default function Tag(props: TagProps) {
   if (props.variant === 'count') {
     return (
-      <span className={`br-tag count bg-${props.tone}`} title={props.label}>
+      <span className={`br-tag count bg-${props.tone}`} title={props.label} aria-label={props.label}>
         <span aria-hidden="true">{props.count}</span>
       </span>
     );

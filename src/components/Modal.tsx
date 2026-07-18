@@ -22,6 +22,11 @@ export default function Modal({ open, onClose, title, children, footer }: ModalP
   const previouslyFocused = useRef<HTMLElement | null>(null);
   const titleId = useId();
 
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
+
   useEffect(() => {
     if (!open) return;
 
@@ -32,7 +37,7 @@ export default function Modal({ open, onClose, title, children, footer }: ModalP
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (e.key !== 'Tab' || !modalEl) return;
@@ -54,13 +59,17 @@ export default function Modal({ open, onClose, title, children, footer }: ModalP
       document.removeEventListener('keydown', handleKeyDown);
       previouslyFocused.current?.focus();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 
   return (
-    <>
-      <div className="br-scrim foco active" onClick={onClose} />
+    <div
+      className="br-scrim foco active"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div
         ref={modalRef}
         className="br-modal medium"
@@ -82,6 +91,6 @@ export default function Modal({ open, onClose, title, children, footer }: ModalP
         <div className="br-modal-body">{children}</div>
         {footer && <div className="br-modal-footer justify-content-end">{footer}</div>}
       </div>
-    </>
+    </div>
   );
 }
