@@ -7,6 +7,8 @@ import React, { useState, useMemo } from 'react';
 import { Search, Filter, ShoppingCart, RefreshCw, Layers, Check, ChevronRight, Eye, Building2, Info, ClipboardCopy } from 'lucide-react';
 import { Produto, EstadoConservacao } from '../types';
 import { MOCK_PRODUTOS, MOCK_CATEGORIAS, MOCK_SECRETARIAS, fuzzySearch } from '../data';
+import Button from './Button';
+import Input from './Input';
 
 interface VitrineProps {
   onAddToCart: (produto: Produto) => void;
@@ -136,56 +138,53 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
             Evite novas compras públicas! Solicite o remanejamento direto de itens disponíveis, ociosos ou sem giro parados em outras secretarias de Florianópolis.
           </p>
         </div>
-        <button 
+        <Button
+          variant="tertiary"
+          size="small"
           onClick={clearFilters}
-          className="text-xs font-semibold text-primary-dark hover:text-emerald-600 flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-gray-200 bg-gray-50 transition-all hover:bg-gray-100"
+          icon={<RefreshCw className="h-3 w-3" aria-hidden="true" />}
         >
-          <RefreshCw className="h-3 w-3" />
           Resetar Busca
-        </button>
+        </Button>
       </div>
 
       {/* Grid de Busca e Shortcuts Rápidos */}
       <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex flex-col gap-4">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Buscar por nome do material, patrimônio, código CATMAT ou categoria... (ex: papel, monitor, cadeira)"
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setDisplayLimit(6); // reset pagination when typing
-            }}
-            id="vitrine-search-input"
-            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-all"
-          />
-        </div>
+        <Input
+          label="Buscar bens ociosos"
+          id="vitrine-search-input"
+          type="text"
+          placeholder="Buscar por nome do material, patrimônio, código CATMAT ou categoria... (ex: papel, monitor, cadeira)"
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setDisplayLimit(6); // reset pagination when typing
+          }}
+          icon={<Search className="h-4 w-4" aria-hidden="true" />}
+        />
 
         {/* Categoria Shortcuts */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Atalhos Rápidos:</span>
-          <button
-            onClick={() => setSelectedCategory(selectedCategory === '' ? '' : '')}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
-              !selectedCategory ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+          <Button
+            variant={!selectedCategory ? 'primary' : 'tertiary'}
+            size="small"
+            onClick={() => setSelectedCategory('')}
           >
             Todos os Itens
-          </button>
+          </Button>
           {sortedCategorias.map((cat) => (
-            <button
+            <Button
               key={cat}
+              variant={selectedCategory === cat ? 'primary' : 'tertiary'}
+              size="small"
               onClick={() => {
                 setSelectedCategory(selectedCategory === cat ? '' : cat);
                 setDisplayLimit(6);
               }}
-              className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                selectedCategory === cat ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
             >
               {cat}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -201,12 +200,9 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
               Filtrar Catálogo
             </h3>
             {hasActiveFilters && (
-              <button 
-                onClick={clearFilters}
-                className="text-xs text-red-600 hover:underline"
-              >
+              <Button variant="tertiary" size="small" onClick={clearFilters}>
                 Limpar
-              </button>
+              </Button>
             )}
           </div>
 
@@ -301,12 +297,9 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
               <p className="text-xs text-gray-500 max-w-sm">
                 Tente ajustar os filtros ou reescrever o termo de busca para encontrar itens equivalentes em outros almoxarifados.
               </p>
-              <button
-                onClick={clearFilters}
-                className="mt-2 px-4 py-2 text-xs font-semibold bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
-              >
+              <Button variant="primary" onClick={clearFilters} className="mt-2">
                 Limpar Todos os Filtros
-              </button>
+              </Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6" id="vitrine-products-grid">
@@ -381,35 +374,28 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
 
                       {/* Botões de Ação */}
                       <div className="grid grid-cols-2 gap-2 mt-2 pt-1">
-                        <button
+                        <Button
+                          variant="tertiary"
+                          size="small"
                           onClick={() => setDetailProduct(produto)}
-                          className="px-3 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1"
+                          icon={<Eye className="h-3.5 w-3.5" aria-hidden="true" />}
                         >
-                          <Eye className="h-3.5 w-3.5" />
                           Ver Detalhes
-                        </button>
-                        
-                        <button
+                        </Button>
+
+                        <Button
+                          variant={isAlreadyInCart ? 'secondary' : 'primary'}
+                          size="small"
                           onClick={(e) => handleAddToCart(e, produto)}
                           disabled={isAlreadyInCart}
-                          className={`px-3 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                          icon={
                             isAlreadyInCart
-                              ? 'bg-emerald-100 text-emerald-700 border border-emerald-200 cursor-not-allowed'
-                              : 'bg-secondary hover:bg-secondary/90 text-white shadow-sm hover:shadow-md'
-                          }`}
+                              ? <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                              : <ShoppingCart className="h-3.5 w-3.5" aria-hidden="true" />
+                          }
                         >
-                          {isAlreadyInCart ? (
-                            <>
-                              <Check className="h-3.5 w-3.5" />
-                              Adicionado
-                            </>
-                          ) : (
-                            <>
-                              <ShoppingCart className="h-3.5 w-3.5" />
-                              Reservar Item
-                            </>
-                          )}
-                        </button>
+                          {isAlreadyInCart ? 'Adicionado' : 'Reservar Item'}
+                        </Button>
                       </div>
                     </div>
                   </article>
@@ -421,13 +407,10 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
           {/* Botão Carregar Mais para mitigar CLS e Paginação */}
           {filteredProducts.length > displayLimit && (
             <div className="flex justify-center py-4">
-              <button
-                onClick={() => setDisplayLimit((prev) => prev + 6)}
-                className="px-6 py-3 bg-white hover:bg-gray-50 border-2 border-primary text-primary font-bold text-sm rounded-lg shadow-sm hover:shadow-md transition-all flex items-center gap-2"
-              >
+              <Button variant="secondary" onClick={() => setDisplayLimit((prev) => prev + 6)}>
                 Carregar Mais Itens Ociosos
-                <ChevronRight className="h-4 w-4" />
-              </button>
+                <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              </Button>
             </div>
           )}
         </section>
