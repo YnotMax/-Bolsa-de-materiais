@@ -260,8 +260,100 @@ git commit -m "style: swap body font to Raleway, matching DS-gov's Rawline fallb
 
 ## Post-Implementation (not a coded task)
 
-- [ ] Run `/impeccable audit` — per the design spec's Phase 1 checkpoint, this scores
+- [x] Run `/impeccable audit` — per the design spec's Phase 1 checkpoint, this scores
   accessibility/performance/theming on the app as it stands after Foundation, without fixing
   anything. Use its output to sanity-check before starting the Phase 2 (Shell) plan, not as a
   blocking gate — some scores are expected to be mediocre until Phases 2-4 replace the remaining
   ad-hoc markup.
+
+  Result: 10/20 (Acceptable). Most findings are correctly scoped to later phases (hand-rolled
+  modals, undersized touch targets, raw Tailwind colors in component markup). Two findings were
+  in Foundation's own territory and got a follow-up Task 4 below: a contrast failure in a
+  pre-existing token this phase didn't originally touch, and an app-shell root div bypassing the
+  token system Task 1-3 set up.
+
+---
+
+### Task 4: Fix Foundation-scope audit findings (state-bom contrast, app-shell token wiring)
+
+**Files:**
+- Modify: `src/index.css` (the `--color-state-bom` value)
+- Modify: `src/App.tsx:236` (root div classes)
+
+**Interfaces:**
+- Consumes: `--color-background` / `--color-on-background` (already defined in `src/index.css`
+  since before this plan; unchanged by Tasks 1-3) via their Tailwind-v4-generated utilities
+  `bg-background` / `text-on-background` — the same mechanism already proven by `bg-primary` /
+  `text-primary` elsewhere in the codebase.
+- Produces: no new tokens or interfaces for later tasks.
+
+- [ ] **Step 1: Fix the `state-bom` badge contrast failure**
+
+The `/impeccable audit` checkpoint computed `--color-state-bom: #2E9D62` (white text on top of it)
+at ≈3.43:1, below the 4.5:1 WCAG AA minimum for normal text — used on every "Bom" conservation-state
+badge in `Vitrine.tsx` and `Carrinho.tsx`. In `src/index.css`, replace:
+
+```css
+  --color-state-novo: #008844;
+  --color-state-bom: #2E9D62;
+```
+
+with:
+
+```css
+  --color-state-novo: #008844;
+  --color-state-bom: #168821;
+```
+
+`#168821` is DS-gov's own official `--green-cool-vivid-50` token (verified from
+`@govbr-ds/core@3.7.0`'s `dist/core-tokens.css`, where it's aliased as `--success`) — computed
+contrast against white is ≈4.59:1, passing AA. Using DS-gov's own success green here (rather than
+an arbitrary darkened value) keeps the fix aligned with the migration's overall direction.
+
+- [ ] **Step 2: Wire the app shell root to the token system**
+
+The audit found `src/App.tsx:236` uses `bg-gray-50 text-gray-800` — a near-identical but distinct
+off-white/gray from the token-driven `--color-background` (`#f9f9f9`) / `--color-on-background`
+(`#1a1c1c`) that `body` in `src/index.css` already applies, so the outer `<div>` silently
+overrides the token system before it reaches any component. Change:
+
+```tsx
+    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800">
+```
+
+to:
+
+```tsx
+    <div className="min-h-screen flex flex-col bg-background text-on-background">
+```
+
+`bg-background` / `text-on-background` are Tailwind-v4-generated utilities from the existing
+`--color-background` / `--color-on-background` custom properties in the `@theme` block — the same
+pattern already used by `bg-primary` / `text-primary` elsewhere, so no new CSS is needed.
+
+**Explicitly out of scope for this task** (left for the Shell/Primitives/Pages phases, per the
+audit's `[Deferred-to-migration]` tagging): rewriting the pervasive `gray-400`/`emerald-*` text
+colors inside Header/Vitrine/Carrinho/WorkflowManager/Relatorios to use
+`--color-on-surface-variant` — that's real component-markup work, not a Foundation-scoped CSS
+wiring fix, and `--color-secondary` stays intentionally unconsumed for now since the design spec
+already designates it as the Florianópolis accent layer for later phases, not dead code to
+remove.
+
+- [ ] **Step 3: Type-check and build**
+
+Run: `npm run lint` — expected: no errors (CSS + one className string change).
+Run: `npm run build` — expected: succeeds.
+
+- [ ] **Step 4: Visual smoke test**
+
+Run: `npm run dev`. Confirm: the "Bom" conservation badge (visible in the Vitrine catalog and
+Carrinho) now renders in a slightly darker, more saturated green with clearly legible white text.
+Confirm the overall page background/text color looks the same as before (the two off-whites were
+close enough that this should be a non-visible or barely-visible change, not a regression).
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add src/index.css src/App.tsx
+git commit -m "fix: resolve Foundation-scope audit findings (state-bom contrast, app-shell tokens)"
+```
