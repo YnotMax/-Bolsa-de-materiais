@@ -5,7 +5,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Search, Filter, ShoppingCart, RefreshCw, Layers, Check, ChevronRight, Eye, Building2, Info, ClipboardCopy, Leaf, Coins } from 'lucide-react';
-import { Produto, EstadoConservacao } from '../types';
+import { Produto } from '../types';
 import { MOCK_PRODUTOS, MOCK_CATEGORIAS, MOCK_SECRETARIAS, fuzzySearch, getEstadoInfo } from '../data';
 import Button from './Button';
 import Input from './Input';
