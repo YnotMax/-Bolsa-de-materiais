@@ -4,11 +4,12 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, ShoppingCart, RefreshCw, Layers, Check, ChevronRight, Eye, Building2, Info, ClipboardCopy } from 'lucide-react';
+import { Search, Filter, ShoppingCart, RefreshCw, Layers, Check, ChevronRight, Eye, Building2, Info, ClipboardCopy, Leaf, Coins } from 'lucide-react';
 import { Produto, EstadoConservacao } from '../types';
 import { MOCK_PRODUTOS, MOCK_CATEGORIAS, MOCK_SECRETARIAS, fuzzySearch } from '../data';
 import Button from './Button';
 import Input from './Input';
+import Modal from './Modal';
 
 interface VitrineProps {
   onAddToCart: (produto: Produto) => void;
@@ -417,117 +418,98 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
       </div>
 
       {/* MODAL de Detalhes Completo */}
-      {detailProduct && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs">
-          <div className="bg-white border border-gray-200 rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden animate-in fade-in zoom-in duration-200">
-            
-            {/* Header do Modal */}
-            <div className="relative h-64 bg-gray-100">
+      <Modal
+        open={!!detailProduct}
+        onClose={() => setDetailProduct(null)}
+        title={detailProduct?.nome ?? ''}
+        footer={
+          detailProduct && (
+            <>
+              <Button variant="secondary" onClick={() => setDetailProduct(null)}>
+                Voltar ao Catálogo
+              </Button>
+              <Button
+                variant="primary"
+                onClick={(e) => {
+                  handleAddToCart(e, detailProduct);
+                  setDetailProduct(null);
+                }}
+                disabled={cartProductIds.includes(detailProduct.id)}
+                icon={<ShoppingCart className="h-4 w-4" aria-hidden="true" />}
+              >
+                {cartProductIds.includes(detailProduct.id) ? 'Já no Carrinho' : 'Reservar Item'}
+              </Button>
+            </>
+          )
+        }
+      >
+        {detailProduct && (
+          <div className="flex flex-col gap-5">
+            <div className="relative h-64 -m-6 mb-0 bg-gray-100">
               <img
                 src={detailProduct.fotoUrl}
                 alt={detailProduct.nome}
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover"
               />
-              <button
-                onClick={() => setDetailProduct(null)}
-                className="absolute top-4 right-4 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 transition-colors focus:outline-none"
-                aria-label="Fechar Detalhes"
-              >
-                ✕
-              </button>
               <span className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold shadow-md ${getEstadoBadge(detailProduct.estadoConservacao).tone}`}>
                 {getEstadoBadge(detailProduct.estadoConservacao).label}
               </span>
             </div>
 
-            {/* Conteúdo do Modal */}
-            <div className="p-6 flex flex-col gap-5">
-              <div>
-                <span className="text-xs font-mono font-bold text-gray-500 uppercase tracking-wider">
-                  {detailProduct.categoria}
-                </span>
-                <h3 className="text-xl md:text-2xl font-bold text-primary font-display mt-0.5 leading-snug">
-                  {detailProduct.nome}
-                </h3>
-                
-                {/* Códigos Patrimoniais */}
-                <div className="flex flex-wrap items-center gap-3 mt-3 text-xs text-gray-600 bg-gray-50 border border-gray-150 p-2.5 rounded-lg font-mono">
-                  <div className="flex items-center gap-1.5">
-                    <ClipboardCopy className="h-3.5 w-3.5 text-gray-400" />
-                    <span>Nº Patrimônio: <strong>{detailProduct.codigoPatrimonio}</strong></span>
-                  </div>
-                  <div className="h-3 w-[1px] bg-gray-300" />
-                  <div>
-                    <span>CATMAT: <strong>{detailProduct.codigoCatmat}</strong></span>
-                  </div>
+            <div>
+              <span className="text-xs font-mono font-bold text-gray-500 uppercase tracking-wider">
+                {detailProduct.categoria}
+              </span>
+
+              <div className="flex flex-wrap items-center gap-3 mt-3 text-xs text-gray-600 bg-gray-50 border border-gray-150 p-2.5 rounded-lg font-mono">
+                <div className="flex items-center gap-1.5">
+                  <ClipboardCopy className="h-3.5 w-3.5 text-gray-400" aria-hidden="true" />
+                  <span>Nº Patrimônio: <strong>{detailProduct.codigoPatrimonio}</strong></span>
                 </div>
-              </div>
-
-              {/* Descrição */}
-              <div className="flex flex-col gap-1.5">
-                <h4 className="text-xs font-bold uppercase text-gray-400 tracking-wider">Descrição do Item</h4>
-                <p className="text-sm text-gray-700 leading-relaxed bg-gray-50/50 p-3.5 rounded-lg border border-gray-100">
-                  {detailProduct.descricaoCompleta || "Sem descrição adicional disponível para este item ocioso."}
-                </p>
-              </div>
-
-              {/* Informações de Origem e Métricas */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="border border-gray-150 rounded-lg p-3 bg-gray-50 flex flex-col gap-1">
-                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Secretaria Cedente</span>
-                  <span className="text-xs font-bold text-primary">{detailProduct.secretariaOrigem}</span>
-                  <span className="text-[10px] text-gray-500">O estoque e a entrega serão coordenados com este órgão municipal.</span>
-                </div>
-
-                <div className="border border-gray-150 rounded-lg p-3 bg-gray-50 flex flex-col gap-1">
-                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Impacto do Reuso</span>
-                  <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
-                    💚 Economia B2B: R$ {detailProduct.valorEstimadoNovo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                  </span>
-                  <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
-                    🌿 Carbono Evitado: {detailProduct.co2eEvitadoKg} kg CO₂e
-                  </span>
-                </div>
-              </div>
-
-              {/* Footer do Modal com Ações */}
-              <div className="flex justify-between items-center pt-4 border-t border-gray-150 mt-2">
+                <div className="h-3 w-[1px] bg-gray-300" />
                 <div>
-                  <span className="text-[10px] text-gray-400 uppercase font-bold block">Físico Disponível</span>
-                  <span className="text-lg font-bold text-primary">{detailProduct.quantidade} unidades</span>
-                </div>
-
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setDetailProduct(null)}
-                    className="px-4 py-2 border border-gray-200 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    Voltar ao Catálogo
-                  </button>
-                  
-                  <button
-                    onClick={(e) => {
-                      handleAddToCart(e, detailProduct);
-                      setDetailProduct(null);
-                    }}
-                    disabled={cartProductIds.includes(detailProduct.id)}
-                    className={`px-5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-2 ${
-                      cartProductIds.includes(detailProduct.id)
-                        ? 'bg-emerald-100 text-emerald-700 border border-emerald-200 cursor-not-allowed'
-                        : 'bg-secondary hover:bg-secondary/90 text-white shadow-sm'
-                    }`}
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                    {cartProductIds.includes(detailProduct.id) ? 'Já no Carrinho' : 'Reservar Item'}
-                  </button>
+                  <span>CATMAT: <strong>{detailProduct.codigoCatmat}</strong></span>
                 </div>
               </div>
+            </div>
 
+            <div className="flex flex-col gap-1.5">
+              <h4 className="text-xs font-bold uppercase text-gray-400 tracking-wider">Descrição do Item</h4>
+              <p className="text-sm text-gray-700 leading-relaxed bg-gray-50/50 p-3.5 rounded-lg border border-gray-100">
+                {detailProduct.descricaoCompleta || "Sem descrição adicional disponível para este item ocioso."}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="border border-gray-150 rounded-lg p-3 bg-gray-50 flex flex-col gap-1">
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Secretaria Cedente</span>
+                <span className="text-xs font-bold text-primary">{detailProduct.secretariaOrigem}</span>
+                <span className="text-[10px] text-gray-500">O estoque e a entrega serão coordenados com este órgão municipal.</span>
+              </div>
+
+              <div className="border border-gray-150 rounded-lg p-3 bg-gray-50 flex flex-col gap-1">
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Impacto do Reuso</span>
+                <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                  <Coins className="h-3.5 w-3.5" aria-hidden="true" />
+                  Economia B2B: R$ {detailProduct.valorEstimadoNovo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                </span>
+                <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                  <Leaf className="h-3.5 w-3.5" aria-hidden="true" />
+                  Carbono Evitado: {detailProduct.co2eEvitadoKg} kg CO₂e
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center pt-4 border-t border-gray-150 mt-2">
+              <div>
+                <span className="text-[10px] text-gray-400 uppercase font-bold block">Físico Disponível</span>
+                <span className="text-lg font-bold text-primary">{detailProduct.quantidade} unidades</span>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
 
     </div>
   );
