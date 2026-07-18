@@ -112,6 +112,18 @@ This is a side-effect import: `core.min.js` is a UMD bundle (verified from its s
 which will attach itself to `window.core` in the browser. Nothing consumes `window.core` yet —
 that starts in Phase 2 when the Header gets its `BRHeader` JS wrapper.
 
+**Update (final whole-branch review, 2026-07-17):** this import was removed again from
+`src/main.tsx`. Nothing in Phase 1 consumes `window.core`, and importing `core.min.js` eagerly ran
+DS-gov's `behavior.initInstanceAll()` at module-eval time — firing its demo/example wiring
+(harmless here since it targets doc-site element IDs that don't exist in this app) and activating
+a global `focus-visible` polyfill — plus pulled in ~228 KB of JS (and its transitive deps,
+`@popperjs/core`, `flatpickr`, `focus-visible`) for zero current benefit. Whoever writes the
+Phase 2 (Shell) plan should add `import '@govbr-ds/core/dist/core.min.js';` back in at that point,
+co-located with the first `new core.BRHeader(...)` usage. Note also that `initInstanceAll()` runs
+once at module-eval time, before React mounts — it will NOT auto-wire any `.br-*` markup React
+renders later, so Phase 2 must instantiate DS-gov JS components explicitly (e.g. in a `useEffect`),
+not rely on the bundle's auto-init.
+
 - [ ] **Step 5: Type-check and build**
 
 Run: `npm run lint`
@@ -335,9 +347,12 @@ pattern already used by `bg-primary` / `text-primary` elsewhere, so no new CSS i
 audit's `[Deferred-to-migration]` tagging): rewriting the pervasive `gray-400`/`emerald-*` text
 colors inside Header/Vitrine/Carrinho/WorkflowManager/Relatorios to use
 `--color-on-surface-variant` — that's real component-markup work, not a Foundation-scoped CSS
-wiring fix, and `--color-secondary` stays intentionally unconsumed for now since the design spec
-already designates it as the Florianópolis accent layer for later phases, not dead code to
-remove.
+wiring fix. `--color-secondary` (`#006d35`) is actively used as a button background with white
+text across 6 components (`WorkflowManager.tsx`, `AvisosCompras.tsx` x2, `Vitrine.tsx` x2,
+`Carrinho.tsx`); it was verified during the final whole-branch review to compute ≈6.5:1 contrast
+against white, passing WCAG AA (4.5:1 required) — no change needed there. What's still out of
+scope for this task is migrating those 6 components' markup to DS-gov component classes
+(Shell/Primitives/Pages phases), not the color value itself.
 
 - [ ] **Step 3: Type-check and build**
 

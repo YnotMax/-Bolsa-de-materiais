@@ -58,7 +58,8 @@ time, not guessed):
 Florianópolis's municipal identity (emerald-green accents, "PMF Ativa" badge, Landmark logo mark)
 is kept as a local identity layer on top of DS-gov's standard blue/components — the same pattern
 other gov.br-adopting agencies use. The green accent gets a WCAG AA contrast check since it isn't
-part of DS-gov's pre-vetted palette.
+part of DS-gov's pre-vetted palette. Verified during Phase 1's final review: `--color-secondary`
+(`#006d35`) on white computes to ≈6.5:1, passing WCAG AA.
 
 ## Phases
 
