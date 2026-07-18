@@ -11,8 +11,6 @@ interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   circle?: boolean;
   icon?: ReactNode;
   children?: ReactNode;
-  className?: string;
-  type?: 'button' | 'submit' | 'reset';
 }
 
 export default function Button({
