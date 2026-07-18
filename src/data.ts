@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Produto } from './types';
+import { Produto, EstadoConservacao } from './types';
 
 export const MOCK_PRODUTOS: Produto[] = [
   {
@@ -179,4 +179,24 @@ export function fuzzySearch(query: string, text: string): boolean {
   const q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const t = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   return t.includes(q);
+}
+
+// State of conservation colors (DS-gov utility classes) and short labels, based on
+// Decreto n\u00ba 45.242/2009 \u2014 the single source of truth consumed by every page that
+// renders a conservation-state badge (Vitrine, Carrinho, and future Phase 4 pages).
+export function getEstadoInfo(estado: EstadoConservacao): { tone: string; label: string } {
+  switch (estado) {
+    case 'NOVO':
+      return { tone: 'bg-success text-white', label: 'Novo' };
+    case 'BOM':
+      return { tone: 'bg-success text-white', label: 'Bom Estado' };
+    case 'REGULAR':
+      return { tone: 'bg-warning text-black font-semibold', label: 'Regular' };
+    case 'PESSIMO':
+      return { tone: 'bg-danger text-white', label: 'P\u00e9ssimo' };
+    case 'SUCATA':
+      return { tone: 'bg-gray-40 text-white', label: 'Sucata' };
+    default:
+      return { tone: 'bg-gray-40 text-white', label: estado };
+  }
 }

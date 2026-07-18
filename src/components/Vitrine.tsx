@@ -6,7 +6,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Filter, ShoppingCart, RefreshCw, Layers, Check, ChevronRight, Eye, Building2, Info, ClipboardCopy, Leaf, Coins } from 'lucide-react';
 import { Produto, EstadoConservacao } from '../types';
-import { MOCK_PRODUTOS, MOCK_CATEGORIAS, MOCK_SECRETARIAS, fuzzySearch } from '../data';
+import { MOCK_PRODUTOS, MOCK_CATEGORIAS, MOCK_SECRETARIAS, fuzzySearch, getEstadoInfo } from '../data';
 import Button from './Button';
 import Input from './Input';
 import Modal from './Modal';
@@ -37,44 +37,6 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
     setTimeout(() => {
       setToastMessage(null);
     }, 3000);
-  };
-
-  // State of conservation colors based on Decreto nº 45.242/2009
-  const getEstadoBadge = (estado: EstadoConservacao) => {
-    switch (estado) {
-      case 'NOVO':
-        return {
-          tone: 'bg-success text-white',
-          label: 'Novo (Sem uso)',
-          desc: 'Adquirido há < 1 ano, sem uso prévio'
-        };
-      case 'BOM':
-        return {
-          tone: 'bg-success text-white',
-          label: 'Bom',
-          desc: 'Em perfeitas condições, > 1 ano de aquisição'
-        };
-      case 'REGULAR':
-        return {
-          tone: 'bg-warning text-black font-semibold',
-          label: 'Regular',
-          desc: 'Precisa apenas de reparos simples'
-        };
-      case 'PESSIMO':
-        return {
-          tone: 'bg-danger text-white',
-          label: 'Péssimo',
-          desc: 'Apresenta avarias importantes'
-        };
-      case 'SUCATA':
-        return {
-          tone: 'bg-gray-40 text-white',
-          label: 'Sucata (Inservível)',
-          desc: 'Inservível para reuso direto, aproveitável para peças'
-        };
-      default:
-        return { tone: 'bg-gray-40 text-white', label: estado, desc: '' };
-    }
   };
 
   // Sorting secretariats and categories alphabetically as requested
@@ -308,7 +270,7 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6" id="vitrine-products-grid">
               {filteredProducts.slice(0, displayLimit).map((produto) => {
-                const badge = getEstadoBadge(produto.estadoConservacao);
+                const badge = getEstadoInfo(produto.estadoConservacao);
                 const isAlreadyInCart = cartProductIds.includes(produto.id);
 
                 return (
@@ -455,8 +417,8 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover"
               />
-              <span className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold shadow-md ${getEstadoBadge(detailProduct.estadoConservacao).tone}`}>
-                {getEstadoBadge(detailProduct.estadoConservacao).label}
+              <span className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold shadow-md ${getEstadoInfo(detailProduct.estadoConservacao).tone}`}>
+                {getEstadoInfo(detailProduct.estadoConservacao).label}
               </span>
             </div>
 

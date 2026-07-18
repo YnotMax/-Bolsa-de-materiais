@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Trash2, ShieldAlert, ArrowLeft, Send, CheckCircle2, UserCheck, AlertTriangle } from 'lucide-react';
 import { CartItem, RequisitanteData } from '../types';
-import { MOCK_SECRETARIAS } from '../data';
+import { MOCK_SECRETARIAS, getEstadoInfo } from '../data';
 
 interface CarrinhoProps {
   cartItems: CartItem[];
@@ -75,29 +75,6 @@ export default function Carrinho({
     onSubmitRequisition(requisitante);
   };
 
-  // State of conservation tags with gov.br colors
-  const getEstadoTagClass = (estado: string) => {
-    switch (estado) {
-      case 'NOVO': return 'bg-state-novo text-white';
-      case 'BOM': return 'bg-state-bom text-white';
-      case 'REGULAR': return 'bg-state-regular text-black font-semibold';
-      case 'PESSIMO': return 'bg-state-pessimo text-white';
-      case 'SUCATA': return 'bg-state-sucata text-white';
-      default: return 'bg-gray-500 text-white';
-    }
-  };
-
-  const getEstadoLabel = (estado: string) => {
-    switch (estado) {
-      case 'NOVO': return 'Novo';
-      case 'BOM': return 'Bom Estado';
-      case 'REGULAR': return 'Regular';
-      case 'PESSIMO': return 'Péssimo';
-      case 'SUCATA': return 'Sucata';
-      default: return estado;
-    }
-  };
-
   return (
     <div className="flex flex-col gap-6">
       
@@ -152,8 +129,8 @@ export default function Carrinho({
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover"
                     />
-                    <span className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold shadow ${getEstadoTagClass(item.produto.estadoConservacao)}`}>
-                      {getEstadoLabel(item.produto.estadoConservacao)}
+                    <span className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold shadow ${getEstadoInfo(item.produto.estadoConservacao).tone}`}>
+                      {getEstadoInfo(item.produto.estadoConservacao).label}
                     </span>
                   </div>
 
