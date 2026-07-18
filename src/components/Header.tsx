@@ -58,7 +58,11 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
     searchTrigger.setAttribute('aria-expanded', searchEl.classList.contains('active') ? 'true' : 'false');
 
     const menuObserver = new MutationObserver(() => {
-      menuTrigger.setAttribute('aria-expanded', menuEl.classList.contains('active') ? 'true' : 'false');
+      const isActive = menuEl.classList.contains('active');
+      menuTrigger.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+      if (!isActive) {
+        menuTrigger.focus();
+      }
     });
     menuObserver.observe(menuEl, { attributes: true, attributeFilter: ['class'] });
 
@@ -241,9 +245,10 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
                 return (
                   <a
                     key={item.id}
-                    className="menu-item"
+                    className={`menu-item ${currentTab === item.id ? 'active' : ''}`}
                     href="#"
                     role="treeitem"
+                    aria-current={currentTab === item.id ? 'page' : undefined}
                     onClick={(e) => {
                       e.preventDefault();
                       setTab(item.id);
