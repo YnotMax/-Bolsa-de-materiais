@@ -543,7 +543,185 @@ git commit -m "feat: extract Footer onto br-footer markup, add skip-link"
 
 ## Post-Implementation (not a coded task)
 
-- [ ] Run `/impeccable audit` — per the parent design spec's Phase 2 checkpoint. Expect
-  accessibility/theming scores to improve meaningfully over Phase 1's 10/20 (Header/Footer/nav
-  were a large share of the findings), while cards/filters/buttons inside the 5 page components
-  remain flagged — that's Phase 3/4, not a regression here.
+- [x] Run `/impeccable audit` — per the parent design spec's Phase 2 checkpoint.
+
+  Result: 11/20 (Acceptable), up from Phase 1's 10/20. Skip-link and cart `aria-label` findings
+  from Phase 1 are resolved. Most remaining findings are correctly `[Deferred-to-pages]` (modal
+  ARIA, `gray-400` contrast, anti-pattern tells — all pre-existing, unaffected by this phase). Five
+  findings were tagged `[Shell-scope]` — things this phase's own Header/Footer/App.tsx work should
+  have gotten right — and get a follow-up Task 3 below.
+
+---
+
+### Task 3: Fix Shell-scope audit findings (aria-expanded, focus trap, h1, badge contrast, dead tab-stop)
+
+**Files:**
+- Modify: `src/components/Header.tsx`
+- Modify: `src/index.css` (add `--color-error`/`--color-on-error` tokens)
+
+**Interfaces:**
+- Consumes: nothing new from earlier tasks.
+- Produces: `--color-error`/`--color-on-error` tokens, consumed only within this task (cart badge)
+  but available for later phases' rejection/delete UI (`Carrinho.tsx`, `WorkflowManager.tsx`,
+  `AvisosCompras.tsx` all currently hardcode raw reds — out of scope to touch here, but the token
+  now exists for when those files get migrated).
+
+- [ ] **Step 1: Add error/danger tokens**
+
+In `src/index.css`, in the `@theme` block, add these two lines directly after the existing
+`--color-state-sucata: #737373;` line:
+
+```css
+  --color-error: #dc2626;
+  --color-on-error: #ffffff;
+```
+
+`#dc2626` (Tailwind's `red-600`) computes to ≈4.9:1 against white, passing WCAG AA (verified
+during the audit that flagged this) — unlike the `red-500` (`#ef4444`, ≈3.76:1) currently used for
+the cart badge.
+
+- [ ] **Step 2: Fix cart badge contrast using the new token**
+
+In `src/components/Header.tsx`, both cart-badge `<span>` elements currently use
+`bg-red-500 text-white`. Replace `bg-red-500` with `bg-error` and `text-white` with `text-on-error`
+in both places (the desktop nav row's badge and the mobile menu item's badge).
+
+- [ ] **Step 3: Promote the header title to a real `<h1>`**
+
+In `src/components/Header.tsx`, the `header-info` block currently has:
+
+```tsx
+              <div className="header-info">
+                <div className="header-title">Bolsa de Materiais</div>
+                <div className="header-subtitle">Reaproveitamento entre almoxarifados municipais</div>
+              </div>
+```
+
+Change `<div className="header-title">` to `<h1 className="header-title">` (closing tag too).
+DS-gov's `.header-title` CSS class controls the visual appearance independent of tag name, but
+verify this visually in Step 7 below — if the browser's default `<h1>` styling (bold weight, extra
+margin, larger font-size) visibly clashes with `.header-title`'s intended look, add an inline
+override (e.g. `style={{ margin: 0, font: 'inherit' }}`) rather than reverting to a `<div>`, since
+the goal is a real semantic heading, not just visual preservation.
+
+- [ ] **Step 4: Wire real `aria-expanded` to the hamburger and search triggers**
+
+`BRHeader`/`BRMenu` manage open/close state via direct DOM class toggling from multiple paths
+(click, Escape, scrim, X button, and this plan's own Task 1 fix for item-click) — trying to mirror
+that with React state would desync from whichever path the library itself handles. Instead, use a
+`MutationObserver` to watch the actual DOM state and reflect it onto the trigger buttons' `aria-expanded`, which stays correct regardless of which path caused the change.
+
+Add refs for both trigger buttons. In the `<button>` with `data-toggle="menu"` (the hamburger),
+add `ref={menuTriggerRef}`. In the `<button>` with `data-toggle="search"` (the search icon), add
+`ref={searchTriggerRef}`.
+
+Add these two ref declarations near the existing `headerRef`/`menuRef`/`dsInitialized` refs:
+
+```tsx
+  const menuTriggerRef = useRef<HTMLButtonElement>(null);
+  const searchTriggerRef = useRef<HTMLButtonElement>(null);
+```
+
+Add a second `useEffect` (separate from the existing DS-gov init effect) that observes both:
+
+```tsx
+  useEffect(() => {
+    const menuEl = menuRef.current;
+    const menuTrigger = menuTriggerRef.current;
+    const searchEl = headerRef.current?.querySelector('.header-search');
+    const searchTrigger = searchTriggerRef.current;
+    if (!menuEl || !menuTrigger || !searchEl || !searchTrigger) return;
+
+    menuTrigger.setAttribute('aria-expanded', menuEl.classList.contains('active') ? 'true' : 'false');
+    searchTrigger.setAttribute('aria-expanded', searchEl.classList.contains('active') ? 'true' : 'false');
+
+    const menuObserver = new MutationObserver(() => {
+      menuTrigger.setAttribute('aria-expanded', menuEl.classList.contains('active') ? 'true' : 'false');
+    });
+    menuObserver.observe(menuEl, { attributes: true, attributeFilter: ['class'] });
+
+    const searchObserver = new MutationObserver(() => {
+      searchTrigger.setAttribute('aria-expanded', searchEl.classList.contains('active') ? 'true' : 'false');
+    });
+    searchObserver.observe(searchEl, { attributes: true, attributeFilter: ['class'] });
+
+    return () => {
+      menuObserver.disconnect();
+      searchObserver.disconnect();
+    };
+  }, []);
+```
+
+This is a plain `MutationObserver` created and owned entirely by this component (not by
+`BRHeader`/`BRMenu`), so its cleanup function is real and safe to run on every unmount — unlike the
+DS-gov classes themselves, there is no "no destroy method" problem here.
+
+- [ ] **Step 5: Add a focus trap to the open off-canvas menu**
+
+`BRMenu`'s own JS (verified from source in Task 1's review) handles Escape and Arrow-key
+navigation but never constrains Tab within the open panel — a keyboard user can Tab past the last
+menu item onto page content hidden behind the scrim. Add a third `useEffect`:
+
+```tsx
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const menuEl = menuRef.current;
+      if (e.key !== 'Tab' || !menuEl || !menuEl.classList.contains('active')) return;
+      const focusable = menuEl.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+```
+
+- [ ] **Step 6: Remove the dead tab-stop on the menu scrim**
+
+The `menu-scrim` div currently has `tabIndex={0}`, but `BRMenu`'s dismiss handling is click-only
+(verified from source) — a keyboard user who tabs onto it and presses Enter/Space gets no
+response. Remove the `tabIndex={0}` prop from the `<div className="menu-scrim" ...>` element
+entirely (keep `data-dismiss="menu"` — that's what makes the scrim clickable-to-close, unrelated
+to the dead tab-stop issue).
+
+- [ ] **Step 7: Type-check, build, and verify**
+
+Run: `npm run lint` — expected: no errors.
+Run: `npm run build` — expected: succeeds.
+Run: `npm run dev` and verify:
+- The `<h1>` renders visually the same as the old `<div>` did (or, if browser default `<h1>`
+  styling leaks through, confirm your Step 3 override neutralizes it — check computed
+  font-weight/margin/font-size in devtools).
+- Open the mobile menu (hamburger button): its `aria-expanded` flips to `"true"` in the DOM;
+  closing it via the X button, Escape, the scrim, or clicking a nav item (all four paths) flips it
+  back to `"false"`.
+- Open the search panel: same `aria-expanded` check on the search trigger button, opening and
+  closing.
+- With the mobile menu open, press Tab repeatedly from the first focusable element inside it:
+  focus should cycle back to the first element after the last, never escaping onto the page behind
+  the scrim. Shift+Tab from the first element should wrap to the last.
+- Cart badge: add an item to the cart, confirm the badge now renders with the darker red
+  (`bg-error`/`#dc2626`) instead of the previous brighter red.
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add src/components/Header.tsx src/index.css
+git commit -m "fix: address Shell-scope audit findings (aria-expanded, focus trap, h1, badge contrast)"
+```
+
+## Post-Task-3 Checkpoint (not a coded task)
+
+- [ ] Re-run `/impeccable audit` if useful to confirm the score improvement, but this is optional
+  — the fixes above are individually verifiable via Step 7, not dependent on a re-audit to prove
+  they work.
