@@ -41,36 +41,36 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
     switch (estado) {
       case 'NOVO':
         return {
-          bg: 'bg-state-novo text-white',
+          tone: 'bg-success text-white',
           label: 'Novo (Sem uso)',
           desc: 'Adquirido há < 1 ano, sem uso prévio'
         };
       case 'BOM':
         return {
-          bg: 'bg-state-bom text-white',
+          tone: 'bg-success text-white',
           label: 'Bom',
           desc: 'Em perfeitas condições, > 1 ano de aquisição'
         };
       case 'REGULAR':
         return {
-          bg: 'bg-state-regular text-black font-semibold',
+          tone: 'bg-warning text-black font-semibold',
           label: 'Regular',
           desc: 'Precisa apenas de reparos simples'
         };
       case 'PESSIMO':
         return {
-          bg: 'bg-state-pessimo text-white',
+          tone: 'bg-danger text-white',
           label: 'Péssimo',
           desc: 'Apresenta avarias importantes'
         };
       case 'SUCATA':
         return {
-          bg: 'bg-state-sucata text-white',
+          tone: 'bg-gray-40 text-white',
           label: 'Sucata (Inservível)',
           desc: 'Inservível para reuso direto, aproveitável para peças'
         };
       default:
-        return { bg: 'bg-gray-500 text-white', label: estado, desc: '' };
+        return { tone: 'bg-gray-40 text-white', label: estado, desc: '' };
     }
   };
 
@@ -220,7 +220,7 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
                 setDisplayLimit(6);
               }}
               id="filter-category"
-              className="w-full bg-gray-50 border border-gray-200 rounded-lg text-xs py-2 px-3 text-gray-800 focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full bg-background border border-gray-200 rounded-lg text-xs py-2 px-3 text-on-surface-variant focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <option value="">Todas as categorias</option>
               {sortedCategorias.map((cat) => (
@@ -239,7 +239,7 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
                 setDisplayLimit(6);
               }}
               id="filter-secretaria"
-              className="w-full bg-gray-50 border border-gray-200 rounded-lg text-xs py-2 px-3 text-gray-800 focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full bg-background border border-gray-200 rounded-lg text-xs py-2 px-3 text-on-surface-variant focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <option value="">Todas as secretarias</option>
               {sortedSecretarias.map((sec) => (
@@ -258,7 +258,7 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
                 setDisplayLimit(6);
               }}
               id="filter-estado"
-              className="w-full bg-gray-50 border border-gray-200 rounded-lg text-xs py-2 px-3 text-gray-800 focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full bg-background border border-gray-200 rounded-lg text-xs py-2 px-3 text-on-surface-variant focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <option value="">Todos os estados</option>
               <option value="NOVO">Novo (Sem uso)</option>
@@ -318,7 +318,7 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
                   <article
                     key={produto.id}
                     id={`product-card-${produto.id}`}
-                    className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg hover:border-primary transition-all duration-300 flex flex-col justify-between"
+                    className="br-card hover bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg hover:border-primary transition-all duration-300 flex flex-col justify-between"
                   >
                     {/* Foto sem cortes - horizontal */}
                     <div className="relative h-44 w-full bg-gray-100 overflow-hidden">
@@ -328,7 +328,7 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
                         referrerPolicy="no-referrer"
                         className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                       />
-                      <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold shadow-md tracking-wide ${badge.bg}`}>
+                      <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold shadow-md tracking-wide ${badge.tone}`}>
                         {badge.label}
                       </span>
                       <span className="absolute bottom-3 right-3 bg-black/75 text-white text-[10px] font-bold font-mono px-2 py-1 rounded-md tracking-wider">
@@ -453,7 +453,7 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
               >
                 ✕
               </button>
-              <span className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold shadow-md ${getEstadoBadge(detailProduct.estadoConservacao).bg}`}>
+              <span className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold shadow-md ${getEstadoBadge(detailProduct.estadoConservacao).tone}`}>
                 {getEstadoBadge(detailProduct.estadoConservacao).label}
               </span>
             </div>
