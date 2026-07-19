@@ -4,7 +4,8 @@
  */
 
 import React, { useMemo } from 'react';
-import { BarChart3, TrendingUp, Leaf, Award, Landmark, AlertTriangle, ArrowUpRight, HelpCircle, Sparkles } from 'lucide-react';
+import { BarChart3, TrendingUp, Leaf, Award, Landmark, AlertTriangle, ArrowUpRight, HelpCircle, Sparkles, Lock } from 'lucide-react';
+import Message from './Message';
 import { Requisicao } from '../types';
 
 interface RelatoriosProps {
@@ -105,7 +106,7 @@ export default function Relatorios({ requisicoes }: RelatoriosProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         
         {/* Card 1: Redução de Despesa Estimada */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
+        <div className="br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div className="flex flex-col gap-1">
             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Erário Economizado (RDE)</span>
             <span className="text-xl md:text-2xl font-bold text-primary font-mono leading-none mt-1">
@@ -121,14 +122,14 @@ export default function Relatorios({ requisicoes }: RelatoriosProps) {
         </div>
 
         {/* Card 2: Emissões de CO2 Evitadas */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
+        <div className="br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div className="flex flex-col gap-1">
             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Carbono Evitado (CO₂e)</span>
             <span className="text-xl md:text-2xl font-bold text-emerald-700 font-mono leading-none mt-1">
               {stats.co2.toLocaleString('pt-BR')} kg
             </span>
-            <span className="text-[11px] text-emerald-600 font-semibold mt-2 block">
-              🌿 Equivalente a {Math.round(stats.co2 / 6)} árvores plantadas
+            <span className="text-[11px] text-emerald-600 font-semibold mt-2 flex items-center gap-1">
+              <Leaf className="h-3 w-3" aria-hidden="true" /> Equivalente a {Math.round(stats.co2 / 6)} árvores plantadas
             </span>
           </div>
           <div className="bg-emerald-50 text-emerald-600 p-2.5 rounded-lg border border-emerald-100">
@@ -137,7 +138,7 @@ export default function Relatorios({ requisicoes }: RelatoriosProps) {
         </div>
 
         {/* Card 3: Itens Remanejados */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
+        <div className="br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div className="flex flex-col gap-1">
             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Itens Remanejados</span>
             <span className="text-xl md:text-2xl font-bold text-primary font-mono leading-none mt-1">
@@ -153,14 +154,14 @@ export default function Relatorios({ requisicoes }: RelatoriosProps) {
         </div>
 
         {/* Card 4: Licitações Evitadas */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
+        <div className="br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
           <div className="flex flex-col gap-1">
             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Licitações Bloqueadas</span>
             <span className="text-xl md:text-2xl font-bold text-primary font-mono leading-none mt-1">
               {stats.projetos} processos
             </span>
-            <span className="text-[11px] text-emerald-600 font-semibold mt-2 block">
-              🔒 Impedidos pela trava sistêmica
+            <span className="text-[11px] text-emerald-600 font-semibold mt-2 flex items-center gap-1">
+              <Lock className="h-3 w-3" aria-hidden="true" /> Impedidos pela trava sistêmica
             </span>
           </div>
           <div className="bg-amber-50 text-amber-600 p-2.5 rounded-lg border border-amber-100">
@@ -174,7 +175,7 @@ export default function Relatorios({ requisicoes }: RelatoriosProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Tabela do Placar */}
-        <div className="lg:col-span-2 bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex flex-col gap-4">
+        <div className="lg:col-span-2 br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex flex-col gap-4">
           <div className="flex justify-between items-center border-b border-gray-100 pb-3">
             <h3 className="font-bold text-base text-primary font-display flex items-center gap-2">
               <Award className="h-5 w-5 text-amber-500" />
@@ -224,7 +225,7 @@ export default function Relatorios({ requisicoes }: RelatoriosProps) {
         </div>
 
         {/* Painel lateral explicativo e metas */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex flex-col justify-between gap-5">
+        <div className="br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex flex-col justify-between gap-5">
           <div className="flex flex-col gap-3">
             <h3 className="font-bold text-sm text-gray-800 border-b border-gray-100 pb-2 flex items-center gap-1.5">
               <Sparkles className="h-4 w-4 text-emerald-500" />
@@ -247,14 +248,11 @@ export default function Relatorios({ requisicoes }: RelatoriosProps) {
             </div>
           </div>
 
-          <div className="bg-emerald-50 border border-emerald-100 text-emerald-900 rounded-lg p-3 text-xs">
-            <p className="font-bold flex items-center gap-1 text-emerald-950">
-              🌿 Selo Verde Florianópolis
-            </p>
-            <p className="mt-1 text-[11px] text-emerald-800">
-              As secretarias com classificação "Selo Verde Ouro" recebem bônus na cota de aprovação de dotações complementares no orçamento do próximo ano!
-            </p>
-          </div>
+          <Message
+            variant="success"
+            title="Selo Verde Florianópolis."
+            body={'As secretarias com classificação "Selo Verde Ouro" recebem bônus na cota de aprovação de dotações complementares no orçamento do próximo ano!'}
+          />
         </div>
 
       </div>
