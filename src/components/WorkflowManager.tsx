@@ -22,20 +22,20 @@ export default function WorkflowManager({ requisicoes, onUpdateStatus }: Workflo
   const [selectedMotivoEstruturado, setSelectedMotivoEstruturado] = useState('');
   const [detalhesRejeicao, setDetalhesRejeicao] = useState('');
 
-  const getStatusBadge = (status: StatusRequisicao) => {
+  const getStatusInfo = (status: StatusRequisicao): { tone: string; label: string } => {
     switch (status) {
       case 'SUBMETIDA':
-        return <span className="bg-blue-100 text-blue-800 border border-blue-200 text-xs px-2.5 py-1 rounded-full font-bold">Submetida</span>;
+        return { tone: 'bg-info text-white', label: 'Submetida' };
       case 'EM_ANALISE':
-        return <span className="bg-amber-100 text-amber-800 border border-amber-200 text-xs px-2.5 py-1 rounded-full font-bold">Em Análise (Estoque Reservado)</span>;
+        return { tone: 'bg-warning text-black font-semibold', label: 'Em Análise (Estoque Reservado)' };
       case 'APROVADA':
-        return <span className="bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs px-2.5 py-1 rounded-full font-bold">Aprovada</span>;
+        return { tone: 'bg-success text-white', label: 'Aprovada' };
       case 'TRANSFERIDA':
-        return <span className="bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs px-2.5 py-1 rounded-full font-bold">Transferida (Concluída)</span>;
+        return { tone: 'bg-success text-white', label: 'Transferida (Concluída)' };
       case 'REJEITADA':
-        return <span className="bg-red-100 text-red-800 border border-red-200 text-xs px-2.5 py-1 rounded-full font-bold">Rejeitada</span>;
+        return { tone: 'bg-danger text-white', label: 'Rejeitada' };
       default:
-        return <span className="bg-gray-100 text-gray-800 border border-gray-200 text-xs px-2.5 py-1 rounded-full font-bold">{status}</span>;
+        return { tone: 'bg-gray-40 text-white', label: status };
     }
   };
 
@@ -136,7 +136,7 @@ export default function WorkflowManager({ requisicoes, onUpdateStatus }: Workflo
                     key={req.id}
                     onClick={() => setActiveRequisition(req)}
                     id={`requisicao-card-${req.id}`}
-                    className={`border rounded-xl p-4 cursor-pointer transition-all ${
+                    className={`br-card hover border rounded-xl p-4 cursor-pointer transition-all ${
                       isSelected 
                         ? 'border-primary bg-primary/5 shadow-md ring-1 ring-primary' 
                         : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/50'
@@ -144,7 +144,9 @@ export default function WorkflowManager({ requisicoes, onUpdateStatus }: Workflo
                   >
                     <div className="flex justify-between items-start gap-2">
                       <span className="text-[10px] font-mono text-gray-400 block">{req.codigoProcesso}</span>
-                      {getStatusBadge(req.status)}
+                      <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${getStatusInfo(req.status).tone}`}>
+                        {getStatusInfo(req.status).label}
+                      </span>
                     </div>
 
                     <h4 className="font-bold text-xs text-primary mt-1.5 truncate">
@@ -184,7 +186,9 @@ export default function WorkflowManager({ requisicoes, onUpdateStatus }: Workflo
                     Solicitação de Remanejamento de Bens
                   </h3>
                 </div>
-                {getStatusBadge(activeRequisition.status)}
+                <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${getStatusInfo(activeRequisition.status).tone}`}>
+                  {getStatusInfo(activeRequisition.status).label}
+                </span>
               </div>
 
               {/* Servidor Requisitante */}
