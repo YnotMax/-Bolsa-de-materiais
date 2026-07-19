@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { FileText, CheckCircle2, XCircle, Clock, Calendar, Check, AlertTriangle, ChevronRight, User, Building, ArrowRight, ShieldCheck, Download, Eye } from 'lucide-react';
 import { Requisicao, StatusRequisicao } from '../types';
 import { MOTIVOS_REJEICAO } from '../data';
+import Button from './Button';
 
 interface WorkflowManagerProps {
   requisicoes: Requisicao[];
@@ -92,28 +93,26 @@ export default function WorkflowManager({ requisicoes, onUpdateStatus }: Workflo
 
         {/* Alternador de Perfis (Gamificação / Adaptação Stockly) */}
         <div className="bg-gray-100 p-1 rounded-lg border border-gray-250 flex items-center self-stretch md:self-auto">
-          <button
+          <Button
+            variant={roleMode === 'cedente' ? 'primary' : 'tertiary'}
+            className="flex-1 md:flex-initial"
             onClick={() => {
               setRoleMode('cedente');
               setActiveRequisition(null);
             }}
-            className={`flex-1 md:flex-initial text-xs font-semibold px-4 py-2 rounded-md transition-all ${
-              roleMode === 'cedente' ? 'bg-primary text-white shadow-sm' : 'text-gray-600 hover:text-gray-900'
-            }`}
           >
             Aprovação (Dona Cedente)
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={roleMode === 'requisitante' ? 'primary' : 'tertiary'}
+            className="flex-1 md:flex-initial"
             onClick={() => {
               setRoleMode('requisitante');
               setActiveRequisition(null);
             }}
-            className={`flex-1 md:flex-initial text-xs font-semibold px-4 py-2 rounded-md transition-all ${
-              roleMode === 'requisitante' ? 'bg-primary text-white shadow-sm' : 'text-gray-600 hover:text-gray-900'
-            }`}
           >
             Acompanhamento (Requisitante)
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -269,40 +268,41 @@ export default function WorkflowManager({ requisicoes, onUpdateStatus }: Workflo
                   <div className="flex gap-2">
                     {activeRequisition.status === 'SUBMETIDA' && (
                       <>
-                        <button
+                        <Button
+                          variant="tertiary"
+                          className="text-danger border border-danger"
                           onClick={(e) => handleOpenRejectionModal(e, activeRequisition.id)}
-                          className="px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 border border-red-200 rounded-lg transition-colors"
                         >
                           Recusar Pedido
-                        </button>
-                        
-                        <button
+                        </Button>
+
+                        <Button
+                          variant="primary"
                           onClick={() => onUpdateStatus(activeRequisition.id, 'APROVADA')}
-                          className="px-4 py-2 text-xs font-bold bg-secondary hover:bg-secondary/90 text-white rounded-lg shadow-sm transition-colors"
                         >
                           Homologar & Aprovar
-                        </button>
+                        </Button>
                       </>
                     )}
 
                     {activeRequisition.status === 'APROVADA' && (
-                      <button
+                      <Button
+                        variant="primary"
                         onClick={() => onUpdateStatus(activeRequisition.id, 'TRANSFERIDA')}
-                        className="px-4 py-2 text-xs font-bold bg-primary hover:bg-primary-dark text-white rounded-lg shadow-sm transition-colors flex items-center gap-1.5"
+                        icon={<Check className="h-4 w-4" aria-hidden="true" />}
                       >
-                        <Check className="h-4 w-4 text-emerald-400" />
                         Confirmar Entrega Física / Transferência
-                      </button>
+                      </Button>
                     )}
 
                     {(activeRequisition.status === 'APROVADA' || activeRequisition.status === 'TRANSFERIDA') && (
-                      <button
+                      <Button
+                        variant="secondary"
                         onClick={() => handleSimulatedDownloadTerm(activeRequisition)}
-                        className="px-3 py-2 text-xs font-bold text-primary border border-gray-200 bg-white hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-1.5"
+                        icon={<Download className="h-4 w-4" aria-hidden="true" />}
                       >
-                        <Download className="h-4 w-4" />
                         Termo de Cessão PDF
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -313,13 +313,13 @@ export default function WorkflowManager({ requisicoes, onUpdateStatus }: Workflo
                   <span className="text-xs font-bold text-emerald-800">
                     Sua requisição foi homologada com sucesso! Entrega agendada.
                   </span>
-                  <button
+                  <Button
+                    variant="primary"
                     onClick={() => handleSimulatedDownloadTerm(activeRequisition)}
-                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg flex items-center gap-1.5"
+                    icon={<Download className="h-4 w-4" aria-hidden="true" />}
                   >
-                    <Download className="h-4 w-4" />
                     Baixar Termo Digital
-                  </button>
+                  </Button>
                 </div>
               )}
 
@@ -383,18 +383,12 @@ export default function WorkflowManager({ requisicoes, onUpdateStatus }: Workflo
 
               {/* Botões do Modal */}
               <div className="flex justify-end gap-2 mt-2 pt-2 border-t border-gray-100">
-                <button
-                  onClick={() => setRejectingReqId(null)}
-                  className="px-4 py-2 border border-gray-200 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-100 transition-colors"
-                >
+                <Button variant="tertiary" onClick={() => setRejectingReqId(null)}>
                   Cancelar
-                </button>
-                <button
-                  onClick={submitRejection}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-lg transition-colors"
-                >
+                </Button>
+                <Button variant="primary" className="bg-danger" onClick={submitRejection}>
                   Registrar Rejeição Oficial
-                </button>
+                </Button>
               </div>
 
             </div>
