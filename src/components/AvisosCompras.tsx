@@ -10,6 +10,8 @@ import { MOCK_PRODUTOS } from '../data';
 import Input from './Input';
 import Button from './Button';
 import Message from './Message';
+import Modal from './Modal';
+import Textarea from './Textarea';
 
 interface AvisosComprasProps {
   onAddFromSimulated: (produto: Produto) => void;
@@ -317,131 +319,93 @@ export default function AvisosCompras({ onAddFromSimulated, onSetTab }: AvisosCo
       </div>
 
       {/* POP-UP TRAVA SISTÊMICA (ALERTA PROATIVO) */}
-      {activeAlert && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 backdrop-blur-xs">
-          <div className="bg-white border-2 border-red-500 rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden animate-in fade-in zoom-in duration-200">
-            
-            {/* Header Vermelho de Alerta Impeditivo */}
-            <div className="bg-gradient-to-r from-red-600 to-amber-600 text-white p-5 flex items-start gap-3.5">
-              <AlertOctagon className="h-8 w-8 text-white animate-pulse flex-shrink-0 mt-1" />
-              <div>
-                <span className="bg-red-800 text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-white/20">
-                  ALERTA SISTÊMICO - BLOQUEIO DE COMPRA
-                </span>
-                <h3 className="text-lg md:text-xl font-bold font-display mt-1 leading-snug">
-                  Bens Equivalentes Disponíveis sem Custos!
-                </h3>
-                <p className="text-xs text-white/90 mt-1 leading-relaxed">
-                  A Lei Federal nº 14.133/2021 e as boas práticas de responsabilidade fiscal vetam a compra de novos materiais se houver similares ociosos cadastrados.
-                </p>
-              </div>
+      <Modal
+        open={!!activeAlert}
+        onClose={() => { setActiveAlert(null); resetForm(); }}
+        title="Bens Equivalentes Disponíveis sem Custos!"
+        footer={
+          <>
+            <Button variant="tertiary" onClick={() => { setActiveAlert(null); resetForm(); }}>
+              Cancelar Simulação
+            </Button>
+            <Button variant="primary" className="bg-warning text-black" onClick={handleBypassSubmit}>
+              Burlar Bloqueio (Justificar)
+            </Button>
+            <Button variant="secondary" icon={<ShieldCheck className="h-4 w-4" aria-hidden="true" />} onClick={() => { setActiveAlert(null); onSetTab('vitrine'); }}>
+              Ir para Vitrine de Reuso
+            </Button>
+          </>
+        }
+      >
+        {activeAlert && (
+          <div className="flex flex-col gap-5">
+            <Message
+              variant="danger"
+              title="Bloqueio legal aplicado."
+              body="A Lei Federal nº 14.133/2021 e as boas práticas de responsabilidade fiscal vetam a compra de novos materiais se houver similares ociosos cadastrados."
+            />
+
+            <div className="text-xs text-gray-600">
+              Sua intenção de compra de <strong className="text-gray-800 font-mono">"{activeAlert.compra.descricao}"</strong> (Qtd: {activeAlert.compra.quantidade}) foi bloqueada porque localizamos os seguintes itens ociosos no Almoxarifado Compartilhado:
             </div>
 
-            {/* Conteúdo: Itens Ociosos Correspondentes */}
-            <div className="p-6 flex flex-col gap-5">
-              
-              <div className="text-xs text-gray-600">
-                Sua intenção de compra de <strong className="text-gray-800 font-mono">"{activeAlert.compra.descricao}"</strong> (Qtd: {activeAlert.compra.quantidade}) foi bloqueada porque localizamos os seguintes itens ociosos no Almoxarifado Compartilhado:
-              </div>
-
-              {/* Lista de Correspondências */}
-              <div className="flex flex-col gap-3 max-h-[180px] overflow-y-auto border border-gray-150 rounded-lg p-2 bg-gray-50">
-                {activeAlert.similarItems.map((item) => (
-                  <div key={item.id} className="bg-white border border-gray-200 rounded-lg p-3 flex justify-between items-center gap-3">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={item.fotoUrl}
-                        alt={item.nome}
-                        referrerPolicy="no-referrer"
-                        className="h-12 w-16 object-cover rounded border border-gray-200 flex-shrink-0"
-                      />
-                      <div>
-                        <h4 className="font-bold text-xs text-primary leading-tight">{item.nome}</h4>
-                        <p className="text-[10px] text-gray-500 mt-0.5">Orgão: <strong>{item.secretariaOrigem}</strong></p>
-                        <span className="text-[9px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-1.5 py-0.2 rounded font-semibold mt-1 inline-block">
-                          Estado: {item.estadoConservacao} (Disp: {item.quantidade} un.)
-                        </span>
-                      </div>
+            <div className="flex flex-col gap-3 max-h-[180px] overflow-y-auto border border-gray-150 rounded-lg p-2 bg-gray-50">
+              {activeAlert.similarItems.map((item) => (
+                <div key={item.id} className="bg-white border border-gray-200 rounded-lg p-3 flex justify-between items-center gap-3">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={item.fotoUrl}
+                      alt={item.nome}
+                      referrerPolicy="no-referrer"
+                      className="h-12 w-16 object-cover rounded border border-gray-200 flex-shrink-0"
+                    />
+                    <div>
+                      <h4 className="font-bold text-xs text-primary leading-tight">{item.nome}</h4>
+                      <p className="text-[10px] text-gray-500 mt-0.5">Orgão: <strong>{item.secretariaOrigem}</strong></p>
+                      <span className="text-[9px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-1.5 py-0.2 rounded font-semibold mt-1 inline-block">
+                        Estado: {item.estadoConservacao} (Disp: {item.quantidade} un.)
+                      </span>
                     </div>
-
-                    <Button
-                      variant="secondary"
-                      size="small"
-                      icon={<ArrowRight className="h-3 w-3" aria-hidden="true" />}
-                      onClick={() => handleRedeemIdle(item)}
-                    >
-                      Resgatar Item
-                    </Button>
                   </div>
-                ))}
-              </div>
 
-              {/* Justificativa de Desvio para Prosseguir */}
-              <div className="border-t border-gray-150 pt-4 flex flex-col gap-3">
-                <Message
-                  variant="warning"
-                  title="Deseja desviar deste bloqueio legal?"
-                  body="Para prosseguir com o processo licitatório comercial de mercado, o gestor de compras é legalmente obrigado a preencher uma justificativa detalhada e formal (mínimo 15 caracteres) explicando por que os itens ociosos listados não atendem à dotação necessária."
-                />
-
-                <div className="flex flex-col gap-1.5">
-                  <label htmlFor="bypass-justification" className="text-xs font-bold text-gray-800">
-                    Justificativa Formal de Recusa dos Itens Ociosos <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    id="bypass-justification"
-                    placeholder="Ex: O material ocioso listado não possui as dimensões de segurança necessárias para o laboratório de biologia..."
-                    value={justificativaForcadaText}
-                    onChange={(e) => {
-                      setJustificativaForcadaText(e.target.value);
-                      setJustificativaError('');
-                    }}
-                    className="w-full text-xs p-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:bg-white focus:ring-1 focus:ring-red-500 resize-none h-16 font-sans"
-                  />
-                  {justificativaError && (
-                    <p className="text-[10px] text-red-600 font-bold mt-0.5">{justificativaError}</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Botões do Popup */}
-              <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                <Button
-                  variant="tertiary"
-                  onClick={() => {
-                    setActiveAlert(null);
-                    resetForm();
-                  }}
-                >
-                  Cancelar Simulação
-                </Button>
-
-                <div className="flex gap-2">
-                  <Button
-                    variant="primary"
-                    className="bg-warning text-black"
-                    onClick={handleBypassSubmit}
-                  >
-                    Burlar Bloqueio (Justificar)
-                  </Button>
-                  
                   <Button
                     variant="secondary"
-                    icon={<ShieldCheck className="h-4 w-4" aria-hidden="true" />}
-                    onClick={() => {
-                      setActiveAlert(null);
-                      onSetTab('vitrine');
-                    }}
+                    size="small"
+                    icon={<ArrowRight className="h-3 w-3" aria-hidden="true" />}
+                    onClick={() => handleRedeemIdle(item)}
                   >
-                    Ir para Vitrine de Reuso
+                    Resgatar Item
                   </Button>
                 </div>
-              </div>
+              ))}
+            </div>
 
+            <div className="border-t border-gray-150 pt-4 flex flex-col gap-3">
+              <Message
+                variant="warning"
+                title="Deseja desviar deste bloqueio legal?"
+                body="Para prosseguir com o processo licitatório comercial de mercado, o gestor de compras é legalmente obrigado a preencher uma justificativa detalhada e formal (mínimo 15 caracteres) explicando por que os itens ociosos listados não atendem à dotação necessária."
+              />
+
+              <Textarea
+                label="Justificativa Formal de Recusa dos Itens Ociosos *"
+                id="bypass-justification"
+                placeholder="Ex: O material ocioso listado não possui as dimensões de segurança necessárias para o laboratório de biologia..."
+                value={justificativaForcadaText}
+                onChange={(e) => {
+                  setJustificativaForcadaText(e.target.value);
+                  setJustificativaError('');
+                }}
+                state={justificativaError ? 'danger' : undefined}
+                textareaClassName="resize-none h-16"
+              />
+              {justificativaError && (
+                <p className="text-[10px] text-danger font-bold mt-0.5">{justificativaError}</p>
+              )}
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
 
     </div>
   );
