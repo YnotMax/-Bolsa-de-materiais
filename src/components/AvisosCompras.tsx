@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { ShieldAlert, AlertOctagon, HelpCircle, Check, Info, FileText, ArrowRight, ExternalLink, HelpCircle as HelpIcon, ShieldCheck } from 'lucide-react';
 import { Produto, CompraSimulada } from '../types';
 import { MOCK_PRODUTOS } from '../data';
+import Input from './Input';
 
 interface AvisosComprasProps {
   onAddFromSimulated: (produto: Produto) => void;
@@ -196,17 +197,15 @@ export default function AvisosCompras({ onAddFromSimulated, onSetTab }: AvisosCo
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Código CATMAT */}
-                <div className="flex flex-col gap-1">
-                  <label htmlFor="compra-catmat" className="text-xs font-bold text-gray-700">Código CATMAT (6 dígitos)</label>
-                  <input
-                    type="text"
-                    id="compra-catmat"
-                    placeholder="Ex: 349281"
-                    value={catmat}
-                    onChange={(e) => setCatmat(e.target.value)}
-                    className="w-full text-xs p-3 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary font-mono"
-                  />
-                </div>
+                <Input
+                  label="Código CATMAT (6 dígitos)"
+                  id="compra-catmat"
+                  type="text"
+                  placeholder="Ex: 349281"
+                  value={catmat}
+                  onChange={(e) => setCatmat(e.target.value)}
+                  inputClassName="font-mono"
+                />
 
                 {/* Órgão Requisitante */}
                 <div className="flex flex-col gap-1">
@@ -215,7 +214,7 @@ export default function AvisosCompras({ onAddFromSimulated, onSetTab }: AvisosCo
                     id="compra-sec"
                     value={sec}
                     onChange={(e) => setSec(e.target.value)}
-                    className="w-full text-xs p-3 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="w-full text-xs p-3 border border-gray-200 rounded-lg bg-background focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"
                   >
                     <option value="Secretaria Municipal de Educação (SME)">Secretaria Municipal de Educação (SME)</option>
                     <option value="Secretaria Municipal de Saúde (SMS)">Secretaria Municipal de Saúde (SMS)</option>
@@ -226,32 +225,27 @@ export default function AvisosCompras({ onAddFromSimulated, onSetTab }: AvisosCo
               </div>
 
               {/* Descrição do Bem */}
-              <div className="flex flex-col gap-1">
-                <label htmlFor="compra-desc" className="text-xs font-bold text-gray-700">Descrição / Objeto da Compra <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  id="compra-desc"
-                  placeholder="Ex: Aquisição de monitores LED para novos servidores do setor"
-                  value={desc}
-                  onChange={(e) => setDesc(e.target.value)}
-                  className="w-full text-xs p-3 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"
-                  required
-                />
-              </div>
+              <Input
+                label="Descrição / Objeto da Compra *"
+                id="compra-desc"
+                type="text"
+                placeholder="Ex: Aquisição de monitores LED para novos servidores do setor"
+                value={desc}
+                onChange={(e) => setDesc(e.target.value)}
+                required
+              />
 
               {/* Quantidade */}
-              <div className="flex flex-col gap-1">
-                <label htmlFor="compra-quant" className="text-xs font-bold text-gray-700">Quantidade Necessária</label>
-                <input
-                  type="number"
-                  id="compra-quant"
-                  min="1"
-                  value={quant}
-                  onChange={(e) => setQuant(parseInt(e.target.value) || 1)}
-                  className="w-24 text-xs p-3 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary font-mono"
-                  required
-                />
-              </div>
+              <Input
+                label="Quantidade Necessária"
+                id="compra-quant"
+                type="number"
+                min="1"
+                value={quant}
+                onChange={(e) => setQuant(parseInt(e.target.value) || 1)}
+                inputClassName="w-24 font-mono"
+                required
+              />
 
               <button
                 type="submit"
