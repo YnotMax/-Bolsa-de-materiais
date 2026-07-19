@@ -8,6 +8,7 @@ import { ShieldAlert, AlertOctagon, HelpCircle, Check, Info, FileText, ArrowRigh
 import { Produto, CompraSimulada } from '../types';
 import { MOCK_PRODUTOS } from '../data';
 import Input from './Input';
+import Button from './Button';
 
 interface AvisosComprasProps {
   onAddFromSimulated: (produto: Produto) => void;
@@ -247,13 +248,14 @@ export default function AvisosCompras({ onAddFromSimulated, onSetTab }: AvisosCo
                 required
               />
 
-              <button
+              <Button
                 type="submit"
-                className="mt-2 py-3 px-6 bg-primary hover:bg-primary-dark text-white font-bold text-xs rounded-lg transition-colors flex items-center justify-center gap-2"
+                variant="primary"
+                className="mt-2"
                 id="btn-simulate-procurement"
               >
                 Simular Abertura de Licitação / Compra
-              </button>
+              </Button>
 
             </form>
           </div>
@@ -296,15 +298,16 @@ export default function AvisosCompras({ onAddFromSimulated, onSetTab }: AvisosCo
               )}
             </div>
             
-            <button 
+            <Button
+              variant="tertiary"
+              className="text-danger w-full mt-2"
               onClick={() => {
                 localStorage.removeItem('compras_simuladas');
                 setCompras([]);
               }}
-              className="text-[10px] text-red-500 hover:underline text-center w-full mt-2"
             >
               Limpar Logs
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -358,13 +361,14 @@ export default function AvisosCompras({ onAddFromSimulated, onSetTab }: AvisosCo
                       </div>
                     </div>
 
-                    <button
+                    <Button
+                      variant="secondary"
+                      size="small"
+                      icon={<ArrowRight className="h-3 w-3" aria-hidden="true" />}
                       onClick={() => handleRedeemIdle(item)}
-                      className="px-3 py-1.5 bg-secondary hover:bg-secondary/90 text-white font-bold text-[11px] rounded transition-colors flex items-center gap-1"
                     >
                       Resgatar Item
-                      <ArrowRight className="h-3 w-3" />
-                    </button>
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -400,35 +404,35 @@ export default function AvisosCompras({ onAddFromSimulated, onSetTab }: AvisosCo
 
               {/* Botões do Popup */}
               <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                <button
+                <Button
+                  variant="tertiary"
                   onClick={() => {
                     setActiveAlert(null);
                     resetForm();
                   }}
-                  className="px-4 py-2 border border-gray-200 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-100 transition-colors"
                 >
                   Cancelar Simulação
-                </button>
+                </Button>
 
                 <div className="flex gap-2">
-                  <button
+                  <Button
+                    variant="primary"
+                    className="bg-warning text-black"
                     onClick={handleBypassSubmit}
-                    className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg transition-colors"
                   >
                     Burlar Bloqueio (Justificar)
-                  </button>
+                  </Button>
                   
-                  <button
+                  <Button
+                    variant="secondary"
+                    icon={<ShieldCheck className="h-4 w-4" aria-hidden="true" />}
                     onClick={() => {
-                      // Let's take them back to the Vitrine Virtual to see everything
                       setActiveAlert(null);
                       onSetTab('vitrine');
                     }}
-                    className="px-4 py-2 bg-secondary hover:bg-secondary/90 text-white font-bold text-xs rounded-lg shadow transition-colors flex items-center gap-1"
                   >
-                    <ShieldCheck className="h-4 w-4" />
                     Ir para Vitrine de Reuso
-                  </button>
+                  </Button>
                 </div>
               </div>
 
