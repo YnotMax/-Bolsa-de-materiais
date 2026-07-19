@@ -4,12 +4,28 @@
  */
 
 import React, { useMemo } from 'react';
-import { BarChart3, TrendingUp, Leaf, Award, Landmark, AlertTriangle, ArrowUpRight, HelpCircle, Sparkles, Lock } from 'lucide-react';
+import { BarChart3, TrendingUp, Leaf, Award, Sparkles, Lock } from 'lucide-react';
 import Message from './Message';
 import { Requisicao } from '../types';
 
 interface RelatoriosProps {
   requisicoes: Requisicao[];
+}
+
+// requisicoes is hydrated from localStorage with no runtime schema check, so a stale or
+// hand-edited record can carry a missing/non-numeric field here; coerce rather than let it
+// poison every total on this transparency panel with NaN.
+function safeNumber(value: unknown): number {
+  const n = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function formatBRL(value: number): string {
+  return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function formatInt(value: number): string {
+  return Math.round(value).toLocaleString('pt-BR');
 }
 
 export default function Relatorios({ requisicoes }: RelatoriosProps) {
@@ -23,23 +39,26 @@ export default function Relatorios({ requisicoes }: RelatoriosProps) {
 
     // Add actual values from approved or transferred requisitions
     const activeRequisitions = requisicoes.filter(r => r.status === 'APROVADA' || r.status === 'TRANSFERIDA');
-    
+
     activeRequisitions.forEach(r => {
       r.itens.forEach(item => {
-        const itemEconomia = item.valorEstimadoNovo * item.quantidade;
-        const itemCO2 = item.co2eEvitadoKg * item.quantidade;
-        baseEconomia += itemEconomia;
-        baseCO2 += itemCO2;
-        baseItens += item.quantidade;
+        const quantidade = safeNumber(item.quantidade);
+        const valorEstimadoNovo = safeNumber(item.valorEstimadoNovo);
+        const co2eEvitadoKg = safeNumber(item.co2eEvitadoKg);
+        baseEconomia += valorEstimadoNovo * quantidade;
+        baseCO2 += co2eEvitadoKg * quantidade;
+        baseItens += quantidade;
       });
       baseProjetosImpedidos += 1;
     });
 
+    // Impact metrics reported on a public transparency panel should never read negative,
+    // even if a malformed record drags the running total below zero.
     return {
-      economia: baseEconomia,
-      co2: baseCO2,
-      itens: baseItens,
-      projetos: baseProjetosImpedidos
+      economia: Math.max(0, baseEconomia),
+      co2: Math.max(0, baseCO2),
+      itens: Math.max(0, Math.round(baseItens)),
+      projetos: Math.max(0, baseProjetosImpedidos)
     };
   }, [requisicoes]);
 
@@ -106,66 +125,66 @@ export default function Relatorios({ requisicoes }: RelatoriosProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         
         {/* Card 1: Redução de Despesa Estimada */}
-        <div className="br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
-          <div className="flex flex-col gap-1">
+        <div className="br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between gap-3">
+          <div className="flex flex-col gap-1 min-w-0">
             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Erário Economizado (RDE)</span>
-            <span className="text-xl md:text-2xl font-bold text-primary font-mono leading-none mt-1">
-              R$ {stats.economia.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            <span className="text-xl md:text-2xl font-bold text-primary font-mono leading-none mt-1 wrap-break-word">
+              R$ {formatBRL(stats.economia)}
             </span>
             <span className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1 mt-2">
-              <TrendingUp className="h-3.5 w-3.5" /> +14.2% em relação ao mês anterior
+              <TrendingUp className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> +14.2% em relação ao mês anterior
             </span>
           </div>
-          <div className="bg-emerald-50 text-emerald-600 p-2.5 rounded-lg border border-emerald-100">
-            <TrendingUp className="h-5 w-5" />
+          <div className="bg-emerald-50 text-emerald-600 p-2.5 rounded-lg border border-emerald-100 shrink-0">
+            <TrendingUp className="h-5 w-5" aria-hidden="true" />
           </div>
         </div>
 
         {/* Card 2: Emissões de CO2 Evitadas */}
-        <div className="br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
-          <div className="flex flex-col gap-1">
+        <div className="br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between gap-3">
+          <div className="flex flex-col gap-1 min-w-0">
             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Carbono Evitado (CO₂e)</span>
-            <span className="text-xl md:text-2xl font-bold text-emerald-700 font-mono leading-none mt-1">
-              {stats.co2.toLocaleString('pt-BR')} kg
+            <span className="text-xl md:text-2xl font-bold text-emerald-700 font-mono leading-none mt-1 wrap-break-word">
+              {formatInt(stats.co2)} kg
             </span>
             <span className="text-[11px] text-emerald-600 font-semibold mt-2 flex items-center gap-1">
-              <Leaf className="h-3 w-3" aria-hidden="true" /> Equivalente a {Math.round(stats.co2 / 6)} árvores plantadas
+              <Leaf className="h-3 w-3 shrink-0" aria-hidden="true" /> Equivalente a {formatInt(stats.co2 / 6)} árvores plantadas
             </span>
           </div>
-          <div className="bg-emerald-50 text-emerald-600 p-2.5 rounded-lg border border-emerald-100">
-            <Leaf className="h-5 w-5" />
+          <div className="bg-emerald-50 text-emerald-600 p-2.5 rounded-lg border border-emerald-100 shrink-0">
+            <Leaf className="h-5 w-5" aria-hidden="true" />
           </div>
         </div>
 
         {/* Card 3: Itens Remanejados */}
-        <div className="br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
-          <div className="flex flex-col gap-1">
+        <div className="br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between gap-3">
+          <div className="flex flex-col gap-1 min-w-0">
             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Itens Remanejados</span>
-            <span className="text-xl md:text-2xl font-bold text-primary font-mono leading-none mt-1">
-              {stats.itens} unidades
+            <span className="text-xl md:text-2xl font-bold text-primary font-mono leading-none mt-1 wrap-break-word">
+              {formatInt(stats.itens)} unidades
             </span>
             <span className="text-[11px] text-gray-500 mt-2 block">
               Materiais que escaparam da ociosidade
             </span>
           </div>
-          <div className="bg-blue-50 text-blue-600 p-2.5 rounded-lg border border-blue-100">
-            <BarChart3 className="h-5 w-5" />
+          <div className="bg-blue-100 text-blue-600 p-2.5 rounded-lg border border-blue-100 shrink-0">
+            <BarChart3 className="h-5 w-5" aria-hidden="true" />
           </div>
         </div>
 
         {/* Card 4: Licitações Evitadas */}
-        <div className="br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between">
-          <div className="flex flex-col gap-1">
+        <div className="br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-start justify-between gap-3">
+          <div className="flex flex-col gap-1 min-w-0">
             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Licitações Bloqueadas</span>
-            <span className="text-xl md:text-2xl font-bold text-primary font-mono leading-none mt-1">
-              {stats.projetos} processos
+            <span className="text-xl md:text-2xl font-bold text-primary font-mono leading-none mt-1 wrap-break-word">
+              {formatInt(stats.projetos)} processos
             </span>
             <span className="text-[11px] text-emerald-600 font-semibold mt-2 flex items-center gap-1">
-              <Lock className="h-3 w-3" aria-hidden="true" /> Impedidos pela trava sistêmica
+              <Lock className="h-3 w-3 shrink-0" aria-hidden="true" /> Impedidos pela trava sistêmica
             </span>
           </div>
-          <div className="bg-amber-50 text-amber-600 p-2.5 rounded-lg border border-amber-100">
-            <Award className="h-5 w-5" />
+          <div className="bg-amber-50 text-amber-600 p-2.5 rounded-lg border border-amber-100 shrink-0">
+            <Award className="h-5 w-5" aria-hidden="true" />
           </div>
         </div>
 
@@ -178,7 +197,7 @@ export default function Relatorios({ requisicoes }: RelatoriosProps) {
         <div className="lg:col-span-2 br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex flex-col gap-4">
           <div className="flex justify-between items-center border-b border-gray-100 pb-3">
             <h3 className="font-bold text-base text-primary font-display flex items-center gap-2">
-              <Award className="h-5 w-5 text-amber-500" />
+              <Award className="h-5 w-5 text-amber-500" aria-hidden="true" />
               Placar de Economia Pública (Gamificação)
             </h3>
             <span className="text-[10px] bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded-full font-bold uppercase">Competição Saudável</span>
@@ -186,29 +205,32 @@ export default function Relatorios({ requisicoes }: RelatoriosProps) {
 
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left text-gray-600 border-collapse">
+              <caption className="sr-only">
+                Ranking de secretarias por economia gerada, CO₂ evitado e selo de eficiência
+              </caption>
               <thead>
                 <tr className="border-b border-gray-200 text-gray-400 text-[10px] uppercase font-bold bg-gray-50">
-                  <th className="py-2.5 px-3 w-12 text-center">Posição</th>
-                  <th className="py-2.5 px-3">Secretaria</th>
-                  <th className="py-2.5 px-3 text-right">RDE (Economia)</th>
-                  <th className="py-2.5 px-3 text-right">CO₂ Evitado</th>
-                  <th className="py-2.5 px-3 text-center">Selo de Eficiência</th>
+                  <th scope="col" className="py-2.5 px-3 w-12 text-center">Posição</th>
+                  <th scope="col" className="py-2.5 px-3">Secretaria</th>
+                  <th scope="col" className="py-2.5 px-3 text-right">RDE (Economia)</th>
+                  <th scope="col" className="py-2.5 px-3 text-right">CO₂ Evitado</th>
+                  <th scope="col" className="py-2.5 px-3 text-center">Selo de Eficiência</th>
                 </tr>
               </thead>
               <tbody>
                 {rankingSecretarias.map((sec, idx) => (
-                  <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
+                  <tr key={sec.nome} className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
                     <td className="py-3 px-3 text-center font-bold">
                       {idx === 0 && <span className="inline-block bg-amber-400 text-amber-950 h-5 w-5 rounded-full text-xs leading-5">1º</span>}
                       {idx === 1 && <span className="inline-block bg-slate-300 text-slate-900 h-5 w-5 rounded-full text-xs leading-5">2º</span>}
                       {idx === 2 && <span className="inline-block bg-amber-600 text-amber-50 h-5 w-5 rounded-full text-xs leading-5 text-white">3º</span>}
                       {idx > 2 && <span className="inline-block text-gray-500">{idx + 1}º</span>}
                     </td>
-                    <td className="py-3 px-3 font-semibold text-primary">{sec.nome}</td>
-                    <td className="py-3 px-3 text-right font-mono font-bold text-emerald-600">
-                      R$ {sec.economiaB2B.toLocaleString('pt-BR')}
+                    <td className="py-3 px-3 font-semibold text-primary max-w-60 wrap-break-word">{sec.nome}</td>
+                    <td className="py-3 px-3 text-right font-mono font-bold text-emerald-600 whitespace-nowrap">
+                      R$ {formatBRL(sec.economiaB2B)}
                     </td>
-                    <td className="py-3 px-3 text-right font-mono">{sec.co2Evitado} kg</td>
+                    <td className="py-3 px-3 text-right font-mono whitespace-nowrap">{formatInt(sec.co2Evitado)} kg</td>
                     <td className="py-3 px-3 text-center">
                       <span className={`inline-block text-[9px] font-bold px-2 py-0.5 rounded-full ${
                         idx === 0 || idx === 1 ? 'bg-amber-100 text-amber-800' :
@@ -228,7 +250,7 @@ export default function Relatorios({ requisicoes }: RelatoriosProps) {
         <div className="br-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex flex-col justify-between gap-5">
           <div className="flex flex-col gap-3">
             <h3 className="font-bold text-sm text-gray-800 border-b border-gray-100 pb-2 flex items-center gap-1.5">
-              <Sparkles className="h-4 w-4 text-emerald-500" />
+              <Sparkles className="h-4 w-4 text-emerald-500" aria-hidden="true" />
               Como funciona o cálculo?
             </h3>
             
@@ -236,7 +258,7 @@ export default function Relatorios({ requisicoes }: RelatoriosProps) {
               <p>
                 A <strong>Redução de Despesa Estimada (RDE)</strong> quantifica o valor financeiro poupado pela prefeitura ao reutilizar materiais:
               </p>
-              <div className="bg-gray-50 border border-gray-150 p-2.5 rounded-md font-mono text-[10px] text-primary-dark">
+              <div className="bg-gray-100 border border-gray-150 p-2.5 rounded-md font-mono text-[10px] text-primary-dark">
                 RDE = Preço Novo - Custo Operacional
               </div>
               <p>

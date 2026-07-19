@@ -159,7 +159,7 @@ export default function Carrinho({
                     </div>
 
                     {/* Quantidade Editor */}
-                    <div className="flex items-center gap-4 bg-gray-50 p-2 rounded-lg border border-gray-150 w-fit">
+                    <div className="flex items-center gap-4 bg-gray-200 p-2 rounded-lg border border-gray-150 w-fit">
                       <span className="text-xs text-gray-500 font-bold px-1">Quantidade:</span>
                       <div className="flex items-center border border-gray-300 rounded bg-white">
                         <Button
@@ -280,7 +280,7 @@ export default function Carrinho({
               />
 
               {/* Checkbox Termo de Compromisso */}
-              <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="mt-2 p-3 bg-gray-200 rounded-lg border border-gray-200">
                 <Checkbox
                   id="checkbox-termos"
                   checked={declara}
@@ -306,10 +306,13 @@ export default function Carrinho({
                   variant="primary"
                   disabled={!isFormValid}
                   id="btn-submit-requisition"
-                  className="w-full justify-center"
-                  icon={<Send className="h-4 w-4" aria-hidden="true" />}
+                  className="w-full h-auto min-h-10 py-2.5 justify-center overflow-visible"
+                  icon={<Send className="h-4 w-4 shrink-0 mr-2" aria-hidden="true" />}
                 >
-                  Submeter Requisição de Remanejamento
+                  <span className="flex flex-col leading-tight">
+                    <span>Submeter Requisição</span>
+                    <span>de Remanejamento</span>
+                  </span>
                 </Button>
 
                 <Button

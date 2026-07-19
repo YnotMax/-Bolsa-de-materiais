@@ -6,7 +6,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Filter, ShoppingCart, RefreshCw, Layers, Check, ChevronRight, Eye, Building2, Info, ClipboardCopy, Leaf, Coins } from 'lucide-react';
 import { Produto } from '../types';
-import { MOCK_PRODUTOS, MOCK_CATEGORIAS, MOCK_SECRETARIAS, fuzzySearch, getEstadoInfo } from '../data';
+import { MOCK_PRODUTOS, MOCK_CATEGORIAS, MOCK_SECRETARIAS, fuzzySearch, getEstadoInfo, getCategoriaTone } from '../data';
 import Button from './Button';
 import Input from './Input';
 import Modal from './Modal';
@@ -300,7 +300,7 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center justify-between text-[11px] text-gray-500 font-mono">
                           <span>CATMAT: {produto.codigoCatmat}</span>
-                          <span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-[10px]">
+                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${getCategoriaTone(produto.categoria)}`}>
                             {produto.categoria}
                           </span>
                         </div>
@@ -344,7 +344,7 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
                           variant="tertiary"
                           size="small"
                           onClick={() => setDetailProduct(produto)}
-                          icon={<Eye className="h-3.5 w-3.5" aria-hidden="true" />}
+                          icon={<Eye className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
                         >
                           Ver Detalhes
                         </Button>
@@ -356,8 +356,8 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
                           disabled={isAlreadyInCart}
                           icon={
                             isAlreadyInCart
-                              ? <Check className="h-3.5 w-3.5" aria-hidden="true" />
-                              : <ShoppingCart className="h-3.5 w-3.5" aria-hidden="true" />
+                              ? <Check className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
+                              : <ShoppingCart className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                           }
                         >
                           {isAlreadyInCart ? 'Adicionado' : 'Reservar Item'}
@@ -389,7 +389,7 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
         title={detailProduct?.nome ?? ''}
         footer={
           detailProduct && (
-            <>
+            <div className='flex gap-1'>
               <Button variant="secondary" onClick={() => setDetailProduct(null)}>
                 Voltar ao Catálogo
               </Button>
@@ -400,34 +400,34 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
                   setDetailProduct(null);
                 }}
                 disabled={cartProductIds.includes(detailProduct.id)}
-                icon={<ShoppingCart className="h-4 w-4" aria-hidden="true" />}
+                icon={<ShoppingCart className="h-4 w-4 mr-1" aria-hidden="true" />}
               >
                 {cartProductIds.includes(detailProduct.id) ? 'Já no Carrinho' : 'Reservar Item'}
               </Button>
-            </>
+            </div>
           )
         }
       >
         {detailProduct && (
-          <div className="flex flex-col gap-5">
-            <div className="relative h-64 -m-6 mb-0 bg-gray-100">
+          <div className="flex flex-col gap-5 pt-3 overflow-x-hidden">
+            <div className="relative h-64 -m-6 mb-0 bg-gray-100 ">
               <img
                 src={detailProduct.fotoUrl}
                 alt={detailProduct.nome}
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover"
               />
-              <span className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold shadow-md ${getEstadoInfo(detailProduct.estadoConservacao).tone}`}>
+              <span className={`absolute top-4 left-6 px-3 py-1 rounded-full text-xs font-bold shadow-md ${getEstadoInfo(detailProduct.estadoConservacao).tone}`}>
                 {getEstadoInfo(detailProduct.estadoConservacao).label}
               </span>
             </div>
 
             <div>
-              <span className="text-xs font-mono font-bold text-gray-500 uppercase tracking-wider">
+              <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${getCategoriaTone(detailProduct.categoria)}`}>
                 {detailProduct.categoria}
               </span>
 
-              <div className="flex flex-wrap items-center gap-3 mt-3 text-xs text-gray-600 bg-gray-50 border border-gray-150 p-2.5 rounded-lg font-mono">
+              <div className="flex flex-wrap items-center gap-3 mt-3 text-xs text-gray-600 bg-gray-200 border border-gray-150 p-2.5 rounded-lg font-mono">
                 <div className="flex items-center gap-1.5">
                   <ClipboardCopy className="h-3.5 w-3.5 text-gray-400" aria-hidden="true" />
                   <span>Nº Patrimônio: <strong>{detailProduct.codigoPatrimonio}</strong></span>
@@ -447,13 +447,13 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="border border-gray-150 rounded-lg p-3 bg-gray-50 flex flex-col gap-1">
+              <div className="border border-gray-150 rounded-lg p-3 bg-gray-200 flex flex-col gap-1">
                 <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Secretaria Cedente</span>
                 <span className="text-xs font-bold text-primary">{detailProduct.secretariaOrigem}</span>
                 <span className="text-[10px] text-gray-500">O estoque e a entrega serão coordenados com este órgão municipal.</span>
               </div>
 
-              <div className="border border-gray-150 rounded-lg p-3 bg-gray-50 flex flex-col gap-1">
+              <div className="border border-gray-150 rounded-lg p-3 bg-gray-200 flex flex-col gap-1">
                 <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Impacto do Reuso</span>
                 <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
                   <Coins className="h-3.5 w-3.5" aria-hidden="true" />

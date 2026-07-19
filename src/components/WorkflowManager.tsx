@@ -194,7 +194,7 @@ export default function WorkflowManager({ requisicoes, onUpdateStatus }: Workflo
               </div>
 
               {/* Servidor Requisitante */}
-              <div className="bg-gray-50 border border-gray-150 rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gray-200 border border-gray-150 rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Dados do Requisitante</h4>
                   <p className="text-xs font-bold text-primary">{activeRequisition.requisitante.nomeCompleto}</p>
@@ -217,15 +217,15 @@ export default function WorkflowManager({ requisicoes, onUpdateStatus }: Workflo
                 <div className="space-y-3">
                   {activeRequisition.itens.map((item, idx) => (
                     <div key={idx} className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm flex flex-col md:flex-row justify-between gap-4">
-                      <div className="flex-grow">
+                      <div className="grow">
                         <span className="text-[10px] font-mono text-gray-400 uppercase block">Cedente: {item.secretariaOrigem}</span>
                         <h5 className="font-bold text-xs text-primary mt-0.5">{item.nome}</h5>
-                        <p className="text-xs text-gray-700 mt-2 leading-relaxed bg-gray-50 p-2.5 rounded border border-gray-100">
+                        <p className="text-xs text-gray-700 mt-2 leading-relaxed bg-gray-200 p-2.5 rounded border border-gray-100">
                           <strong>Justificativa de Uso:</strong> "{item.justificativa}"
                         </p>
                       </div>
 
-                      <div className="text-right flex-shrink-0 md:border-l md:border-gray-100 md:pl-4 min-w-[120px]">
+                      <div className="text-right shrink-0 md:border-l md:border-gray-100 md:pl-4 min-w-[120px]">
                         <span className="text-[10px] text-gray-400 uppercase block">Qtd Solicitada</span>
                         <span className="text-base font-bold text-primary block">{item.quantidade} un.</span>
                         <span className="text-[10px] text-emerald-600 font-bold mt-1 block">R$ {(item.valorEstimadoNovo * item.quantidade).toLocaleString('pt-BR')} economizados</span>
@@ -255,7 +255,7 @@ export default function WorkflowManager({ requisicoes, onUpdateStatus }: Workflo
 
               {/* Botões de Ação para Cedente / Central */}
               {roleMode === 'cedente' && (
-                <div className="flex flex-wrap items-center justify-between gap-3 bg-gray-50 p-4 rounded-lg border border-gray-150 mt-2">
+                <div className="flex flex-wrap items-center justify-between gap-3 bg-gray-200 p-4 rounded-lg border border-gray-150 mt-2">
                   <span className="text-xs font-bold text-primary flex items-center gap-1.5">
                     <Clock className="h-4 w-4 text-amber-500" />
                     Ações de Homologação

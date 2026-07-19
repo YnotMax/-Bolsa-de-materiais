@@ -174,6 +174,20 @@ export const MOTIVOS_REJEICAO = [
   "Secretaria cedente necessita reincorporar o patrimônio"
 ];
 
+// Category tag colors for the Vitrine grid. Deliberately drawn from hues the DS-gov
+// semantic states don't already use (green/success, yellow/warning, red/danger,
+// blue/info+primary) so a category pill is never mistaken for a status badge.
+// "Outros" stays neutral gray: it's the catch-all bucket, not a real category identity.
+const CATEGORIA_TONES: Record<string, string> = {
+  "Informática": 'bg-violet-200 text-violet-700 border border-violet-100',
+  "Mobiliário": 'bg-teal-50 text-teal-700 border border-teal-100',
+  "Materiais de Escritório": 'bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-100',
+};
+
+export function getCategoriaTone(categoria: string): string {
+  return CATEGORIA_TONES[categoria] ?? 'bg-gray-100 text-gray-600 border border-gray-200';
+}
+
 export function fuzzySearch(query: string, text: string): boolean {
   if (!query) return true;
   const q = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");

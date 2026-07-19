@@ -121,7 +121,7 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
           <div className="flex items-center gap-3">
             <span className="font-bold tracking-wider text-amber-400">BR</span>
             <div className="w-[1px] h-3 bg-white/30" />
-            <a href="https://www.gov.br" target="_blank" rel="noopener noreferrer" className="hover:underline">Portal do Governo Brasileiro</a>
+            <a href="https://www.gov.br" target="_blank" rel="noopener noreferrer" className="hover:underline text-white">Portal do Governo Brasileiro</a>
           </div>
           <div className="flex items-center gap-4">
             <span className="hidden sm:inline">Serviços Municipais</span>
@@ -159,8 +159,8 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
               </div>
             </div>
           </div>
-          <div className="header-bottom">
-            <div className="header-menu min-w-0">
+          <div className="header-bottom flex-wrap gap-y-2">
+            <div className="header-menu min-w-44">
               <div className="header-menu-trigger">
                 <button ref={menuTriggerRef} className="br-button circle" type="button" aria-label="Abrir menu de navegação" aria-controls="main-navigation" data-toggle="menu" data-target="#main-navigation">
                   <Menu className="h-5 w-5" aria-hidden="true" />
@@ -202,11 +202,11 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
                     key={item.id}
                     type="button"
                     onClick={() => setTab(item.id)}
-                    className={`br-button ${isActive ? 'primary' : ''} small`}
+                    className={`br-button ${isActive ? 'primary' : ''} small items-center`}
                     aria-current={isActive ? 'page' : undefined}
                   >
                     <Icon className="h-4 w-4" aria-hidden="true" />
-                    <span>{item.label}</span>
+                    <span className='ml-1'>{item.label}</span>
                     {item.id === 'carrinho' && cartCount > 0 && (
                       <span className="ml-1">
                         <Tag variant="count" tone="danger" count={cartCount} label={cartLabel} />
