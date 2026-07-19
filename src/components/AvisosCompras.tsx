@@ -145,14 +145,14 @@ export default function AvisosCompras({ onAddFromSimulated, onSetTab }: AvisosCo
     alert('Justificativa registrada. Licitação liberada com registro de inconformidade para auditoria interna.');
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusInfo = (status: string): { tone: string; label: string } => {
     switch (status) {
       case 'FORCADO_COM_JUSTIFICATIVA':
-        return <span className="bg-amber-100 text-amber-800 border border-amber-200 text-[10px] px-2 py-0.5 rounded-full font-bold">Compra Forçada (Justificada)</span>;
+        return { tone: 'bg-warning text-black font-semibold', label: 'Compra Forçada (Justificada)' };
       case 'REQUISITADO_REMANEJAMENTO':
-        return <span className="bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] px-2 py-0.5 rounded-full font-bold">Redirecionado ao Reuso</span>;
+        return { tone: 'bg-success text-white', label: 'Redirecionado ao Reuso' };
       default:
-        return <span className="bg-gray-100 text-gray-800 border border-gray-200 text-[10px] px-2 py-0.5 rounded-full font-bold">{status}</span>;
+        return { tone: 'bg-gray-40 text-white', label: status };
     }
   };
 
@@ -280,7 +280,9 @@ export default function AvisosCompras({ onAddFromSimulated, onSetTab }: AvisosCo
                   <div key={idx} className="border border-gray-150 rounded-lg p-3 bg-gray-50/50 flex flex-col gap-1.5 text-xs">
                     <div className="flex justify-between items-start gap-2">
                       <span className="font-mono font-bold text-[10px] text-gray-500">CATMAT: {comp.codigoCatmat || "N/D"}</span>
-                      {getStatusBadge(comp.status)}
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${getStatusInfo(comp.status).tone}`}>
+                        {getStatusInfo(comp.status).label}
+                      </span>
                     </div>
                     
                     <p className="font-bold text-primary">{comp.descricao}</p>
