@@ -9,6 +9,8 @@ import { Requisicao, StatusRequisicao } from '../types';
 import { MOTIVOS_REJEICAO } from '../data';
 import Button from './Button';
 import Message from './Message';
+import Modal from './Modal';
+import Textarea from './Textarea';
 
 interface WorkflowManagerProps {
   requisicoes: Requisicao[];
@@ -338,61 +340,53 @@ export default function WorkflowManager({ requisicoes, onUpdateStatus }: Workflo
       </div>
 
       {/* MODAL DE REJEIÇÃO ESTRUTURADA IMPEDITIVA */}
-      {rejectingReqId && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs">
-          <div className="bg-white border border-gray-200 rounded-xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in duration-200">
-            
-            <div className="bg-red-600 text-white p-4">
-              <h3 className="font-bold text-base font-display">Recusar Requisição</h3>
-              <p className="text-xs text-red-100 mt-1">
-                Toda recusa de remanejamento deve exigir a seleção de um motivo regulamentar para auditoria.
-              </p>
-            </div>
+      <Modal
+        open={!!rejectingReqId}
+        onClose={() => setRejectingReqId(null)}
+        title="Recusar Requisição"
+        footer={
+          <>
+            <Button variant="tertiary" onClick={() => setRejectingReqId(null)}>
+              Cancelar
+            </Button>
+            <Button variant="primary" className="bg-danger" onClick={submitRejection}>
+              Registrar Rejeição Oficial
+            </Button>
+          </>
+        }
+      >
+        <p className="text-xs text-gray-600 mb-4">
+          Toda recusa de remanejamento deve exigir a seleção de um motivo regulamentar para auditoria.
+        </p>
 
-            <div className="p-5 flex flex-col gap-4">
-              
-              {/* Motivo Estruturado dropdown */}
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="motivo-rejeicao" className="text-xs font-bold text-gray-700">Selecione o Motivo Regulamentar <span className="text-red-500">*</span></label>
-                <select
-                  id="motivo-rejeicao"
-                  value={selectedMotivoEstruturado}
-                  onChange={(e) => setSelectedMotivoEstruturado(e.target.value)}
-                  className="w-full text-xs p-3 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500"
-                  required
-                >
-                  {MOTIVOS_REJEICAO.map((motivo) => (
-                    <option key={motivo} value={motivo}>{motivo}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Detalhes complementares */}
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="rejeicao-detalhes" className="text-xs font-bold text-gray-700">Detalhes Complementares</label>
-                <textarea
-                  id="rejeicao-detalhes"
-                  placeholder="Escreva detalhes adicionais sobre o impedimento técnico ou operacional constatado."
-                  value={detalhesRejeicao}
-                  onChange={(e) => setDetalhesRejeicao(e.target.value)}
-                  className="w-full text-xs p-3 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500 resize-none h-20"
-                />
-              </div>
-
-              {/* Botões do Modal */}
-              <div className="flex justify-end gap-2 mt-2 pt-2 border-t border-gray-100">
-                <Button variant="tertiary" onClick={() => setRejectingReqId(null)}>
-                  Cancelar
-                </Button>
-                <Button variant="primary" className="bg-danger" onClick={submitRejection}>
-                  Registrar Rejeição Oficial
-                </Button>
-              </div>
-
-            </div>
+        <div className="flex flex-col gap-4">
+          {/* Motivo Estruturado dropdown */}
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="motivo-rejeicao" className="text-xs font-bold text-gray-700">Selecione o Motivo Regulamentar <span className="text-red-500">*</span></label>
+            <select
+              id="motivo-rejeicao"
+              value={selectedMotivoEstruturado}
+              onChange={(e) => setSelectedMotivoEstruturado(e.target.value)}
+              className="w-full text-xs p-3 border border-gray-200 rounded-lg bg-background focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500"
+              required
+            >
+              {MOTIVOS_REJEICAO.map((motivo) => (
+                <option key={motivo} value={motivo}>{motivo}</option>
+              ))}
+            </select>
           </div>
+
+          {/* Detalhes complementares */}
+          <Textarea
+            label="Detalhes Complementares"
+            id="rejeicao-detalhes"
+            placeholder="Escreva detalhes adicionais sobre o impedimento técnico ou operacional constatado."
+            value={detalhesRejeicao}
+            onChange={(e) => setDetalhesRejeicao(e.target.value)}
+            textareaClassName="resize-none h-20"
+          />
         </div>
-      )}
+      </Modal>
 
     </div>
   );
