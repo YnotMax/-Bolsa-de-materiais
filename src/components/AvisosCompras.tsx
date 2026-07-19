@@ -9,6 +9,7 @@ import { Produto, CompraSimulada } from '../types';
 import { MOCK_PRODUTOS } from '../data';
 import Input from './Input';
 import Button from './Button';
+import Message from './Message';
 
 interface AvisosComprasProps {
   onAddFromSimulated: (produto: Produto) => void;
@@ -182,15 +183,17 @@ export default function AvisosCompras({ onAddFromSimulated, onSetTab }: AvisosCo
             </h3>
 
             {/* Sugestões de Teste */}
-            <div className="bg-emerald-50 border border-emerald-100 text-emerald-800 rounded-lg p-3.5 text-xs">
-              <p className="font-bold mb-1 flex items-center gap-1.5 text-emerald-900">
-                <Info className="h-4 w-4" /> Códigos de teste para disparar a trava sistêmica:
-              </p>
-              <ul className="list-disc list-inside space-y-1 text-emerald-700 font-medium">
-                <li>Digite o CATMAT <strong className="font-mono text-emerald-900 bg-emerald-150 px-1 rounded">349281</strong> ou escreva <strong className="text-emerald-900">Monitor</strong> no campo de descrição</li>
-                <li>Digite o CATMAT <strong className="font-mono text-emerald-900 bg-emerald-150 px-1 rounded">442910</strong> ou escreva <strong className="text-emerald-900">Cadeira</strong> no campo de descrição</li>
-                <li>Digite o CATMAT <strong className="font-mono text-emerald-900 bg-emerald-150 px-1 rounded">150921</strong> ou escreva <strong className="text-emerald-900">Papel</strong> no campo de descrição</li>
-                <li>Digite o CATMAT <strong className="font-mono text-emerald-900 bg-emerald-150 px-1 rounded">392810</strong> ou escreva <strong className="text-emerald-900">Notebook</strong> no campo de descrição</li>
+            <div className="flex flex-col gap-2">
+              <Message
+                variant="info"
+                title="Códigos de teste para disparar a trava sistêmica."
+                body="Use um dos códigos CATMAT ou termos de descrição abaixo na simulação para forçar o bloqueio."
+              />
+              <ul className="list-disc list-inside space-y-1 text-xs text-gray-700 font-medium pl-1">
+                <li>Digite o CATMAT <strong className="font-mono text-primary bg-gray-100 px-1 rounded">349281</strong> ou escreva <strong>Monitor</strong> no campo de descrição</li>
+                <li>Digite o CATMAT <strong className="font-mono text-primary bg-gray-100 px-1 rounded">442910</strong> ou escreva <strong>Cadeira</strong> no campo de descrição</li>
+                <li>Digite o CATMAT <strong className="font-mono text-primary bg-gray-100 px-1 rounded">150921</strong> ou escreva <strong>Papel</strong> no campo de descrição</li>
+                <li>Digite o CATMAT <strong className="font-mono text-primary bg-gray-100 px-1 rounded">392810</strong> ou escreva <strong>Notebook</strong> no campo de descrição</li>
               </ul>
             </div>
 
@@ -375,12 +378,11 @@ export default function AvisosCompras({ onAddFromSimulated, onSetTab }: AvisosCo
 
               {/* Justificativa de Desvio para Prosseguir */}
               <div className="border-t border-gray-150 pt-4 flex flex-col gap-3">
-                <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-lg p-3 text-xs">
-                  <p className="font-bold">Deseja desviar deste bloqueio legal?</p>
-                  <p className="text-[11px] text-amber-800 mt-0.5">
-                    Para prosseguir com o processo licitatório comercial de mercado, o gestor de compras é legalmente obrigado a preencher uma justificativa detalhada e formal (mínimo 15 caracteres) explicando por que os itens ociosos listados não atendem à dotação necessária.
-                  </p>
-                </div>
+                <Message
+                  variant="warning"
+                  title="Deseja desviar deste bloqueio legal?"
+                  body="Para prosseguir com o processo licitatório comercial de mercado, o gestor de compras é legalmente obrigado a preencher uma justificativa detalhada e formal (mínimo 15 caracteres) explicando por que os itens ociosos listados não atendem à dotação necessária."
+                />
 
                 <div className="flex flex-col gap-1.5">
                   <label htmlFor="bypass-justification" className="text-xs font-bold text-gray-800">
