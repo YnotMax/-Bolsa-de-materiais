@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { ShieldAlert, AlertOctagon, HelpCircle, Check, Info, FileText, ArrowRight, ExternalLink, HelpCircle as HelpIcon, ShieldCheck } from 'lucide-react';
+import { ShieldAlert, HelpCircle, Check, Info, FileText, ArrowRight, ExternalLink, HelpCircle as HelpIcon, ShieldCheck } from 'lucide-react';
 import { Produto, CompraSimulada } from '../types';
 import { MOCK_PRODUTOS } from '../data';
 import Input from './Input';
