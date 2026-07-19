@@ -1,15 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Noto+Sans:wght@400;500;600;700&display=swap');
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Raleway:wght@400;500;600;700&display=swap');
+
+@layer govbr, theme, base, components, utilities;
+
+@import "@govbr-ds/core/dist/core.min.css" layer(govbr);
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 
 @theme {
-  --font-sans: "Noto Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Raleway", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Libre Franklin", sans-serif;
 
-  --color-primary: #002f5a;
-  --color-primary-dark: #001c3a;
-  --color-gov-blue: #002f5a;
-  --color-gov-blue-dark: #003366;
-  --color-gov-blue-vivid: #1351B4;
+  --color-primary: #1351b4;
+  --color-primary-dark: #0c326f;
   
   --color-secondary: #006d35;
   --color-on-secondary: #ffffff;
@@ -23,10 +25,27 @@
   --color-on-surface-variant: #424750;
   
   --color-state-novo: #008844;
-  --color-state-bom: #2E9D62;
+  --color-state-bom: #168821;
   --color-state-regular: #FFCC00;
   --color-state-pessimo: #D93B3B;
   --color-state-sucata: #737373;
+  --color-error: #dc2626;
+  --color-on-error: #ffffff;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-toast-in {
+  animation: toast-in 300ms ease-out;
 }
 
 body {

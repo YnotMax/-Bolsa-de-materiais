@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import Vitrine from './components/Vitrine';
 import Carrinho from './components/Carrinho';
 import WorkflowManager from './components/WorkflowManager';
@@ -12,7 +13,6 @@ import AvisosCompras from './components/AvisosCompras';
 import Relatorios from './components/Relatorios';
 import { Produto, CartItem, Requisicao, StatusRequisicao, RequisitanteData } from './types';
 import { MOCK_PRODUTOS } from './data';
-import { Landmark, Info, MessageSquareCode, ShieldCheck, Scale, Globe } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>(() => {
@@ -233,8 +233,15 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800">
-      
+    <div className="min-h-screen flex flex-col bg-background text-on-background">
+
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-primary focus:text-white focus:px-4 focus:py-2 focus:rounded-md"
+      >
+        Pular para o conteúdo principal
+      </a>
+
       {/* Header oficial gov.br DS e PMF */}
       <Header
         currentTab={activeTab}
@@ -243,7 +250,7 @@ export default function App() {
       />
 
       {/* Main Container */}
-      <main className="flex-grow max-w-7xl w-full mx-auto px-4 py-8 md:py-10">
+      <main id="main-content" tabIndex={-1} className="flex-grow max-w-7xl w-full mx-auto px-4 py-8 md:py-10">
         <div className="transition-all duration-300">
           
           {activeTab === 'vitrine' && (
@@ -287,67 +294,7 @@ export default function App() {
         </div>
       </main>
 
-      {/* Rodapé Oficial da Prefeitura de Florianópolis gov.br DS */}
-      <footer className="bg-primary-dark text-white border-t-4 border-emerald-500 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
-          
-          {/* Col 1: Prefeitura */}
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2">
-              <Landmark className="h-5 w-5 text-emerald-400" />
-              <span className="font-bold font-display uppercase tracking-wider text-sm">Prefeitura de Florianópolis</span>
-            </div>
-            <p className="text-xs text-gray-300 leading-relaxed">
-              Secretaria Municipal de Administração (SMA)<br />
-              Diretoria de Patrimônio e Gestão de Almoxarifados Públicos.
-            </p>
-            <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-1 rounded border border-emerald-400/25 w-fit">
-              Desafio 14 - PoC TRL3
-            </span>
-          </div>
-
-          {/* Col 2: Regulatory compliance */}
-          <div className="flex flex-col gap-2">
-            <span className="font-bold text-xs uppercase text-gray-200 tracking-wider font-display">Marco Regulatório</span>
-            <ul className="text-xs text-gray-300 space-y-1.5 leading-snug">
-              <li className="flex items-start gap-1.5">
-                <ShieldCheck className="h-4 w-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                <span>Lei Federal nº 14.133/2021 (Nova Lei de Licitações)</span>
-              </li>
-              <li className="flex items-start gap-1.5">
-                <Scale className="h-4 w-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                <span>Decreto Estadual nº 45.242/2009 (Estado de Conservação)</span>
-              </li>
-              <li className="flex items-start gap-1.5">
-                <Globe className="h-4 w-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                <span>eMAG & WCAG 2.1 AA (Acessibilidade Digital)</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 3: Portal gov.br Links */}
-          <div className="flex flex-col gap-2">
-            <span className="font-bold text-xs uppercase text-gray-200 tracking-wider font-display">Links de Transparência</span>
-            <div className="grid grid-cols-2 gap-2 text-xs text-gray-300">
-              <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-emerald-400 hover:underline">Acessibilidade</a>
-              <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-emerald-400 hover:underline">Dados Abertos</a>
-              <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-emerald-400 hover:underline">Privacidade</a>
-              <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-emerald-400 hover:underline">Termos de Uso</a>
-              <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-emerald-400 hover:underline">Ouvidoria</a>
-              <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-emerald-400 hover:underline">Portal de Compras</a>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Copyleft bottom footer bar */}
-        <div className="bg-primary-dark/85 border-t border-white/10 text-[10px] text-gray-400 py-4">
-          <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-            <span>© 2026 Prefeitura Municipal de Florianópolis. Todos os direitos reservados.</span>
-            <span>Desenvolvido no âmbito da 1ª Jornada Incubintech de Inovação Aberta.</span>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
     </div>
   );

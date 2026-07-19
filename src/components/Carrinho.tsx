@@ -4,9 +4,14 @@
  */
 
 import React, { useState } from 'react';
-import { ShoppingCart, Trash2, ShieldAlert, ArrowLeft, Send, CheckCircle2, UserCheck, AlertTriangle } from 'lucide-react';
+import { ShoppingCart, Trash2, ArrowLeft, Send, UserCheck, Minus, Plus } from 'lucide-react';
 import { CartItem, RequisitanteData } from '../types';
-import { MOCK_SECRETARIAS } from '../data';
+import { MOCK_SECRETARIAS, getEstadoInfo } from '../data';
+import Button from './Button';
+import Input from './Input';
+import Checkbox from './Checkbox';
+import Textarea from './Textarea';
+import Message from './Message';
 
 interface CarrinhoProps {
   cartItems: CartItem[];
@@ -75,29 +80,6 @@ export default function Carrinho({
     onSubmitRequisition(requisitante);
   };
 
-  // State of conservation tags with gov.br colors
-  const getEstadoTagClass = (estado: string) => {
-    switch (estado) {
-      case 'NOVO': return 'bg-state-novo text-white';
-      case 'BOM': return 'bg-state-bom text-white';
-      case 'REGULAR': return 'bg-state-regular text-black font-semibold';
-      case 'PESSIMO': return 'bg-state-pessimo text-white';
-      case 'SUCATA': return 'bg-state-sucata text-white';
-      default: return 'bg-gray-500 text-white';
-    }
-  };
-
-  const getEstadoLabel = (estado: string) => {
-    switch (estado) {
-      case 'NOVO': return 'Novo';
-      case 'BOM': return 'Bom Estado';
-      case 'REGULAR': return 'Regular';
-      case 'PESSIMO': return 'Péssimo';
-      case 'SUCATA': return 'Sucata';
-      default: return estado;
-    }
-  };
-
   return (
     <div className="flex flex-col gap-6">
       
@@ -120,13 +102,9 @@ export default function Carrinho({
               Navegue na nossa vitrine virtual para encontrar materiais e móveis ociosos em outras unidades administrativas.
             </p>
           </div>
-          <button
-            onClick={onGoToVitrine}
-            className="px-6 py-3 bg-primary text-white font-bold text-sm rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2 shadow"
-          >
-            <ArrowLeft className="h-4 w-4" />
+          <Button variant="primary" onClick={onGoToVitrine} icon={<ArrowLeft className="h-4 w-4" aria-hidden="true" />}>
             Navegar no Catálogo
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -142,7 +120,7 @@ export default function Carrinho({
                 <article
                   key={item.produto.id}
                   id={`cart-item-${item.produto.id}`}
-                  className="bg-white border border-gray-200 rounded-xl p-4 md:p-5 shadow-sm hover:border-emerald-500 transition-all flex flex-col sm:flex-row gap-5"
+                  className="br-card hover bg-white border border-gray-200 rounded-xl p-4 md:p-5 shadow-sm hover:border-emerald-500 transition-all flex flex-col sm:flex-row gap-5"
                 >
                   {/* Imagem do Item com tag */}
                   <div className="w-full sm:w-44 h-32 bg-gray-50 rounded-lg overflow-hidden relative flex-shrink-0">
@@ -152,8 +130,8 @@ export default function Carrinho({
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover"
                     />
-                    <span className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold shadow ${getEstadoTagClass(item.produto.estadoConservacao)}`}>
-                      {getEstadoLabel(item.produto.estadoConservacao)}
+                    <span className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold shadow ${getEstadoInfo(item.produto.estadoConservacao).tone}`}>
+                      {getEstadoInfo(item.produto.estadoConservacao).label}
                     </span>
                   </div>
 
@@ -169,39 +147,44 @@ export default function Carrinho({
                           Cedente: <strong className="text-gray-700">{item.produto.secretariaOrigem}</strong>
                         </p>
                       </div>
-                      <button
+                      <Button
+                        variant="tertiary"
+                        circle
+                        className="text-danger"
                         onClick={() => onRemoveItem(item.produto.id)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-colors flex-shrink-0"
-                        title="Remover item"
+                        aria-label="Remover item"
                         id={`btn-remove-${item.produto.id}`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                        icon={<Trash2 className="h-4 w-4" aria-hidden="true" />}
+                      />
                     </div>
 
                     {/* Quantidade Editor */}
-                    <div className="flex items-center gap-4 bg-gray-50 p-2 rounded-lg border border-gray-150 w-fit">
+                    <div className="flex items-center gap-4 bg-gray-200 p-2 rounded-lg border border-gray-150 w-fit">
                       <span className="text-xs text-gray-500 font-bold px-1">Quantidade:</span>
                       <div className="flex items-center border border-gray-300 rounded bg-white">
-                        <button
+                        <Button
+                          variant="tertiary"
+                          size="small"
+                          circle
                           type="button"
                           onClick={() => onUpdateQuantity(item.produto.id, -1)}
-                          className="px-2.5 py-1 text-gray-600 hover:bg-gray-100 transition-colors font-bold"
                           disabled={item.quantidadeSolicitada <= 1}
-                        >
-                          -
-                        </button>
+                          aria-label="Diminuir quantidade"
+                          icon={<Minus className="h-3.5 w-3.5" aria-hidden="true" />}
+                        />
                         <span className="w-10 text-center text-sm font-bold text-primary font-mono">
                           {item.quantidadeSolicitada}
                         </span>
-                        <button
+                        <Button
+                          variant="tertiary"
+                          size="small"
+                          circle
                           type="button"
                           onClick={() => onUpdateQuantity(item.produto.id, 1)}
-                          className="px-2.5 py-1 text-gray-600 hover:bg-gray-100 transition-colors font-bold"
                           disabled={item.quantidadeSolicitada >= item.produto.quantidade}
-                        >
-                          +
-                        </button>
+                          aria-label="Aumentar quantidade"
+                          icon={<Plus className="h-3.5 w-3.5" aria-hidden="true" />}
+                        />
                       </div>
                       <span className="text-xs text-gray-400">
                         Máx: {item.produto.quantidade} un.
@@ -209,24 +192,16 @@ export default function Carrinho({
                     </div>
 
                     {/* Campo de Justificativa de Uso */}
-                    <div className="flex flex-col gap-1.5 mt-1">
-                      <label 
-                        htmlFor={`justificativa-${item.produto.id}`}
-                        className="text-xs font-bold text-gray-700 flex items-center justify-between"
-                      >
-                        <span>Justificativa de Uso Individual <span className="text-red-500">*</span></span>
-                        <span className="text-[10px] text-gray-400 font-normal">
-                          Mínimo 10 caracteres (restam: {Math.max(0, 10 - item.justificativa.length)})
-                        </span>
-                      </label>
-                      <textarea
+                    <div className="mt-1">
+                      <Textarea
+                        label="Justificativa de Uso Individual *"
                         id={`justificativa-${item.produto.id}`}
                         placeholder="Descreva a finalidade pública desse material. Ex: Substituição de cadeiras quebradas no setor de atendimento ao cidadão."
                         value={item.justificativa}
                         onChange={(e) => onUpdateJustificativa(item.produto.id, e.target.value)}
-                        className={`w-full text-xs p-3 bg-gray-50/50 border rounded-lg focus:outline-none focus:bg-white focus:ring-1 focus:ring-primary transition-all resize-none h-16 ${
-                          item.justificativa.trim().length >= 10 ? 'border-gray-200' : 'border-amber-300 focus:ring-amber-500'
-                        }`}
+                        counterText={`Mínimo 10 caracteres (restam: ${Math.max(0, 10 - item.justificativa.length)})`}
+                        state={item.justificativa.trim().length >= 10 ? undefined : 'warning'}
+                        textareaClassName="resize-none h-16"
                         required
                       />
                     </div>
@@ -251,36 +226,26 @@ export default function Carrinho({
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               
               {/* Campo: Nome Completo */}
-              <div className="flex flex-col gap-1">
-                <label htmlFor="nome-completo" className="text-xs font-bold text-gray-700">
-                  Nome Completo <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="nome-completo"
-                  placeholder="Nome do Servidor Requisitante"
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
-                  className="w-full text-sm p-3 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"
-                  required
-                />
-              </div>
+              <Input
+                label="Nome Completo *"
+                id="nome-completo"
+                type="text"
+                placeholder="Nome do Servidor Requisitante"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                required
+              />
 
               {/* Campo: Matrícula Funcional */}
-              <div className="flex flex-col gap-1">
-                <label htmlFor="matricula-funcional" className="text-xs font-bold text-gray-700">
-                  Matrícula Funcional <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="matricula-funcional"
-                  placeholder="Ex: 129481-2"
-                  value={matricula}
-                  onChange={(e) => setMatricula(e.target.value)}
-                  className="w-full text-sm p-3 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"
-                  required
-                />
-              </div>
+              <Input
+                label="Matrícula Funcional *"
+                id="matricula-funcional"
+                type="text"
+                placeholder="Ex: 129481-2"
+                value={matricula}
+                onChange={(e) => setMatricula(e.target.value)}
+                required
+              />
 
               {/* Campo: Secretaria Setor */}
               <div className="flex flex-col gap-1">
@@ -291,7 +256,7 @@ export default function Carrinho({
                   id="secretaria-requisitante"
                   value={secretaria}
                   onChange={(e) => setSecretaria(e.target.value)}
-                  className="w-full text-sm p-3 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full text-sm p-3 border border-gray-200 rounded-lg bg-background focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary"
                   required
                 >
                   <option value="">Selecione seu órgão municipal</option>
@@ -302,79 +267,62 @@ export default function Carrinho({
               </div>
 
               {/* Campo: Email Institucional */}
-              <div className="flex flex-col gap-1">
-                <label htmlFor="email-institucional" className="text-xs font-bold text-gray-700">
-                  E-mail Institucional <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="email"
-                  id="email-institucional"
-                  placeholder="exemplo@pmf.sc.gov.br"
-                  value={email}
-                  onChange={(e) => handleEmailChange(e.target.value)}
-                  className={`w-full text-sm p-3 border rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary ${
-                    emailError ? 'border-red-300 focus:ring-red-500' : 'border-gray-200'
-                  }`}
-                  required
-                />
-                {emailError ? (
-                  <p className="text-[10px] text-red-600 font-medium mt-0.5">{emailError}</p>
-                ) : (
-                  <p className="text-[10px] text-gray-500 mt-0.5">Apenas domínios @pmf.sc.gov.br são aceitos.</p>
-                )}
-              </div>
+              <Input
+                label="E-mail Institucional *"
+                id="email-institucional"
+                type="email"
+                placeholder="exemplo@pmf.sc.gov.br"
+                value={email}
+                onChange={(e) => handleEmailChange(e.target.value)}
+                state={emailError ? 'danger' : undefined}
+                helperText={emailError || 'Apenas domínios @pmf.sc.gov.br são aceitos.'}
+                required
+              />
 
               {/* Checkbox Termo de Compromisso */}
-              <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200 flex items-start gap-2.5">
-                <input
-                  type="checkbox"
+              <div className="mt-2 p-3 bg-gray-200 rounded-lg border border-gray-200">
+                <Checkbox
                   id="checkbox-termos"
                   checked={declara}
                   onChange={(e) => setDeclara(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
                   required
+                  label="Declaro que os bens ociosos ora requisitados destinam-se exclusivamente para uso no serviço público e que há dotação física para os acomodar."
                 />
-                <label htmlFor="checkbox-termos" className="text-xs text-gray-600 cursor-pointer select-none leading-relaxed">
-                  Declaro que os bens ociosos ora requisitados destinam-se exclusivamente para uso no serviço público e que há dotação física para os acomodar.
-                </label>
               </div>
 
               {/* Warning if validation incomplete */}
               {showValidationWarning && !isFormValid && (
-                <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-lg p-3 text-xs flex items-start gap-2">
-                  <AlertTriangle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-bold">Solicitação Incompleta</p>
-                    <p className="text-[11px] text-amber-800 mt-0.5 leading-relaxed">
-                      Por favor, verifique se preencheu todos os dados do requisitante, se o e-mail possui o final oficial e se cada justificativa de uso possui no mínimo 10 caracteres.
-                    </p>
-                  </div>
-                </div>
+                <Message
+                  variant="warning"
+                  title="Solicitação Incompleta."
+                  body="Por favor, verifique se preencheu todos os dados do requisitante, se o e-mail possui o final oficial e se cada justificativa de uso possui no mínimo 10 caracteres."
+                />
               )}
 
               {/* Botões de Submissão */}
               <div className="flex flex-col gap-2 mt-2 pt-2 border-t border-gray-100">
-                <button
+                <Button
                   type="submit"
+                  variant="primary"
                   disabled={!isFormValid}
-                  className={`w-full py-4 px-6 rounded-lg font-bold text-sm flex items-center justify-center gap-2 shadow-md transition-all ${
-                    isFormValid
-                      ? 'bg-secondary hover:bg-secondary/90 text-white hover:shadow-lg'
-                      : 'bg-gray-200 text-gray-400 border border-gray-300 cursor-not-allowed'
-                  }`}
                   id="btn-submit-requisition"
+                  className="w-full h-auto min-h-10 py-2.5 justify-center overflow-visible"
+                  icon={<Send className="h-4 w-4 shrink-0 mr-2" aria-hidden="true" />}
                 >
-                  <Send className="h-4 w-4" />
-                  Submeter Requisição de Remanejamento
-                </button>
+                  <span className="flex flex-col leading-tight">
+                    <span>Submeter Requisição</span>
+                    <span>de Remanejamento</span>
+                  </span>
+                </Button>
 
-                <button
+                <Button
                   type="button"
+                  variant="tertiary"
                   onClick={onGoToVitrine}
-                  className="w-full py-3 px-6 bg-white border border-gray-200 text-primary hover:bg-gray-50 font-bold text-xs rounded-lg transition-colors"
+                  className="w-full justify-center"
                 >
                   Continuar Procurando Bens
-                </button>
+                </Button>
               </div>
 
             </form>
