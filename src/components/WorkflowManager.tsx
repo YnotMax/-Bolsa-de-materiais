@@ -8,6 +8,7 @@ import { FileText, CheckCircle2, XCircle, Clock, Calendar, Check, AlertTriangle,
 import { Requisicao, StatusRequisicao } from '../types';
 import { MOTIVOS_REJEICAO } from '../data';
 import Button from './Button';
+import Message from './Message';
 
 interface WorkflowManagerProps {
   requisicoes: Requisicao[];
@@ -234,27 +235,20 @@ export default function WorkflowManager({ requisicoes, onUpdateStatus }: Workflo
 
               {/* Reserva Otimista de Estoque Informativo */}
               {activeRequisition.status === 'SUBMETIDA' && (
-                <div className="bg-amber-50 border border-amber-100 text-amber-900 p-3 rounded-lg text-xs flex items-start gap-2">
-                  <AlertTriangle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5 animate-pulse" />
-                  <div>
-                    <p className="font-bold">Reserva Otimista Ativa</p>
-                    <p className="text-[11px] text-amber-800 mt-0.5 leading-relaxed">
-                      Este processo possui reserva física temporária garantida no banco de dados para evitar requisições duplicadas simultâneas.
-                    </p>
-                  </div>
-                </div>
+                <Message
+                  variant="warning"
+                  title="Reserva Otimista Ativa."
+                  body="Este processo possui reserva física temporária garantida no banco de dados para evitar requisições duplicadas simultâneas."
+                />
               )}
 
               {/* Se rejeitado, mostrar motivo */}
               {activeRequisition.status === 'REJEITADA' && activeRequisition.motivoRejeicao && (
-                <div className="bg-red-50 border border-red-100 text-red-900 p-4 rounded-lg text-xs">
-                  <p className="font-bold text-red-900 flex items-center gap-1.5">
-                    <XCircle className="h-4 w-4" /> Motivo da Recusa / Rejeição
-                  </p>
-                  <p className="text-red-800 mt-1.5 leading-relaxed font-sans font-medium">
-                    {activeRequisition.motivoRejeicao}
-                  </p>
-                </div>
+                <Message
+                  variant="danger"
+                  title="Motivo da Recusa / Rejeição."
+                  body={activeRequisition.motivoRejeicao}
+                />
               )}
 
               {/* Botões de Ação para Cedente / Central */}
@@ -309,10 +303,14 @@ export default function WorkflowManager({ requisicoes, onUpdateStatus }: Workflo
               )}
 
               {roleMode === 'requisitante' && (activeRequisition.status === 'APROVADA' || activeRequisition.status === 'TRANSFERIDA') && (
-                <div className="flex items-center justify-between bg-emerald-50 border border-emerald-100 p-4 rounded-lg">
-                  <span className="text-xs font-bold text-emerald-800">
-                    Sua requisição foi homologada com sucesso! Entrega agendada.
-                  </span>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="flex-grow">
+                    <Message
+                      variant="success"
+                      title="Sucesso."
+                      body="Sua requisição foi homologada com sucesso! Entrega agendada."
+                    />
+                  </div>
                   <Button
                     variant="primary"
                     onClick={() => handleSimulatedDownloadTerm(activeRequisition)}
