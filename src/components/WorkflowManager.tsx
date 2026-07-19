@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { FileText, CheckCircle2, XCircle, Clock, Calendar, Check, AlertTriangle, ChevronRight, User, Building, ArrowRight, ShieldCheck, Download, Eye } from 'lucide-react';
+import { FileText, Clock, Check, ChevronRight, Building, ShieldCheck, Download } from 'lucide-react';
 import { Requisicao, StatusRequisicao } from '../types';
 import { MOTIVOS_REJEICAO } from '../data';
 import Button from './Button';
