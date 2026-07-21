@@ -184,7 +184,7 @@ export const MOCK_USERS: Omit<User, 'rule'>[] = [
   {
     id: '3',
     name: 'Alex',
-    image_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f96?auto=format&fit=facearea&facepad=2&w=400&h=400&q=80',
+    image_url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=facearea&facepad=2&w=400&h=400&q=80',
     inserted_at: '2026-01-10T08:30:00-03:00',
     updated_at: '2026-01-10T08:30:00-03:00',
   },
