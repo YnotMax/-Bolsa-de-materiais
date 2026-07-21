@@ -5,18 +5,24 @@
 
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
+import Login from './components/Login';
 import Footer from './components/Footer';
 import Vitrine from './components/Vitrine';
 import Carrinho from './components/Carrinho';
 import WorkflowManager from './components/WorkflowManager';
 import AvisosCompras from './components/AvisosCompras';
 import Relatorios from './components/Relatorios';
-import { Produto, CartItem, Requisicao, StatusRequisicao, RequisitanteData } from './types';
+import { Produto, CartItem, Requisicao, StatusRequisicao, RequisitanteData, User } from './types';
 import { MOCK_PRODUTOS } from './data';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>(() => {
     return localStorage.getItem('bolsa_active_tab') || 'vitrine';
+  });
+
+  const [loggedUser, setLoggedUser] = useState<User | null>(() => {
+    const saved = localStorage.getItem('bolsa_logged_user');
+    return saved ? JSON.parse(saved) : null;
   });
 
   // [CONTRIBUIÇÃO PARCEIROS]: O estado atual inicializa com MOCK_PRODUTOS via localStorage.
@@ -118,6 +124,14 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('bolsa_requisicoes', JSON.stringify(requisicoes));
   }, [requisicoes]);
+
+  useEffect(() => {
+    if (loggedUser) {
+      localStorage.setItem('bolsa_logged_user', JSON.stringify(loggedUser));
+    } else {
+      localStorage.removeItem('bolsa_logged_user');
+    }
+  }, [loggedUser]);
 
   // Cart operations
   const handleAddToCart = (produto: Produto) => {
@@ -232,6 +246,19 @@ export default function App() {
     setActiveTab('carrinho');
   };
 
+  const handleLogin = (user: User) => {
+    setLoggedUser(user);
+    setActiveTab('vitrine');
+  };
+
+  const handleLogout = () => {
+    setLoggedUser(null);
+  };
+
+  if (!loggedUser) {
+    return <Login onLogin={handleLogin} />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-on-background">
 
@@ -247,6 +274,8 @@ export default function App() {
         currentTab={activeTab}
         setTab={setActiveTab}
         cartCount={cart.length}
+        loggedUser={loggedUser}
+        onLogout={handleLogout}
       />
 
       {/* Main Container */}

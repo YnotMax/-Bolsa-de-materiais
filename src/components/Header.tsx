@@ -4,7 +4,8 @@
  */
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { Package2, ShoppingCart, BarChart3, ShieldAlert, FileText, Menu, X, Landmark, UserCheck, Search } from 'lucide-react';
+import { Package2, ShoppingCart, BarChart3, ShieldAlert, FileText, Menu, X, Landmark, UserCheck, Search, LogOut } from 'lucide-react';
+import { User, UserRule } from '../types';
 import BRHeader from '@govbr-ds/core/dist/components/header/header.js';
 import BRMenu from '@govbr-ds/core/dist/components/menu/menu.js';
 import Tag from './Tag';
@@ -13,6 +14,12 @@ interface HeaderProps {
   currentTab: string;
   setTab: (tab: string) => void;
   cartCount: number;
+  loggedUser: User;
+  onLogout: () => void;
+}
+
+function getRuleLabel(rule: UserRule): string {
+  return rule === 'manager' ? 'Gestor' : 'Requisitante / Cedente';
 }
 
 const NAV_ITEMS = [
@@ -23,7 +30,7 @@ const NAV_ITEMS = [
   { id: 'placar', label: 'Placar & Relatórios', icon: BarChart3 },
 ];
 
-export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
+export default function Header({ currentTab, setTab, cartCount, loggedUser, onLogout }: HeaderProps) {
   const headerRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const dsInitialized = useRef(false);
@@ -148,13 +155,23 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
                 <div className="header-avatar flex items-center gap-3">
                   <div className="text-right">
                     <div className="text-xs text-primary flex items-center gap-1 justify-end font-semibold">
-                      <UserCheck className="h-3 w-3" /> Requisitante / Cedente
+                      <UserCheck className="h-3 w-3" /> {getRuleLabel(loggedUser.rule)}
                     </div>
-                    <div className="text-xs font-medium text-gray-700 max-w-[150px] truncate">Maurício Alexandre</div>
+                    <div className="text-xs font-medium text-gray-700 max-w-[150px] truncate">{loggedUser.name}</div>
                   </div>
-                  <div className="h-8 w-8 rounded-full bg-primary/10 border border-primary flex items-center justify-center font-bold text-primary text-sm">
-                    MA
-                  </div>
+                  <img
+                    src={loggedUser.image_url}
+                    alt=""
+                    className="h-8 w-8 rounded-full object-cover border border-primary"
+                  />
+                  <button
+                    type="button"
+                    onClick={onLogout}
+                    aria-label="Sair"
+                    className="br-button circle small"
+                  >
+                    <LogOut className="h-4 w-4" aria-hidden="true" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -259,15 +276,25 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
               </form>
             </div>
             <div className="menu-profile lg:hidden flex items-center gap-3 px-4 py-3 border-b border-gray-200">
-              <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary flex items-center justify-center font-bold text-primary text-sm shrink-0">
-                MA
-              </div>
-              <div className="min-w-0">
-                <div className="text-sm font-medium text-gray-700 truncate">Maurício Alexandre</div>
+              <img
+                src={loggedUser.image_url}
+                alt=""
+                className="h-10 w-10 rounded-full object-cover border border-primary shrink-0"
+              />
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-medium text-gray-700 truncate">{loggedUser.name}</div>
                 <div className="text-xs text-primary flex items-center gap-1 font-semibold">
-                  <UserCheck className="h-3 w-3" /> Requisitante / Cedente
+                  <UserCheck className="h-3 w-3" /> {getRuleLabel(loggedUser.rule)}
                 </div>
               </div>
+              <button
+                type="button"
+                onClick={onLogout}
+                aria-label="Sair"
+                className="br-button circle small"
+              >
+                <LogOut className="h-4 w-4" aria-hidden="true" />
+              </button>
             </div>
             <nav className="menu-body" role="tree">
               {NAV_ITEMS.map((item) => {
