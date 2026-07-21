@@ -70,3 +70,14 @@ export interface CompraSimulada {
   status: 'PENDENTE' | 'ALERTA_EXIBIDO' | 'REQUISITADO_REMANEJAMENTO' | 'FORCADO_COM_JUSTIFICATIVA';
   justificativaForcada?: string;
 }
+
+export type UserRule = 'manager' | 'commum';
+
+export interface User {
+  id: string;
+  name: string;
+  image_url: string;
+  rule: UserRule;
+  inserted_at: string;
+  updated_at: string;
+}

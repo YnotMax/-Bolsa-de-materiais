@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Produto, EstadoConservacao } from './types';
+import { Produto, EstadoConservacao, User, UserRule } from './types';
 
 export const MOCK_PRODUTOS: Produto[] = [
   {
@@ -165,6 +165,38 @@ export const MOCK_SECRETARIAS = [
   "Secretaria de Assistência Social (SEMAS)",
   "Instituto de Planejamento Urbano (IPUF)"
 ];
+
+export const MOCK_USERS: Omit<User, 'rule'>[] = [
+  {
+    id: '1',
+    name: 'Mauricio Alexandre',
+    image_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=facearea&facepad=2&w=400&h=400&q=80',
+    inserted_at: '2026-01-10T08:30:00-03:00',
+    updated_at: '2026-01-10T08:30:00-03:00',
+  },
+  {
+    id: '2',
+    name: 'Tonny',
+    image_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=400&h=400&q=80',
+    inserted_at: '2026-01-10T08:30:00-03:00',
+    updated_at: '2026-01-10T08:30:00-03:00',
+  },
+  {
+    id: '3',
+    name: 'Alex',
+    image_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f96?auto=format&fit=facearea&facepad=2&w=400&h=400&q=80',
+    inserted_at: '2026-01-10T08:30:00-03:00',
+    updated_at: '2026-01-10T08:30:00-03:00',
+  },
+];
+
+export function getLoginUsers(): User[] {
+  const rules: UserRule[] = ['manager', 'commum'];
+  return MOCK_USERS.map((u) => ({
+    ...u,
+    rule: rules[Math.floor(Math.random() * rules.length)],
+  }));
+}
 
 export const MOTIVOS_REJEICAO = [
   "Item já comprometido para demanda local urgente",
