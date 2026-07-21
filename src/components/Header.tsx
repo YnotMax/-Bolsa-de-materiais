@@ -120,7 +120,7 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
         <div className="max-w-7xl mx-auto px-4 py-1.5 flex justify-between items-center opacity-90 text-white">
           <div className="flex items-center gap-3">
             <span className="font-bold tracking-wider text-amber-400">BR</span>
-            <div className="w-[1px] h-3 bg-white/30" />
+            <div className="w-px h-3 bg-white/30" />
             <a href="https://www.gov.br" target="_blank" rel="noopener noreferrer" className="hover:underline text-white">Portal do Governo Brasileiro</a>
           </div>
           <div className="flex items-center gap-4">
@@ -133,18 +133,18 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
       <header ref={headerRef} className="br-header" data-sticky>
         <div className="container-lg">
           <div className="header-top">
-            <div className="header-logo">
+            <div className="header-logo hidden lg:flex">
               <Landmark className="h-6 w-6 text-primary" aria-hidden="true" />
               <span className="br-divider vertical mx-1" />
               <div className="header-sign">Prefeitura de Florianópolis</div>
             </div>
             <div className="header-actions">
-              <div className="header-search-trigger">
+              <div className="header-search-trigger hidden lg:block">
                 <button ref={searchTriggerRef} className="br-button circle" type="button" aria-label="Abrir Busca" data-toggle="search" data-target=".header-search">
                   <Search className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
-              <div className="header-login">
+              <div className="header-login hidden lg:block">
                 <div className="header-avatar flex items-center gap-3">
                   <div className="text-right">
                     <div className="text-xs text-primary flex items-center gap-1 justify-end font-semibold">
@@ -235,6 +235,38 @@ export default function Header({ currentTab, setTab, cartCount }: HeaderProps) {
                 <button className="br-button circle" type="button" aria-label="Fechar o menu" data-dismiss="menu">
                   <X className="h-5 w-5" aria-hidden="true" />
                 </button>
+              </div>
+            </div>
+            <div className="menu-search lg:hidden px-4 py-3 border-b border-gray-200">
+              <form
+                className="br-input has-icon"
+                onSubmit={(e) => {
+                  handleSearchSubmit(e);
+                  menuRef.current?.classList.remove('active');
+                }}
+              >
+                <label htmlFor="menu-search-input">Texto da pesquisa</label>
+                <input
+                  id="menu-search-input"
+                  type="text"
+                  placeholder="O que você procura?"
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                />
+                <button className="br-button circle small" type="submit" aria-label="Pesquisar">
+                  <Search className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </form>
+            </div>
+            <div className="menu-profile lg:hidden flex items-center gap-3 px-4 py-3 border-b border-gray-200">
+              <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary flex items-center justify-center font-bold text-primary text-sm shrink-0">
+                MA
+              </div>
+              <div className="min-w-0">
+                <div className="text-sm font-medium text-gray-700 truncate">Maurício Alexandre</div>
+                <div className="text-xs text-primary flex items-center gap-1 font-semibold">
+                  <UserCheck className="h-3 w-3" /> Requisitante / Cedente
+                </div>
               </div>
             </div>
             <nav className="menu-body" role="tree">

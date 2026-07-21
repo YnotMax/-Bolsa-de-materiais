@@ -3,11 +3,26 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Landmark, ShieldCheck, Scale, Globe } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { Landmark, ShieldCheck, Scale, Globe, ChevronDown } from 'lucide-react';
+import BRFooter from '@govbr-ds/core/dist/components/footer/footer.js';
 
 export default function Footer() {
+  const footerRef = useRef<HTMLElement>(null);
+  const dsInitialized = useRef(false);
+
+  useEffect(() => {
+    if (dsInitialized.current) return;
+    if (!footerRef.current) return;
+    dsInitialized.current = true;
+    // Wires up BRFooter's built-in mobile accordion: below 992px each column's
+    // .br-item.header collapses its sibling .br-list until tapped, so the footer
+    // doesn't dump all three columns' content on the page at once on small screens.
+    new BRFooter('footer', footerRef.current);
+  }, []);
+
   return (
-    <footer className="br-footer mt-auto">
+    <footer ref={footerRef} className="br-footer mt-auto">
       <div className="container-lg">
         <div className="logo flex items-center gap-2">
           <Landmark className="h-5 w-5" aria-hidden="true" />
@@ -15,8 +30,9 @@ export default function Footer() {
         </div>
         <div className="br-list horizontal">
           <div className="col-4">
-            <div className="br-item header">
+            <div className="br-item header justify-between cursor-pointer lg:cursor-auto lg:pointer-events-none" role="button" tabIndex={0} aria-expanded={false}>
               <div className="content text-down-01 text-bold text-uppercase">Prefeitura</div>
+              <ChevronDown className="h-4 w-4 lg:hidden" aria-hidden="true" />
             </div>
             <div className="br-list">
               <div className="br-item">
@@ -31,8 +47,9 @@ export default function Footer() {
             </div>
           </div>
           <div className="col-4">
-            <div className="br-item header">
+            <div className="br-item header justify-between cursor-pointer lg:cursor-auto lg:pointer-events-none" role="button" tabIndex={0} aria-expanded={false}>
               <div className="content text-down-01 text-bold text-uppercase">Marco Regulatório</div>
+              <ChevronDown className="h-4 w-4 lg:hidden" aria-hidden="true" />
             </div>
             <div className="br-list">
               <div className="br-item">
@@ -50,8 +67,9 @@ export default function Footer() {
             </div>
           </div>
           <div className="col-4">
-            <div className="br-item header">
+            <div className="br-item header justify-between cursor-pointer lg:cursor-auto lg:pointer-events-none" role="button" tabIndex={0} aria-expanded={false}>
               <div className="content text-down-01 text-bold text-uppercase">Links de Transparência</div>
+              <ChevronDown className="h-4 w-4 lg:hidden" aria-hidden="true" />
             </div>
             <div className="br-list">
               <a className="br-item" href="#" onClick={(e) => e.preventDefault()}>
