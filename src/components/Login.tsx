@@ -20,16 +20,16 @@ export default function Login({ onLogin }: LoginProps) {
         <h1 className="text-2xl font-bold text-on-background">Bolsa de Materiais</h1>
         <p className="mt-1 text-sm text-on-surface-variant">Selecione seu usuário para continuar</p>
       </div>
-      <div className="flex flex-wrap justify-center gap-6">
+      <div className="flex flex-col items-center gap-4">
         {users.map((user) => (
           <button
             key={user.id}
             type="button"
             onClick={() => onLogin(user)}
-            className="br-card hover bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-primary transition-all duration-300 flex flex-col items-center gap-3 w-40"
+            className="br-card hover bg-white border border-gray-200 rounded-xl p-4 hover:shadow-lg hover:border-primary transition-all duration-300 flex items-center gap-4 w-72"
           >
-            <img src={user.image_url} alt="" className="h-20 w-20 rounded-full object-cover" />
-            <span className="text-sm font-medium text-on-background text-center">{user.name}</span>
+            <img src={user.image_url} alt="" className="h-14 w-14 rounded-full object-cover shrink-0" />
+            <span className="text-sm font-medium text-on-background">{user.name}</span>
           </button>
         ))}
       </div>
