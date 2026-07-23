@@ -13,6 +13,7 @@ export const MOCK_PRODUTOS: Produto[] = [
     nome: "Monitor Dell 24 Polegadas",
     categoria: "Informática",
     estadoConservacao: "BOM",
+    detalhamentoEstado: "10 Bons, 5 Regulares",
     quantidade: 15,
     secretariaOrigem: "Secretaria Municipal de Educação (SME)",
     fotoUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=600&h=400",
@@ -27,6 +28,7 @@ export const MOCK_PRODUTOS: Produto[] = [
     nome: "Cadeira Giratória Ergonômica",
     categoria: "Mobiliário",
     estadoConservacao: "BOM",
+    detalhamentoEstado: "5 Boas, 3 Regulares",
     quantidade: 8,
     secretariaOrigem: "Secretaria Municipal de Administração (SMA)",
     fotoUrl: "https://images.unsplash.com/photo-1505797149-43b0069ec26b?auto=format&fit=crop&q=80&w=600&h=400",
@@ -41,6 +43,7 @@ export const MOCK_PRODUTOS: Produto[] = [
     nome: "Mesa de Escritório em L",
     categoria: "Mobiliário",
     estadoConservacao: "REGULAR",
+    detalhamentoEstado: "8 Regulares, 4 Péssimas",
     quantidade: 12,
     secretariaOrigem: "Secretaria Municipal de Saúde (SMS)",
     fotoUrl: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&q=80&w=600&h=400",
@@ -55,6 +58,7 @@ export const MOCK_PRODUTOS: Produto[] = [
     nome: "Resma de Papel A4 500fls",
     categoria: "Materiais de Escritório",
     estadoConservacao: "NOVO",
+    detalhamentoEstado: "140 Novas",
     quantidade: 140,
     secretariaOrigem: "Secretaria Municipal de Finanças (SEF)",
     fotoUrl: "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&q=80&w=600&h=400",
@@ -69,6 +73,7 @@ export const MOCK_PRODUTOS: Produto[] = [
     nome: "Notebook Lenovo ThinkPad L14",
     categoria: "Informática",
     estadoConservacao: "BOM",
+    detalhamentoEstado: "4 Bons, 1 Regular",
     quantidade: 5,
     secretariaOrigem: "Secretaria Municipal de Planejamento (SMP)",
     fotoUrl: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&q=80&w=600&h=400",
@@ -83,6 +88,7 @@ export const MOCK_PRODUTOS: Produto[] = [
     nome: "Ar Condicionado Split 12000 BTU",
     categoria: "Outros",
     estadoConservacao: "REGULAR",
+    detalhamentoEstado: "2 Regulares, 1 Péssimo",
     quantidade: 3,
     secretariaOrigem: "Secretaria de Turismo, Cultura e Esporte (SCTC)",
     fotoUrl: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=600&h=400",
@@ -97,6 +103,7 @@ export const MOCK_PRODUTOS: Produto[] = [
     nome: "Impressora Multifuncional HP LaserJet Pro",
     categoria: "Informática",
     estadoConservacao: "PESSIMO",
+    detalhamentoEstado: "2 Péssimas",
     quantidade: 2,
     secretariaOrigem: "Secretaria de Assistência Social (SEMAS)",
     fotoUrl: "https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?auto=format&fit=crop&q=80&w=600&h=400",
@@ -111,6 +118,7 @@ export const MOCK_PRODUTOS: Produto[] = [
     nome: "Gaveteiro de Madeira 3 Gavetas",
     categoria: "Mobiliário",
     estadoConservacao: "BOM",
+    detalhamentoEstado: "10 Bons, 4 Regulares",
     quantidade: 14,
     secretariaOrigem: "Instituto de Planejamento Urbano (IPUF)",
     fotoUrl: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&q=80&w=600&h=400",
@@ -125,6 +133,7 @@ export const MOCK_PRODUTOS: Produto[] = [
     nome: "Teclado USB Standard Preto",
     categoria: "Informática",
     estadoConservacao: "NOVO",
+    detalhamentoEstado: "45 Novos",
     quantidade: 45,
     secretariaOrigem: "Secretaria Municipal de Administração (SMA)",
     fotoUrl: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&q=80&w=600&h=400",
@@ -139,12 +148,88 @@ export const MOCK_PRODUTOS: Produto[] = [
     nome: "Projetor Multimídia Epson",
     categoria: "Outros",
     estadoConservacao: "REGULAR",
+    detalhamentoEstado: "3 Regulares, 1 Péssimo",
     quantidade: 4,
     secretariaOrigem: "Secretaria Municipal de Educação (SME)",
     fotoUrl: "https://images.unsplash.com/photo-1535016120720-40c646be5580?auto=format&fit=crop&q=80&w=600&h=400",
     descricaoCompleta: "Projetor de 3000 lumens, entrada HDMI e VGA. A lâmpada está com 1200 horas de uso (vida útil estimada de 4000h). Acompanha controle remoto e cabo de força.",
     valorEstimadoNovo: 3200.00,
     co2eEvitadoKg: 90
+  },
+  {
+    id: "prod-011",
+    codigoPatrimonio: "PMF-992384",
+    codigoCatmat: "442935", // CATMAT para Armários
+    nome: "Armário de Aço 2 Portas",
+    categoria: "Mobiliário",
+    estadoConservacao: "BOM",
+    detalhamentoEstado: "4 Bons, 2 Regulares",
+    quantidade: 6,
+    secretariaOrigem: "Secretaria Municipal de Saúde (SMS)",
+    fotoUrl: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Armário de aço reforçado, cor cinza, com duas portas de abrir e 4 prateleiras reguláveis. Ideal para arquivo morto e materiais de almoxarifado. Inclui chaves.",
+    valorEstimadoNovo: 750.00,
+    co2eEvitadoKg: 55
+  },
+  {
+    id: "prod-012",
+    codigoPatrimonio: "PMF-334212",
+    codigoCatmat: "389210", // CATMAT para Fragmentadoras
+    nome: "Fragmentadora de Papel Secreta",
+    categoria: "Outros",
+    estadoConservacao: "SUCATA",
+    detalhamentoEstado: "2 Sucatas",
+    quantidade: 2,
+    secretariaOrigem: "Secretaria Municipal de Finanças (SEF)",
+    fotoUrl: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Fragmentadora industrial com motor travado. Lâminas e cesto em bom estado, serve para doação de peças ou conserto especializado.",
+    valorEstimadoNovo: 1500.00,
+    co2eEvitadoKg: 70
+  },
+  {
+    id: "prod-013",
+    codigoPatrimonio: "PMF-772930",
+    codigoCatmat: "294825", // CATMAT para Mesas de Reunião
+    nome: "Mesa de Reunião Redonda",
+    categoria: "Mobiliário",
+    estadoConservacao: "REGULAR",
+    detalhamentoEstado: "2 Regulares, 1 Péssima",
+    quantidade: 3,
+    secretariaOrigem: "Secretaria Municipal de Planejamento (SMP)",
+    fotoUrl: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Mesa redonda para reunião, diâmetro de 1,20m, base disco de aço escovado. Apresenta lascados nas bordas do tampo.",
+    valorEstimadoNovo: 600.00,
+    co2eEvitadoKg: 20
+  },
+  {
+    id: "prod-014",
+    codigoPatrimonio: "PMF-448291",
+    codigoCatmat: "150925", // CATMAT para Quadros Brancos
+    nome: "Quadro Branco Magnético",
+    categoria: "Materiais de Escritório",
+    estadoConservacao: "BOM",
+    detalhamentoEstado: "15 Bons, 5 Novas",
+    quantidade: 20,
+    secretariaOrigem: "Secretaria Municipal de Educação (SME)",
+    fotoUrl: "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Quadro branco magnético tamanho 1,20m x 0,90m, moldura em alumínio. Perfeito para salas de aula e reuniões rápidas.",
+    valorEstimadoNovo: 180.00,
+    co2eEvitadoKg: 8
+  },
+  {
+    id: "prod-015",
+    codigoPatrimonio: "PMF-558291",
+    codigoCatmat: "392815", // CATMAT para Mouses
+    nome: "Mouse Óptico USB",
+    categoria: "Informática",
+    estadoConservacao: "NOVO",
+    detalhamentoEstado: "100 Novos",
+    quantidade: 100,
+    secretariaOrigem: "Instituto de Planejamento Urbano (IPUF)",
+    fotoUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Mouse óptico com fio USB, design ergonômico básico, 3 botões com scroll. Lotes lacrados excedentes de licitação.",
+    valorEstimadoNovo: 25.00,
+    co2eEvitadoKg: 1
   }
 ];
 
@@ -188,14 +273,22 @@ export const MOCK_USERS: Omit<User, 'rule'>[] = [
     inserted_at: '2026-01-10T08:30:00-03:00',
     updated_at: '2026-01-10T08:30:00-03:00',
   },
+  {
+    id: '4',
+    name: 'Gestor Central (SMA)',
+    image_url: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=facearea&facepad=2&w=400&h=400&q=80',
+    inserted_at: '2026-01-10T08:30:00-03:00',
+    updated_at: '2026-01-10T08:30:00-03:00',
+  },
 ];
 
 export function getLoginUsers(): User[] {
-  const rules: UserRule[] = ['manager', 'commum'];
-  return MOCK_USERS.map((u) => ({
-    ...u,
-    rule: rules[Math.floor(Math.random() * rules.length)],
-  }));
+  return MOCK_USERS.map((u) => {
+    let rule: UserRule = 'commum';
+    if (u.id === '1') rule = 'manager';
+    else if (u.id === '4') rule = 'admin';
+    return { ...u, rule };
+  });
 }
 
 export const MOTIVOS_REJEICAO = [

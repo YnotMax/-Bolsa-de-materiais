@@ -12,6 +12,7 @@ export interface Produto {
   nome: string;
   categoria: string;
   estadoConservacao: EstadoConservacao;
+  detalhamentoEstado?: string; // Ex: "10 Boas, 5 Regulares"
   quantidade: number;
   secretariaOrigem: string;
   fotoUrl: string;
@@ -71,7 +72,7 @@ export interface CompraSimulada {
   justificativaForcada?: string;
 }
 
-export type UserRule = 'manager' | 'commum';
+export type UserRule = 'manager' | 'commum' | 'admin';
 
 export interface User {
   id: string;

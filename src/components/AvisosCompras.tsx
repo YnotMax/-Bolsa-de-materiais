@@ -16,9 +16,10 @@ import Textarea from './Textarea';
 interface AvisosComprasProps {
   onAddFromSimulated: (produto: Produto) => void;
   onSetTab: (tab: string) => void;
+  produtosData?: Produto[];
 }
 
-export default function AvisosCompras({ onAddFromSimulated, onSetTab }: AvisosComprasProps) {
+export default function AvisosCompras({ onAddFromSimulated, onSetTab, produtosData }: AvisosComprasProps) {
   // Simulator form state
   const [catmat, setCatmat] = useState('');
   const [desc, setDesc] = useState('');
@@ -62,6 +63,8 @@ export default function AvisosCompras({ onAddFromSimulated, onSetTab }: AvisosCo
     localStorage.setItem('compras_simuladas', JSON.stringify(newCompras));
   };
 
+  const currentProductsList = produtosData && produtosData.length > 0 ? produtosData : MOCK_PRODUTOS;
+
   // Find similar items based on catmat or fuzzy match in description
   const handleSimulateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,7 +79,7 @@ export default function AvisosCompras({ onAddFromSimulated, onSetTab }: AvisosCo
     };
 
     // Find similar items in the Bolsa de Materiais
-    const similarItems = MOCK_PRODUTOS.filter(p => {
+    const similarItems = currentProductsList.filter(p => {
       // match exact CATMAT code
       const isCatmatMatch = novaCompra.codigoCatmat && p.codigoCatmat === novaCompra.codigoCatmat;
       // or match description/name

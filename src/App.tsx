@@ -14,6 +14,7 @@ import AvisosCompras from './components/AvisosCompras';
 import Relatorios from './components/Relatorios';
 import { Produto, CartItem, Requisicao, StatusRequisicao, RequisitanteData, User } from './types';
 import { MOCK_PRODUTOS } from './data';
+import { fetchProductsFromApi, submitRequisitionApi, fetchRequisitionsFromApi, updateRequisitionStatusApi } from './api';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>(() => {
@@ -25,9 +26,7 @@ export default function App() {
     return saved ? JSON.parse(saved) : null;
   });
 
-  // [CONTRIBUIÇÃO PARCEIROS]: O estado atual inicializa com MOCK_PRODUTOS via localStorage.
-  // TODO: Conectar este estado com o endpoint real do backend (GET /api/products) para 
-  // consumir os dados diretamente do MongoDB / Prisma.
+  // Produtos carregados do Backend Express / MongoDB / Fallback em memória
   const [produtos, setProdutos] = useState<Produto[]>(() => {
     const saved = localStorage.getItem('bolsa_produtos');
     return saved ? JSON.parse(saved) : MOCK_PRODUTOS;
@@ -39,14 +38,11 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // [CONTRIBUIÇÃO PARCEIROS]: O histórico de requisições também é mockado.
-  // TODO: Trocar para o endpoint (POST /api/requests e futuramente GET /api/requests)
-  // para persistir o histórico e aplicar o Workflow de Aprovação de fato no banco.
+  // Histórico de Requisições
   const [requisicoes, setRequisicoes] = useState<Requisicao[]>(() => {
     const saved = localStorage.getItem('bolsa_requisicoes');
     if (saved) return JSON.parse(saved);
 
-    // Initial mock requisitions for demonstration
     return [
       {
         id: "req-001",
@@ -107,6 +103,21 @@ export default function App() {
       }
     ];
   });
+
+  // Carrega produtos do backend na inicialização
+  useEffect(() => {
+    fetchProductsFromApi().then(apiProds => {
+      if (apiProds && apiProds.length > 0) {
+        setProdutos(apiProds);
+      }
+    });
+
+    fetchRequisitionsFromApi().then(apiReqs => {
+      if (apiReqs && apiReqs.length > 0) {
+        setRequisicoes(apiReqs);
+      }
+    });
+  }, []);
 
   // Save states to local storage whenever they change
   useEffect(() => {
@@ -172,13 +183,13 @@ export default function App() {
     setCart(cart.filter(item => item.produto.id !== produtoId));
   };
 
-  // Submit Requisition Handler
-  const handleSubmitRequisition = (requisitante: RequisitanteData) => {
+  // Submit Requisition Handler (Conectado à API do Express)
+  const handleSubmitRequisition = async (requisitante: RequisitanteData) => {
     const randomNum = Math.floor(10000 + Math.random() * 90000);
     const codigoProcesso = `PMF-${randomNum}/2026`;
     const dataCriacao = new Date().toLocaleDateString('pt-BR');
 
-    const novaRequisicao: Requisicao = {
+    const novaRequisicaoLocal: Requisicao = {
       id: `req-${Date.now()}`,
       codigoProcesso,
       dataCriacao,
@@ -198,18 +209,50 @@ export default function App() {
       ]
     };
 
-    setRequisicoes([novaRequisicao, ...requisicoes]);
-    setCart([]); // Clear cart
-    setActiveTab('requisicoes'); // switch to requisitions list
+    // Submete ao backend
+    const apiResult = await submitRequisitionApi({
+      requisitante,
+      itens: cart.map(item => ({
+        produtoId: item.produto.id,
+        quantidade: item.quantidadeSolicitada,
+        justificativaItem: item.justificativa
+      }))
+    });
+
+    if (apiResult.success && apiResult.data) {
+      const created = apiResult.data;
+      setRequisicoes([
+        {
+          id: created.id || novaRequisicaoLocal.id,
+          codigoProcesso: created.codigoProcesso || created.codigo || novaRequisicaoLocal.codigoProcesso,
+          dataCriacao: created.dataCriacao || novaRequisicaoLocal.dataCriacao,
+          requisitante: created.requisitante || novaRequisicaoLocal.requisitante,
+          itens: created.itens || novaRequisicaoLocal.itens,
+          status: created.status || novaRequisicaoLocal.status,
+          historicoStatus: created.historicoStatus || novaRequisicaoLocal.historicoStatus
+        },
+        ...requisicoes
+      ]);
+    } else {
+      setRequisicoes([novaRequisicaoLocal, ...requisicoes]);
+    }
+
+    // Recarrega produtos atualizados (reserva virtual)
+    fetchProductsFromApi().then(apiProds => {
+      if (apiProds && apiProds.length > 0) setProdutos(apiProds);
+    });
+
+    setCart([]);
+    setActiveTab('requisicoes');
   };
 
-  // Transition Workflow Status Handler
-  const handleUpdateStatus = (requisicaoId: string, novoStatus: StatusRequisicao, motivoRejeicao?: string) => {
+  // Transition Workflow Status Handler (Conectado à API do Express)
+  const handleUpdateStatus = async (requisicaoId: string, novoStatus: StatusRequisicao, motivoRejeicao?: string) => {
+    // Atualização otimista local
     setRequisicoes(prev => prev.map(req => {
       if (req.id === requisicaoId) {
         const timestamp = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
         
-        // Subtract inventory physical quantity if requisition gets approved
         if (novoStatus === 'APROVADA') {
           setProdutos(currentProds => currentProds.map(prod => {
             const requestedItem = req.itens.find(i => i.produtoId === prod.id);
@@ -238,6 +281,13 @@ export default function App() {
       }
       return req;
     }));
+
+    // Atualiza backend
+    await updateRequisitionStatusApi(requisicaoId, novoStatus, motivoRejeicao);
+
+    fetchProductsFromApi().then(apiProds => {
+      if (apiProds && apiProds.length > 0) setProdutos(apiProds);
+    });
   };
 
   // Bypass action from system block - add and open cart directly
@@ -286,6 +336,7 @@ export default function App() {
             <Vitrine
               onAddToCart={handleAddToCart}
               cartProductIds={cart.map(item => item.produto.id)}
+              produtosData={produtos}
             />
           )}
 
@@ -311,12 +362,14 @@ export default function App() {
             <AvisosCompras
               onAddFromSimulated={handleAddFromSimulated}
               onSetTab={setActiveTab}
+              produtosData={produtos}
             />
           )}
 
           {activeTab === 'placar' && (
             <Relatorios
               requisicoes={requisicoes}
+              loggedUser={loggedUser}
             />
           )}
 

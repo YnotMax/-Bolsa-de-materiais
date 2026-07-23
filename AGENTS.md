@@ -69,3 +69,15 @@ A interface foi estruturada com foco em acessibilidade e transparência ativa:
 - Endpoint `GET /api/products` funcional. Endpoint de requisições `POST /api/requests` configurado com transações Prisma.
 - Configurações do navegador (Favicon de 'pacote' e Título 'Bolsa de Materiais') aplicadas no `index.html`.
 - O Frontend ainda utiliza persistência em `localStorage` (como definido no MVP inicial) e o próximo passo de desenvolvimento será conectar totalmente os estados React aos endpoints do Express.
+
+## 🤖 Diretrizes e Instruções Obrigatórias para Agentes de IA
+
+1. **Design System (gov.br DS):**
+   - Todas as telas e componentes devem seguir estritamente o **Gov.BR Design System** (`@govbr-ds/core`), cujas implementações de componentes React estão localizadas em `src/components/` (ex: `Button.tsx`, `Input.tsx`, `Header.tsx`, `Modal.tsx`).
+   - Acessibilidade e padronização visual governamental (WCAG 2.1 AA / eMAG) são prioritárias.
+
+2. **Lista de Afazeres (`AFAZERES.md`):**
+   - O arquivo [`AFAZERES.md`](file:///d:/estudos/Hackaton/desafio%2014/AFAZERES.md) contém o backlog completo e o checklist de tarefas (TODO) a serem realizadas no projeto.
+
+3. **Atualização Obrigatória do Registro de Alterações (`atualizaçoes.md`):**
+   - **REGRA CRÍTICA:** Qualquer nova alteração, refatoração, melhoria de UI ou funcionalidade implementada pelo agente de IA DEVE ser documentada e atualizada no arquivo [`atualizaçoes.md`](file:///d:/estudos/Hackaton/desafio%2014/atualiza%C3%A7oes.md) imediatamente após a sua conclusão.
