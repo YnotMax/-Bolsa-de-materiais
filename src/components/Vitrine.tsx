@@ -5,7 +5,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Search, Filter, ShoppingCart, RefreshCw, Layers, Check, ChevronRight, Eye, Building2, Info, ClipboardCopy, Leaf, Coins, LayoutGrid, List, Minus, Plus } from 'lucide-react';
-import { Produto } from '../types';
+import { Produto, EstadoConservacao } from '../types';
 import { MOCK_PRODUTOS, MOCK_CATEGORIAS, MOCK_SECRETARIAS, fuzzySearch, getEstadoInfo, getCategoriaTone } from '../data';
 import Button from './Button';
 import Input from './Input';
@@ -17,12 +17,10 @@ interface VitrineProps {
   produtosData?: Produto[];
 }
 
-type MatrixCol = 'NOVO' | 'USADO' | 'DANIFICADO';
+type MatrixCol = EstadoConservacao;
 
 const mapEstadoToMatrixCol = (estado: string): MatrixCol => {
-  if (estado === 'NOVO') return 'NOVO';
-  if (estado === 'BOM' || estado === 'REGULAR') return 'USADO';
-  return 'DANIFICADO';
+  return estado as MatrixCol;
 };
 
 interface MatrixReservationProps {
@@ -41,7 +39,7 @@ function MatrixReservation({ catmat, currentProducts, onReserve, cartProductIds 
     items.forEach(p => {
       const col = mapEstadoToMatrixCol(p.estadoConservacao);
       if (!map.has(p.secretariaOrigem)) {
-        map.set(p.secretariaOrigem, { NOVO: [], USADO: [], DANIFICADO: [] });
+        map.set(p.secretariaOrigem, { NOVO: [], BOM: [], REGULAR: [], PESSIMO: [], SUCATA: [] });
       }
       map.get(p.secretariaOrigem)![col].push(p);
     });
@@ -81,21 +79,25 @@ function MatrixReservation({ catmat, currentProducts, onReserve, cartProductIds 
       </h4>
       <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
         <table className="w-full text-sm text-left">
-          <thead className="bg-gray-100 text-[10px] uppercase text-gray-500 border-b border-gray-200 tracking-wider">
+          <thead className="bg-gray-100 border-b border-gray-200">
             <tr>
-              <th className="px-4 py-3 font-bold">Secretaria Cedente</th>
-              <th className="px-4 py-3 font-bold text-center w-28">Novo</th>
-              <th className="px-4 py-3 font-bold text-center w-28">Usado</th>
-              <th className="px-4 py-3 font-bold text-center w-28">Danificado</th>
+              <th className="px-4 py-4 font-bold text-xs uppercase text-gray-500 tracking-wider align-middle">Secretaria Cedente</th>
+              {(['NOVO', 'BOM', 'REGULAR', 'PESSIMO', 'SUCATA'] as MatrixCol[]).map(col => (
+                <th key={col} className="px-2 py-3 text-center align-middle w-24">
+                  <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm ${getEstadoInfo(col).tone}`}>
+                    {getEstadoInfo(col).label}
+                  </span>
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 bg-white">
             {grouped.map(({ secretaria, cols }) => (
               <tr key={secretaria} className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-4 py-3 font-medium text-gray-700 max-w-[200px] truncate" title={secretaria}>
+                <td className="px-4 py-3 font-medium text-gray-700 max-w-[180px] truncate" title={secretaria}>
                   {secretaria}
                 </td>
-                {(['NOVO', 'USADO', 'DANIFICADO'] as MatrixCol[]).map(col => {
+                {(['NOVO', 'BOM', 'REGULAR', 'PESSIMO', 'SUCATA'] as MatrixCol[]).map(col => {
                   const prods = cols[col];
                   const total = prods.reduce((acc, p) => acc + p.quantidade, 0);
                   const isAvailable = total > 0;
@@ -131,7 +133,7 @@ function MatrixReservation({ catmat, currentProducts, onReserve, cartProductIds 
                         ) : inCart ? (
                           <div className="flex flex-col items-center justify-center gap-1 opacity-70">
                             <Check className="h-4 w-4 text-emerald-500" />
-                            <span className="text-[9px] font-bold text-emerald-600 uppercase">No Carrinho</span>
+                            <span className="text-[9px] font-bold text-emerald-600 uppercase leading-tight">No Carrinho</span>
                           </div>
                         ) : (
                           <button

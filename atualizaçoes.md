@@ -47,5 +47,5 @@ Para enriquecer a experiência visual da vitrine e validar os novos filtros com 
   - O Modal de Detalhes do Produto foi reescrito para substituir a simples aprovação de um "lote isolado" por uma poderosa **Tabela de Matriz de Disponibilidade**.
   - O sistema agora agrupa automaticamente **todos os itens com o mesmo código CATMAT** da prefeitura inteira e apresenta uma visão cruzada entre:
     - **Linhas:** Órgão/Secretaria Cedente (ex: SME, SMS, SMA).
-    - **Colunas:** Estado de Conservação simplificado em 3 categorias operacionais: **Novo** (NOVO), **Usado** (BOM, REGULAR) e **Danificado** (PESSIMO, SUCATA).
+    - **Colunas:** Os 5 Estados de Conservação oficiais (**Novo, Bom, Regular, Péssimo, Sucata**), exibindo cabeçalhos com o mesmo design visual (cores e badges) dos filtros e cards, facilitando a identificação imediata pelo usuário.
   - **Carrinho Inteligente por Célula:** O usuário clica na célula desejada, seleciona precisamente a quantidade que deseja através do controle interativo `[-] [+]` e clica em **Adicionar**. É possível reservar múltiplos itens idênticos de diferentes secretarias e estados, tudo na mesma tela!
