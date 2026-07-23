@@ -6,14 +6,15 @@
 import { Produto, EstadoConservacao, User, UserRule } from './types';
 
 export const MOCK_PRODUTOS: Produto[] = [
+  // --- MONITORES (CATMAT 349281) ---
   {
     id: "prod-001",
     codigoPatrimonio: "PMF-129482",
-    codigoCatmat: "349281", // CATMAT para Monitores
+    codigoCatmat: "349281",
     nome: "Monitor Dell 24 Polegadas",
     categoria: "Informática",
     estadoConservacao: "BOM",
-    detalhamentoEstado: "10 Bons, 5 Regulares",
+    detalhamentoEstado: "15 Bons em SME",
     quantidade: 15,
     secretariaOrigem: "Secretaria Municipal de Educação (SME)",
     fotoUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=600&h=400",
@@ -22,13 +23,60 @@ export const MOCK_PRODUTOS: Produto[] = [
     co2eEvitadoKg: 45
   },
   {
+    id: "prod-001-sma-novo",
+    codigoPatrimonio: "PMF-129483",
+    codigoCatmat: "349281",
+    nome: "Monitor Dell 24 Polegadas",
+    categoria: "Informática",
+    estadoConservacao: "NOVO",
+    detalhamentoEstado: "25 Novos em SMA",
+    quantidade: 25,
+    secretariaOrigem: "Secretaria Municipal de Administração (SMA)",
+    fotoUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Monitor Dell Professional de 24 polegadas na caixa original lacrada.",
+    valorEstimadoNovo: 950.00,
+    co2eEvitadoKg: 45
+  },
+  {
+    id: "prod-001-sms-reg",
+    codigoPatrimonio: "PMF-129484",
+    codigoCatmat: "349281",
+    nome: "Monitor Dell 24 Polegadas",
+    categoria: "Informática",
+    estadoConservacao: "REGULAR",
+    detalhamentoEstado: "10 Regulares em SMS",
+    quantidade: 10,
+    secretariaOrigem: "Secretaria Municipal de Saúde (SMS)",
+    fotoUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Monitor Dell de 24 polegadas com pequenos riscos superficiais na carcaça.",
+    valorEstimadoNovo: 950.00,
+    co2eEvitadoKg: 45
+  },
+  {
+    id: "prod-001-semas-pes",
+    codigoPatrimonio: "PMF-129485",
+    codigoCatmat: "349281",
+    nome: "Monitor Dell 24 Polegadas",
+    categoria: "Informática",
+    estadoConservacao: "PESSIMO",
+    detalhamentoEstado: "3 Péssimos em SEMAS",
+    quantidade: 3,
+    secretariaOrigem: "Secretaria de Assistência Social (SEMAS)",
+    fotoUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Monitor Dell de 24 polegadas com manchas no display, ideal para reposição de peças.",
+    valorEstimadoNovo: 950.00,
+    co2eEvitadoKg: 45
+  },
+
+  // --- CADEIRAS (CATMAT 442910) ---
+  {
     id: "prod-002",
     codigoPatrimonio: "PMF-084931",
-    codigoCatmat: "442910", // CATMAT para Cadeiras
+    codigoCatmat: "442910",
     nome: "Cadeira Giratória Ergonômica",
     categoria: "Mobiliário",
     estadoConservacao: "BOM",
-    detalhamentoEstado: "5 Boas, 3 Regulares",
+    detalhamentoEstado: "8 Boas em SMA",
     quantidade: 8,
     secretariaOrigem: "Secretaria Municipal de Administração (SMA)",
     fotoUrl: "https://images.unsplash.com/photo-1505797149-43b0069ec26b?auto=format&fit=crop&q=80&w=600&h=400",
@@ -37,13 +85,60 @@ export const MOCK_PRODUTOS: Produto[] = [
     co2eEvitadoKg: 25
   },
   {
+    id: "prod-002-sme-novo",
+    codigoPatrimonio: "PMF-084932",
+    codigoCatmat: "442910",
+    nome: "Cadeira Giratória Ergonômica",
+    categoria: "Mobiliário",
+    estadoConservacao: "NOVO",
+    detalhamentoEstado: "30 Novas em SME",
+    quantidade: 30,
+    secretariaOrigem: "Secretaria Municipal de Educação (SME)",
+    fotoUrl: "https://images.unsplash.com/photo-1505797149-43b0069ec26b?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Lote de cadeiras ergonômicas recém-entregues sem uso prévio.",
+    valorEstimadoNovo: 680.00,
+    co2eEvitadoKg: 25
+  },
+  {
+    id: "prod-002-sms-reg",
+    codigoPatrimonio: "PMF-084933",
+    codigoCatmat: "442910",
+    nome: "Cadeira Giratória Ergonômica",
+    categoria: "Mobiliário",
+    estadoConservacao: "REGULAR",
+    detalhamentoEstado: "14 Regulares em SMS",
+    quantidade: 14,
+    secretariaOrigem: "Secretaria Municipal de Saúde (SMS)",
+    fotoUrl: "https://images.unsplash.com/photo-1505797149-43b0069ec26b?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Cadeiras giratórias com pequenas marcas de desgaste no estofado.",
+    valorEstimadoNovo: 680.00,
+    co2eEvitadoKg: 25
+  },
+  {
+    id: "prod-002-sctc-suc",
+    codigoPatrimonio: "PMF-084934",
+    codigoCatmat: "442910",
+    nome: "Cadeira Giratória Ergonômica",
+    categoria: "Mobiliário",
+    estadoConservacao: "SUCATA",
+    detalhamentoEstado: "4 Sucatas em SCTC",
+    quantidade: 4,
+    secretariaOrigem: "Secretaria de Turismo, Cultura e Esporte (SCTC)",
+    fotoUrl: "https://images.unsplash.com/photo-1505797149-43b0069ec26b?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Cadeiras com amortecedor a gás quebrado e pistão danificado.",
+    valorEstimadoNovo: 680.00,
+    co2eEvitadoKg: 25
+  },
+
+  // --- MESAS (CATMAT 294821) --- (Conforme desenho do usuário no screenshot)
+  {
     id: "prod-003",
     codigoPatrimonio: "PMF-349204",
-    codigoCatmat: "294821", // CATMAT para Mesas
+    codigoCatmat: "294821",
     nome: "Mesa de Escritório em L",
     categoria: "Mobiliário",
     estadoConservacao: "REGULAR",
-    detalhamentoEstado: "8 Regulares, 4 Péssimas",
+    detalhamentoEstado: "12 Regulares em SMS",
     quantidade: 12,
     secretariaOrigem: "Secretaria Municipal de Saúde (SMS)",
     fotoUrl: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&q=80&w=600&h=400",
@@ -52,13 +147,75 @@ export const MOCK_PRODUTOS: Produto[] = [
     co2eEvitadoKg: 35
   },
   {
+    id: "prod-003-sms-novo",
+    codigoPatrimonio: "PMF-349205",
+    codigoCatmat: "294821",
+    nome: "Mesa de Escritório em L",
+    categoria: "Mobiliário",
+    estadoConservacao: "NOVO",
+    detalhamentoEstado: "10 Novas em SMS",
+    quantidade: 10,
+    secretariaOrigem: "Secretaria Municipal de Saúde (SMS)",
+    fotoUrl: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Mesas em L novas, desmontadas na embalagem original.",
+    valorEstimadoNovo: 850.00,
+    co2eEvitadoKg: 35
+  },
+  {
+    id: "prod-003-sms-bom",
+    codigoPatrimonio: "PMF-349206",
+    codigoCatmat: "294821",
+    nome: "Mesa de Escritório em L",
+    categoria: "Mobiliário",
+    estadoConservacao: "BOM",
+    detalhamentoEstado: "9 Boas em SMS",
+    quantidade: 9,
+    secretariaOrigem: "Secretaria Municipal de Saúde (SMS)",
+    fotoUrl: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Mesas em L em bom estado de conservação.",
+    valorEstimadoNovo: 850.00,
+    co2eEvitadoKg: 35
+  },
+  {
+    id: "prod-003-sms-pessimo",
+    codigoPatrimonio: "PMF-349207",
+    codigoCatmat: "294821",
+    nome: "Mesa de Escritório em L",
+    categoria: "Mobiliário",
+    estadoConservacao: "PESSIMO",
+    detalhamentoEstado: "2 Péssimas em SMS",
+    quantidade: 2,
+    secretariaOrigem: "Secretaria Municipal de Saúde (SMS)",
+    fotoUrl: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Mesas com tampo avariado por umidade.",
+    valorEstimadoNovo: 850.00,
+    co2eEvitadoKg: 35
+  },
+  {
+    id: "prod-003-sme-bom",
+    codigoPatrimonio: "PMF-349208",
+    codigoCatmat: "294821",
+    nome: "Mesa de Escritório em L",
+    categoria: "Mobiliário",
+    estadoConservacao: "BOM",
+    detalhamentoEstado: "15 Boas em SME",
+    quantidade: 15,
+    secretariaOrigem: "Secretaria Municipal de Educação (SME)",
+    fotoUrl: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Lote de mesas em L disponíveis na SME.",
+    valorEstimadoNovo: 850.00,
+    co2eEvitadoKg: 35
+  },
+
+  // --- PAPEL A4 (CATMAT 150921) ---
+  {
     id: "prod-004",
     codigoPatrimonio: "PMF-889341",
-    codigoCatmat: "150921", // CATMAT para Papelaria
+    codigoCatmat: "150921",
     nome: "Resma de Papel A4 500fls",
     categoria: "Materiais de Escritório",
     estadoConservacao: "NOVO",
-    detalhamentoEstado: "140 Novas",
+    detalhamentoEstado: "140 Novas em SEF",
     quantidade: 140,
     secretariaOrigem: "Secretaria Municipal de Finanças (SEF)",
     fotoUrl: "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&q=80&w=600&h=400",
@@ -67,13 +224,45 @@ export const MOCK_PRODUTOS: Produto[] = [
     co2eEvitadoKg: 2
   },
   {
+    id: "prod-004-sme-novo",
+    codigoPatrimonio: "PMF-889342",
+    codigoCatmat: "150921",
+    nome: "Resma de Papel A4 500fls",
+    categoria: "Materiais de Escritório",
+    estadoConservacao: "NOVO",
+    detalhamentoEstado: "200 Novas em SME",
+    quantidade: 200,
+    secretariaOrigem: "Secretaria Municipal de Educação (SME)",
+    fotoUrl: "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Caixas de resmas A4 disponíveis no almoxarifado central da Educação.",
+    valorEstimadoNovo: 32.00,
+    co2eEvitadoKg: 2
+  },
+  {
+    id: "prod-004-sma-novo",
+    codigoPatrimonio: "PMF-889343",
+    codigoCatmat: "150921",
+    nome: "Resma de Papel A4 500fls",
+    categoria: "Materiais de Escritório",
+    estadoConservacao: "NOVO",
+    detalhamentoEstado: "85 Novas em SMA",
+    quantidade: 85,
+    secretariaOrigem: "Secretaria Municipal de Administração (SMA)",
+    fotoUrl: "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Resmas de papel sulfite de estoque excedente da SMA.",
+    valorEstimadoNovo: 32.00,
+    co2eEvitadoKg: 2
+  },
+
+  // --- NOTEBOOKS (CATMAT 392810) ---
+  {
     id: "prod-005",
     codigoPatrimonio: "PMF-294830",
-    codigoCatmat: "392810", // CATMAT para Computadores
+    codigoCatmat: "392810",
     nome: "Notebook Lenovo ThinkPad L14",
     categoria: "Informática",
     estadoConservacao: "BOM",
-    detalhamentoEstado: "4 Bons, 1 Regular",
+    detalhamentoEstado: "5 Bons em SMP",
     quantidade: 5,
     secretariaOrigem: "Secretaria Municipal de Planejamento (SMP)",
     fotoUrl: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&q=80&w=600&h=400",
@@ -82,13 +271,45 @@ export const MOCK_PRODUTOS: Produto[] = [
     co2eEvitadoKg: 120
   },
   {
+    id: "prod-005-sma-novo",
+    codigoPatrimonio: "PMF-294831",
+    codigoCatmat: "392810",
+    nome: "Notebook Lenovo ThinkPad L14",
+    categoria: "Informática",
+    estadoConservacao: "NOVO",
+    detalhamentoEstado: "12 Novos em SMA",
+    quantidade: 12,
+    secretariaOrigem: "Secretaria Municipal de Administração (SMA)",
+    fotoUrl: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Notebooks ThinkPad na caixa lacrada.",
+    valorEstimadoNovo: 4200.00,
+    co2eEvitadoKg: 120
+  },
+  {
+    id: "prod-005-sms-bom",
+    codigoPatrimonio: "PMF-294832",
+    codigoCatmat: "392810",
+    nome: "Notebook Lenovo ThinkPad L14",
+    categoria: "Informática",
+    estadoConservacao: "BOM",
+    detalhamentoEstado: "8 Bons em SMS",
+    quantidade: 8,
+    secretariaOrigem: "Secretaria Municipal de Saúde (SMS)",
+    fotoUrl: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Notebooks em ótimo estado de funcionamento.",
+    valorEstimadoNovo: 4200.00,
+    co2eEvitadoKg: 120
+  },
+
+  // --- AR CONDICIONADO (CATMAT 209412) ---
+  {
     id: "prod-006",
     codigoPatrimonio: "PMF-582910",
-    codigoCatmat: "209412", // CATMAT para Climatização
+    codigoCatmat: "209412",
     nome: "Ar Condicionado Split 12000 BTU",
     categoria: "Outros",
     estadoConservacao: "REGULAR",
-    detalhamentoEstado: "2 Regulares, 1 Péssimo",
+    detalhamentoEstado: "3 Regulares em SCTC",
     quantidade: 3,
     secretariaOrigem: "Secretaria de Turismo, Cultura e Esporte (SCTC)",
     fotoUrl: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=600&h=400",
@@ -97,13 +318,30 @@ export const MOCK_PRODUTOS: Produto[] = [
     co2eEvitadoKg: 85
   },
   {
+    id: "prod-006-sms-bom",
+    codigoPatrimonio: "PMF-582911",
+    codigoCatmat: "209412",
+    nome: "Ar Condicionado Split 12000 BTU",
+    categoria: "Outros",
+    estadoConservacao: "BOM",
+    detalhamentoEstado: "6 Bons em SMS",
+    quantidade: 6,
+    secretariaOrigem: "Secretaria Municipal de Saúde (SMS)",
+    fotoUrl: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Aparelhos de ar condicionado revisados recentemente.",
+    valorEstimadoNovo: 1800.00,
+    co2eEvitadoKg: 85
+  },
+
+  // --- IMPRESSORAS (CATMAT 348210) ---
+  {
     id: "prod-007",
     codigoPatrimonio: "PMF-729481",
-    codigoCatmat: "348210", // CATMAT para Impressoras
+    codigoCatmat: "348210",
     nome: "Impressora Multifuncional HP LaserJet Pro",
     categoria: "Informática",
     estadoConservacao: "PESSIMO",
-    detalhamentoEstado: "2 Péssimas",
+    detalhamentoEstado: "2 Péssimas em SEMAS",
     quantidade: 2,
     secretariaOrigem: "Secretaria de Assistência Social (SEMAS)",
     fotoUrl: "https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?auto=format&fit=crop&q=80&w=600&h=400",
@@ -112,13 +350,30 @@ export const MOCK_PRODUTOS: Produto[] = [
     co2eEvitadoKg: 50
   },
   {
+    id: "prod-007-sme-bom",
+    codigoPatrimonio: "PMF-729482",
+    codigoCatmat: "348210",
+    nome: "Impressora Multifuncional HP LaserJet Pro",
+    categoria: "Informática",
+    estadoConservacao: "BOM",
+    detalhamentoEstado: "8 Boas em SME",
+    quantidade: 8,
+    secretariaOrigem: "Secretaria Municipal de Educação (SME)",
+    fotoUrl: "https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Impressoras revisadas com toner incluso.",
+    valorEstimadoNovo: 1200.00,
+    co2eEvitadoKg: 50
+  },
+
+  // --- GAVETEIROS (CATMAT 442930) ---
+  {
     id: "prod-008",
     codigoPatrimonio: "PMF-482012",
-    codigoCatmat: "442930", // CATMAT para Gaveteiros
+    codigoCatmat: "442930",
     nome: "Gaveteiro de Madeira 3 Gavetas",
     categoria: "Mobiliário",
     estadoConservacao: "BOM",
-    detalhamentoEstado: "10 Bons, 4 Regulares",
+    detalhamentoEstado: "14 Bons em IPUF",
     quantidade: 14,
     secretariaOrigem: "Instituto de Planejamento Urbano (IPUF)",
     fotoUrl: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&q=80&w=600&h=400",
@@ -127,13 +382,30 @@ export const MOCK_PRODUTOS: Produto[] = [
     co2eEvitadoKg: 15
   },
   {
+    id: "prod-008-sma-novo",
+    codigoPatrimonio: "PMF-482013",
+    codigoCatmat: "442930",
+    nome: "Gaveteiro de Madeira 3 Gavetas",
+    categoria: "Mobiliário",
+    estadoConservacao: "NOVO",
+    detalhamentoEstado: "10 Novos em SMA",
+    quantidade: 10,
+    secretariaOrigem: "Secretaria Municipal de Administração (SMA)",
+    fotoUrl: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Gaveteiros novos embalados de fábrica.",
+    valorEstimadoNovo: 350.00,
+    co2eEvitadoKg: 15
+  },
+
+  // --- TECLADOS (CATMAT 258391) ---
+  {
     id: "prod-009",
     codigoPatrimonio: "PMF-994810",
-    codigoCatmat: "258391", // CATMAT para Teclados
+    codigoCatmat: "258391",
     nome: "Teclado USB Standard Preto",
     categoria: "Informática",
     estadoConservacao: "NOVO",
-    detalhamentoEstado: "45 Novos",
+    detalhamentoEstado: "45 Novos em SMA",
     quantidade: 45,
     secretariaOrigem: "Secretaria Municipal de Administração (SMA)",
     fotoUrl: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&q=80&w=600&h=400",
@@ -142,13 +414,30 @@ export const MOCK_PRODUTOS: Produto[] = [
     co2eEvitadoKg: 5
   },
   {
+    id: "prod-009-sme-novo",
+    codigoPatrimonio: "PMF-994811",
+    codigoCatmat: "258391",
+    nome: "Teclado USB Standard Preto",
+    categoria: "Informática",
+    estadoConservacao: "NOVO",
+    detalhamentoEstado: "60 Novos em SME",
+    quantidade: 60,
+    secretariaOrigem: "Secretaria Municipal de Educação (SME)",
+    fotoUrl: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Teclados USB lacrados no depósito central da Educação.",
+    valorEstimadoNovo: 60.00,
+    co2eEvitadoKg: 5
+  },
+
+  // --- PROJETORES (CATMAT 302841) ---
+  {
     id: "prod-010",
     codigoPatrimonio: "PMF-102941",
-    codigoCatmat: "302841", // CATMAT para Projetores
+    codigoCatmat: "302841",
     nome: "Projetor Multimídia Epson",
     categoria: "Outros",
     estadoConservacao: "REGULAR",
-    detalhamentoEstado: "3 Regulares, 1 Péssimo",
+    detalhamentoEstado: "4 Regulares em SME",
     quantidade: 4,
     secretariaOrigem: "Secretaria Municipal de Educação (SME)",
     fotoUrl: "https://images.unsplash.com/photo-1535016120720-40c646be5580?auto=format&fit=crop&q=80&w=600&h=400",
@@ -157,13 +446,30 @@ export const MOCK_PRODUTOS: Produto[] = [
     co2eEvitadoKg: 90
   },
   {
+    id: "prod-010-sctc-bom",
+    codigoPatrimonio: "PMF-102942",
+    codigoCatmat: "302841",
+    nome: "Projetor Multimídia Epson",
+    categoria: "Outros",
+    estadoConservacao: "BOM",
+    detalhamentoEstado: "5 Bons em SCTC",
+    quantidade: 5,
+    secretariaOrigem: "Secretaria de Turismo, Cultura e Esporte (SCTC)",
+    fotoUrl: "https://images.unsplash.com/photo-1535016120720-40c646be5580?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Projetores Epson em excelente estado de funcionamento.",
+    valorEstimadoNovo: 3200.00,
+    co2eEvitadoKg: 90
+  },
+
+  // --- ARMÁRIOS (CATMAT 442935) ---
+  {
     id: "prod-011",
     codigoPatrimonio: "PMF-992384",
-    codigoCatmat: "442935", // CATMAT para Armários
+    codigoCatmat: "442935",
     nome: "Armário de Aço 2 Portas",
     categoria: "Mobiliário",
     estadoConservacao: "BOM",
-    detalhamentoEstado: "4 Bons, 2 Regulares",
+    detalhamentoEstado: "6 Bons em SMS",
     quantidade: 6,
     secretariaOrigem: "Secretaria Municipal de Saúde (SMS)",
     fotoUrl: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&q=80&w=600&h=400",
@@ -172,13 +478,30 @@ export const MOCK_PRODUTOS: Produto[] = [
     co2eEvitadoKg: 55
   },
   {
+    id: "prod-011-sma-novo",
+    codigoPatrimonio: "PMF-992385",
+    codigoCatmat: "442935",
+    nome: "Armário de Aço 2 Portas",
+    categoria: "Mobiliário",
+    estadoConservacao: "NOVO",
+    detalhamentoEstado: "10 Novos em SMA",
+    quantidade: 10,
+    secretariaOrigem: "Secretaria Municipal de Administração (SMA)",
+    fotoUrl: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&q=80&w=600&h=400",
+    descricaoCompleta: "Armários de aço novos, sem uso.",
+    valorEstimadoNovo: 750.00,
+    co2eEvitadoKg: 55
+  },
+
+  // --- FRAGMENTADORAS (CATMAT 389210) ---
+  {
     id: "prod-012",
     codigoPatrimonio: "PMF-334212",
-    codigoCatmat: "389210", // CATMAT para Fragmentadoras
+    codigoCatmat: "389210",
     nome: "Fragmentadora de Papel Secreta",
     categoria: "Outros",
     estadoConservacao: "SUCATA",
-    detalhamentoEstado: "2 Sucatas",
+    detalhamentoEstado: "2 Sucatas em SEF",
     quantidade: 2,
     secretariaOrigem: "Secretaria Municipal de Finanças (SEF)",
     fotoUrl: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=600&h=400",
@@ -186,14 +509,16 @@ export const MOCK_PRODUTOS: Produto[] = [
     valorEstimadoNovo: 1500.00,
     co2eEvitadoKg: 70
   },
+
+  // --- MESAS DE REUNIÃO (CATMAT 294825) ---
   {
     id: "prod-013",
     codigoPatrimonio: "PMF-772930",
-    codigoCatmat: "294825", // CATMAT para Mesas de Reunião
+    codigoCatmat: "294825",
     nome: "Mesa de Reunião Redonda",
     categoria: "Mobiliário",
     estadoConservacao: "REGULAR",
-    detalhamentoEstado: "2 Regulares, 1 Péssima",
+    detalhamentoEstado: "3 Regulares em SMP",
     quantidade: 3,
     secretariaOrigem: "Secretaria Municipal de Planejamento (SMP)",
     fotoUrl: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&q=80&w=600&h=400",
@@ -201,14 +526,16 @@ export const MOCK_PRODUTOS: Produto[] = [
     valorEstimadoNovo: 600.00,
     co2eEvitadoKg: 20
   },
+
+  // --- QUADROS BRANCOS (CATMAT 150925) ---
   {
     id: "prod-014",
     codigoPatrimonio: "PMF-448291",
-    codigoCatmat: "150925", // CATMAT para Quadros Brancos
+    codigoCatmat: "150925",
     nome: "Quadro Branco Magnético",
     categoria: "Materiais de Escritório",
     estadoConservacao: "BOM",
-    detalhamentoEstado: "15 Bons, 5 Novas",
+    detalhamentoEstado: "20 Bons em SME",
     quantidade: 20,
     secretariaOrigem: "Secretaria Municipal de Educação (SME)",
     fotoUrl: "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&q=80&w=600&h=400",
@@ -216,14 +543,16 @@ export const MOCK_PRODUTOS: Produto[] = [
     valorEstimadoNovo: 180.00,
     co2eEvitadoKg: 8
   },
+
+  // --- MOUSES (CATMAT 392815) ---
   {
     id: "prod-015",
     codigoPatrimonio: "PMF-558291",
-    codigoCatmat: "392815", // CATMAT para Mouses
+    codigoCatmat: "392815",
     nome: "Mouse Óptico USB",
     categoria: "Informática",
     estadoConservacao: "NOVO",
-    detalhamentoEstado: "100 Novos",
+    detalhamentoEstado: "100 Novos em IPUF",
     quantidade: 100,
     secretariaOrigem: "Instituto de Planejamento Urbano (IPUF)",
     fotoUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=600&h=400",

@@ -9,13 +9,16 @@ Este arquivo documenta todas as implementações e melhorias recentes realizadas
   - Adicionamos um **alternador de exibição (Lista vs Grade)** no topo dos resultados utilizando os botões circulares padronizados do **Gov.BR DS** (`Button circle size="small"`).
   - Corrigimos o layout no **Modo Grade** para que nenhum botão ou valor monetário ("Economia Estimada") seja cortado na tela, reorganizando as estatísticas e os botões em duas linhas limpas e bem distribuídas.
 - **Filtros Interativos em Botões (Pills) & Scroll Independente:**
-  - Substituímos os selects por botões (tags/pills) com contorno oficial.
-  - Corrigido o problema onde os últimos botões de "Estado de Conservação" ficavam escondidos no final da página: a barra de filtros lateral agora possui **altura ajustada à tela (`max-h`) e rolagem própria e independente (`overflow-y-auto`)**, sem exigir a rolagem da página toda.
+  - Substituímos os selects por botões (tags/pills) interativos.
+  - **Filtro de Conservação em Badges Institucionais:** Todos os botões de filtro de "Estado de Conservação" na barra lateral agora exibem permanentemente o mesmo design visual (cores vibrantes dos badges: Verde para Novo/Bom, Amarelo para Regular, Vermelho para Péssimo, Cinza para Sucata) presente nos cabeçalhos da Matriz e nas fotos dos produtos. Quando inativos, exibem uma opacidade suave; ao serem ativados, assumem cor total, sombra e um ícone de *check* (✓).
+  - Corrigido o problema onde os últimos botões ficavam escondidos no final da página: a barra de filtros lateral agora possui altura ajustada à tela (`max-h`) e rolagem própria independente.
 - **Reorganização do Botão de Resetar Busca:**
   - Removido o botão solitário "Resetar Busca" que ficava perdido no card de apresentação superior.
   - O botão **"Limpar Filtros & Busca"** agora aparece de forma muito mais intuitiva diretamente na **seção da barra de pesquisa e atalhos rápidos**, aparecendo somente quando há algum filtro ou busca ativa.
 - **Atalhos Rápidos de Busca:**
   - Inserida uma barra de atalhos rápidos logo abaixo da pesquisa principal com termos altamente procurados (ex: Cadeira, Mesa, Monitor, Armário), bastando um clique para filtrar toda a lista.
+- **Remoção do Card de Apresentação:**
+  - O card de boas-vindas ("Catálogo de Bens Ociosos") foi removido do topo da tela da Vitrine para priorizar o espaço da barra de busca e dos atalhos rápidos, tornando a interface mais limpa e focada na ação.
 
 ## 🔐 Perfis e Autenticação (Admin)
 
@@ -31,12 +34,16 @@ Este arquivo documenta todas as implementações e melhorias recentes realizadas
 
 ## 📦 Variedade de Itens e Banco de Dados (Mock)
 
-Para enriquecer a experiência visual da vitrine e validar os novos filtros com consistência, injetamos uma série de novos materiais ociosos tanto no backend (`server.ts`) quanto no mock do frontend (`data.ts`):
+Para enriquecer a experiência visual da vitrine e preencher a **Matriz de Reservas** com dados ricos e realistas de múltiplos almoxarifados municipais, expandimos o mock de dados (`data.ts`) com múltiplas entradas por `CATMAT`:
 
-1. **Armário de Aço 2 Portas** (Categoria: Mobiliário | Estado: Bom)
-2. **Fragmentadora de Papel Secreta** (Categoria: Outros | Estado: Sucata)
-3. **Mesa de Reunião Redonda** (Categoria: Mobiliário | Estado: Regular)
-4. **Quadro Branco Magnético** (Categoria: Materiais de Escritório | Estado: Bom)
-5. **Mouse Óptico USB** (Categoria: Informática | Estado: Novo)
+- **Expansão Multisserial de Estoque:** Todos os produtos (Monitores, Cadeiras, Mesas em L, Papel A4, Notebooks, Ar Condicionado, Impressoras, etc.) agora possuem lotes distribuídos em **diferentes Secretarias** (SMS, SME, SMA, SEF, SEMAS, IPUF, SCTC) e em **diferentes Estados de Conservação** (Novo, Bom, Regular, Péssimo, Sucata).
+- **Mesa de Escritório em L (Exemplo do Usuário):** A SMS agora possui 10 Novas, 9 Boas, 12 Regulares e 2 Péssimas em estoque real na tabela da Matriz, além de lotes adicionais na SME.
 
+## 🛒 Funcionalidades Avançadas de Remanejamento
 
+- **Matriz de Reservas por Secretaria e Estado (Disponibilidade Consolidada):**
+  - O Modal de Detalhes do Produto foi reescrito para substituir a simples aprovação de um "lote isolado" por uma poderosa **Tabela de Matriz de Disponibilidade**.
+  - O sistema agora agrupa automaticamente **todos os itens com o mesmo código CATMAT** da prefeitura inteira e apresenta uma visão cruzada entre:
+    - **Linhas:** Órgão/Secretaria Cedente (ex: SME, SMS, SMA).
+    - **Colunas:** Os 5 Estados de Conservação oficiais (**Novo, Bom, Regular, Péssimo, Sucata**), exibindo cabeçalhos com o mesmo design visual (cores e badges) dos filtros e cards, facilitando a identificação imediata pelo usuário.
+  - **Carrinho Inteligente por Célula:** O usuário clica na célula desejada, seleciona precisamente a quantidade que deseja através do controle interativo `[-] [+]` e clica em **Adicionar**. É possível reservar múltiplos itens idênticos de diferentes secretarias e estados, tudo na mesma tela!

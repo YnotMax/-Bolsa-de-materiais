@@ -29,7 +29,13 @@ export default function App() {
   // Produtos carregados do Backend Express / MongoDB / Fallback em memória
   const [produtos, setProdutos] = useState<Produto[]>(() => {
     const saved = localStorage.getItem('bolsa_produtos');
-    return saved ? JSON.parse(saved) : MOCK_PRODUTOS;
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length >= MOCK_PRODUTOS.length) {
+        return parsed;
+      }
+    }
+    return MOCK_PRODUTOS;
   });
 
   // Reallocation Cart state
@@ -145,13 +151,21 @@ export default function App() {
   }, [loggedUser]);
 
   // Cart operations
-  const handleAddToCart = (produto: Produto) => {
-    const existing = cart.find(item => item.produto.id === produto.id);
-    if (existing) return;
+  const handleAddToCart = (produto: Produto, quantidade?: number) => {
+    const existingIndex = cart.findIndex(item => item.produto.id === produto.id);
+    if (existingIndex >= 0) {
+      if (quantidade !== undefined) {
+        // Update existing quantity
+        const newCart = [...cart];
+        newCart[existingIndex].quantidadeSolicitada = quantidade;
+        setCart(newCart);
+      }
+      return;
+    }
 
     const newItem: CartItem = {
       produto,
-      quantidadeSolicitada: 1,
+      quantidadeSolicitada: quantidade || 1,
       justificativa: ''
     };
     setCart([...cart, newItem]);

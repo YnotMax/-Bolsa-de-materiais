@@ -4,17 +4,159 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, ShoppingCart, RefreshCw, Layers, Check, ChevronRight, Eye, Building2, Info, ClipboardCopy, Leaf, Coins, LayoutGrid, List } from 'lucide-react';
-import { Produto } from '../types';
+import { Search, Filter, ShoppingCart, RefreshCw, Layers, Check, ChevronRight, Eye, Building2, Info, ClipboardCopy, Leaf, Coins, LayoutGrid, List, Minus, Plus } from 'lucide-react';
+import { Produto, EstadoConservacao } from '../types';
 import { MOCK_PRODUTOS, MOCK_CATEGORIAS, MOCK_SECRETARIAS, fuzzySearch, getEstadoInfo, getCategoriaTone } from '../data';
 import Button from './Button';
 import Input from './Input';
 import Modal from './Modal';
 
 interface VitrineProps {
-  onAddToCart: (produto: Produto) => void;
+  onAddToCart: (produto: Produto, quantidade?: number) => void;
   cartProductIds: string[];
   produtosData?: Produto[];
+}
+
+type MatrixCol = EstadoConservacao;
+
+const mapEstadoToMatrixCol = (estado: string): MatrixCol => {
+  return estado as MatrixCol;
+};
+
+interface MatrixReservationProps {
+  catmat: string;
+  currentProducts: Produto[];
+  onReserve: (produto: Produto, quantidade: number) => void;
+  cartProductIds: string[];
+}
+
+function MatrixReservation({ catmat, currentProducts, onReserve, cartProductIds }: MatrixReservationProps) {
+  const items = useMemo(() => currentProducts.filter(p => p.codigoCatmat === catmat), [currentProducts, catmat]);
+  
+  // Group by secretaria
+  const grouped = useMemo(() => {
+    const map = new Map<string, Record<MatrixCol, Produto[]>>();
+    items.forEach(p => {
+      const col = mapEstadoToMatrixCol(p.estadoConservacao);
+      if (!map.has(p.secretariaOrigem)) {
+        map.set(p.secretariaOrigem, { NOVO: [], BOM: [], REGULAR: [], PESSIMO: [], SUCATA: [] });
+      }
+      map.get(p.secretariaOrigem)![col].push(p);
+    });
+    return Array.from(map.entries()).map(([secretaria, cols]) => ({ secretaria, cols }));
+  }, [items]);
+
+  const [activeCell, setActiveCell] = useState<{ secretaria: string; col: MatrixCol } | null>(null);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+
+  const handleCellClick = (secretaria: string, col: MatrixCol, prods: Produto[]) => {
+    if (prods.length === 0) return;
+    setActiveCell({ secretaria, col });
+    const key = `${secretaria}-${col}`;
+    if (!quantities[key]) setQuantities(prev => ({ ...prev, [key]: 1 }));
+  };
+
+  const updateQuantity = (key: string, delta: number, max: number) => {
+    setQuantities(prev => {
+      const current = prev[key] || 1;
+      const next = Math.max(1, Math.min(max, current + delta));
+      return { ...prev, [key]: next };
+    });
+  };
+
+  const handleReserve = (prods: Produto[], key: string) => {
+    if (prods.length > 0) {
+      onReserve(prods[0], quantities[key] || 1);
+      setActiveCell(null);
+    }
+  };
+
+  return (
+    <div className="mt-6">
+      <h4 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+        <Building2 className="h-4 w-4 text-primary" />
+        Disponibilidade na Rede Municipal
+      </h4>
+      <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+        <table className="w-full text-sm text-left">
+          <thead className="bg-gray-100 border-b border-gray-200">
+            <tr>
+              <th className="px-4 py-4 font-bold text-xs uppercase text-gray-500 tracking-wider align-middle">Secretaria Cedente</th>
+              {(['NOVO', 'BOM', 'REGULAR', 'PESSIMO', 'SUCATA'] as MatrixCol[]).map(col => (
+                <th key={col} className="px-2 py-3 text-center align-middle w-24">
+                  <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm ${getEstadoInfo(col).tone}`}>
+                    {getEstadoInfo(col).label}
+                  </span>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 bg-white">
+            {grouped.map(({ secretaria, cols }) => (
+              <tr key={secretaria} className="hover:bg-gray-50/50 transition-colors">
+                <td className="px-4 py-3 font-medium text-gray-700 max-w-[180px] truncate" title={secretaria}>
+                  {secretaria}
+                </td>
+                {(['NOVO', 'BOM', 'REGULAR', 'PESSIMO', 'SUCATA'] as MatrixCol[]).map(col => {
+                  const prods = cols[col];
+                  const total = prods.reduce((acc, p) => acc + p.quantidade, 0);
+                  const isAvailable = total > 0;
+                  const isActive = activeCell?.secretaria === secretaria && activeCell?.col === col;
+                  const key = `${secretaria}-${col}`;
+                  
+                  // Check if any product in this cell is already in cart
+                  const inCart = prods.some(p => cartProductIds.includes(p.id));
+                  
+                  return (
+                    <td key={col} className="px-2 py-2 text-center align-middle border-l border-gray-100">
+                      {isAvailable ? (
+                        isActive && !inCart ? (
+                          <div className="flex flex-col items-center gap-1.5 animate-in fade-in zoom-in duration-200">
+                            <div className="flex items-center gap-1 bg-white border border-emerald-200 rounded-md p-0.5 shadow-sm">
+                              <button onClick={() => updateQuantity(key, -1, total)} className="p-1 hover:bg-gray-100 rounded text-gray-500">
+                                <Minus className="h-3 w-3" />
+                              </button>
+                              <span className="font-mono font-bold text-xs w-5 text-center text-emerald-800">{quantities[key] || 1}</span>
+                              <button onClick={() => updateQuantity(key, 1, total)} className="p-1 hover:bg-gray-100 rounded text-gray-500">
+                                <Plus className="h-3 w-3" />
+                              </button>
+                            </div>
+                            <Button 
+                              variant="primary" 
+                              size="small" 
+                              className="w-full text-[10px] py-1 px-1 h-auto"
+                              onClick={() => handleReserve(prods, key)}
+                            >
+                              Adicionar
+                            </Button>
+                          </div>
+                        ) : inCart ? (
+                          <div className="flex flex-col items-center justify-center gap-1 opacity-70">
+                            <Check className="h-4 w-4 text-emerald-500" />
+                            <span className="text-[9px] font-bold text-emerald-600 uppercase leading-tight">No Carrinho</span>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handleCellClick(secretaria, col, prods)}
+                            className="w-full h-full min-h-[36px] rounded hover:bg-emerald-50 hover:text-emerald-700 transition-colors flex items-center justify-center font-bold text-gray-600 border border-transparent hover:border-emerald-200"
+                            title="Clique para selecionar quantidade"
+                          >
+                            {total}
+                          </button>
+                        )
+                      ) : (
+                        <span className="text-gray-300">-</span>
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }
 
 export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: VitrineProps) {
@@ -78,9 +220,9 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
   }, [searchTerm, selectedCategory, selectedSecretaria, selectedEstado, currentProductsList]);
 
   // Handle adding product to cart
-  const handleAddToCart = (e: React.MouseEvent, produto: Produto) => {
+  const handleAddToCart = (e: React.MouseEvent, produto: Produto, quantidade?: number) => {
     e.stopPropagation();
-    onAddToCart(produto);
+    onAddToCart(produto, quantidade);
     showToast(`"${produto.nome}" adicionado ao carrinho de remanejamento!`);
   };
 
@@ -106,16 +248,6 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
           <span className="font-medium text-sm">{toastMessage}</span>
         </div>
       )}
-
-      {/* Seção Superior - Boas-vindas e Visão da Plataforma */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <h2 className="text-xl md:text-2xl font-bold font-display text-primary tracking-tight">
-          Catálogo de Bens Ociosos
-        </h2>
-        <p className="text-sm text-gray-600 mt-1 max-w-2xl">
-          Evite novas compras públicas! Solicite o remanejamento direto de itens disponíveis, ociosos ou sem giro parados em outras secretarias de Florianópolis.
-        </p>
-      </div>
 
       {/* Grid de Busca e Shortcuts Rápidos */}
       <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex flex-col gap-4">
@@ -235,30 +367,34 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
           <div className="flex flex-col gap-2">
             <label className="text-xs font-bold text-gray-700">Estado de Conservação</label>
             <div className="flex flex-wrap gap-2">
-              {[
-                { value: 'NOVO', label: 'Novo' },
-                { value: 'BOM', label: 'Bom' },
-                { value: 'REGULAR', label: 'Regular' },
-                { value: 'PESSIMO', label: 'Péssimo' },
-                { value: 'SUCATA', label: 'Sucata' }
-              ].map(estado => {
-                const isActive = selectedEstado.includes(estado.value);
+              {(['NOVO', 'BOM', 'REGULAR', 'PESSIMO', 'SUCATA'] as EstadoConservacao[]).map(estadoVal => {
+                const isActive = selectedEstado.includes(estadoVal);
+                const badgeStyle = getEstadoInfo(estadoVal).tone;
+                const labelMap: Record<EstadoConservacao, string> = {
+                  NOVO: 'Novo', BOM: 'Bom', REGULAR: 'Regular', PESSIMO: 'Péssimo', SUCATA: 'Sucata'
+                };
+                const label = labelMap[estadoVal];
                 return (
-                  <Button
-                    key={estado.value}
-                    variant={isActive ? 'primary' : 'secondary'}
-                    size="small"
+                  <button
+                    key={estadoVal}
+                    type="button"
                     onClick={() => {
                       setSelectedEstado(prev => 
-                        prev.includes(estado.value) 
-                          ? prev.filter(e => e !== estado.value) 
-                          : [...prev, estado.value]
+                        prev.includes(estadoVal) 
+                          ? prev.filter(e => e !== estadoVal) 
+                          : [...prev, estadoVal]
                       );
                       setDisplayLimit(6);
                     }}
+                    className={`px-3 py-1 rounded-full text-xs font-bold border-0 outline-none transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${badgeStyle} ${
+                      isActive 
+                        ? 'opacity-100 scale-105 shadow-md' 
+                        : 'opacity-45 hover:opacity-90'
+                    }`}
                   >
-                    {estado.label}
-                  </Button>
+                    {isActive && <Check className="h-3 w-3 stroke-[3]" />}
+                    {label}
+                  </button>
                 );
               })}
             </div>
@@ -509,20 +645,9 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
         title={detailProduct?.nome ?? ''}
         footer={
           detailProduct && (
-            <div className='flex gap-1'>
+            <div className='flex gap-1 justify-end w-full'>
               <Button variant="secondary" onClick={() => setDetailProduct(null)}>
                 Voltar ao Catálogo
-              </Button>
-              <Button
-                variant="primary"
-                onClick={(e) => {
-                  handleAddToCart(e, detailProduct);
-                  setDetailProduct(null);
-                }}
-                disabled={cartProductIds.includes(detailProduct.id)}
-                icon={<ShoppingCart className="h-4 w-4 mr-1" aria-hidden="true" />}
-              >
-                {cartProductIds.includes(detailProduct.id) ? 'Já no Carrinho' : 'Reservar Item'}
               </Button>
             </div>
           )
@@ -566,15 +691,9 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div className="border border-gray-150 rounded-lg p-3 bg-gray-200 flex flex-col gap-1">
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Secretaria Cedente</span>
-                <span className="text-xs font-bold text-primary">{detailProduct.secretariaOrigem}</span>
-                <span className="text-[10px] text-gray-500">O estoque e a entrega serão coordenados com este órgão municipal.</span>
-              </div>
-
-              <div className="border border-gray-150 rounded-lg p-3 bg-gray-200 flex flex-col gap-1">
-                <span className="text-[10px] text-gray-400 uppercase font-bold block">Impacto do Reuso</span>
+                <span className="text-[10px] text-gray-400 uppercase font-bold block">Impacto do Reuso (Referência)</span>
                 <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
                   <Coins className="h-3.5 w-3.5" aria-hidden="true" />
                   Economia B2B: R$ {detailProduct.valorEstimadoNovo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
@@ -586,17 +705,12 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-gray-150 mt-2">
-              <div>
-                <span className="text-[10px] text-gray-400 uppercase font-bold block">Físico Disponível no Lote</span>
-                <span className="text-lg font-bold text-primary">{detailProduct.quantidade} unidades</span>
-                {detailProduct.detalhamentoEstado && (
-                  <span className="text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md font-medium block mt-1">
-                    Decomposição do Lote: <strong>{detailProduct.detalhamentoEstado}</strong>
-                  </span>
-                )}
-              </div>
-            </div>
+            <MatrixReservation
+              catmat={detailProduct.codigoCatmat}
+              currentProducts={currentProductsList}
+              onReserve={(produto, quantidade) => handleAddToCart({ stopPropagation: () => {} } as React.MouseEvent, produto, quantidade)}
+              cartProductIds={cartProductIds}
+            />
           </div>
         )}
       </Modal>
