@@ -247,16 +247,6 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
         </div>
       )}
 
-      {/* Seção Superior - Boas-vindas e Visão da Plataforma */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <h2 className="text-xl md:text-2xl font-bold font-display text-primary tracking-tight">
-          Catálogo de Bens Ociosos
-        </h2>
-        <p className="text-sm text-gray-600 mt-1 max-w-2xl">
-          Evite novas compras públicas! Solicite o remanejamento direto de itens disponíveis, ociosos ou sem giro parados em outras secretarias de Florianópolis.
-        </p>
-      </div>
-
       {/* Grid de Busca e Shortcuts Rápidos */}
       <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex flex-col gap-4">
         <Input

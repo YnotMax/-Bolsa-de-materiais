@@ -16,6 +16,8 @@ Este arquivo documenta todas as implementações e melhorias recentes realizadas
   - O botão **"Limpar Filtros & Busca"** agora aparece de forma muito mais intuitiva diretamente na **seção da barra de pesquisa e atalhos rápidos**, aparecendo somente quando há algum filtro ou busca ativa.
 - **Atalhos Rápidos de Busca:**
   - Inserida uma barra de atalhos rápidos logo abaixo da pesquisa principal com termos altamente procurados (ex: Cadeira, Mesa, Monitor, Armário), bastando um clique para filtrar toda a lista.
+- **Remoção do Card de Apresentação:**
+  - O card de boas-vindas ("Catálogo de Bens Ociosos") foi removido do topo da tela da Vitrine para priorizar o espaço da barra de busca e dos atalhos rápidos, tornando a interface mais limpa e focada na ação.
 
 ## 🔐 Perfis e Autenticação (Admin)
 
