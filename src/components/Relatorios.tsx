@@ -38,8 +38,8 @@ const TRANSACOES_SISTEMA = [
     secretaria: "Secretaria Municipal de Saúde (SMS)",
     acao: "Requisitou remanejamento de material",
     detalhes: "2x Mesa de Escritório em L (Processo PMF-48291/2026)",
-    tipo: "requisicao",
-    badgeColor: "bg-info text-white"
+    tipo: "REQUISIÇÃO",
+    badgeColor: "bg-blue-100 text-blue-900 border border-blue-200"
   },
   {
     id: "tx-002",
@@ -49,8 +49,8 @@ const TRANSACOES_SISTEMA = [
     secretaria: "Secretaria Municipal de Administração (SMA)",
     acao: "Sessão iniciada como Administrador",
     detalhes: "Autenticação via SSO Municipal com acesso a auditoria global",
-    tipo: "login",
-    badgeColor: "bg-purple-600 text-white"
+    tipo: "LOGIN ADMIN",
+    badgeColor: "bg-purple-100 text-purple-900 border border-purple-200"
   },
   {
     id: "tx-003",
@@ -60,8 +60,8 @@ const TRANSACOES_SISTEMA = [
     secretaria: "Secretaria Municipal de Educação (SME)",
     acao: "Intenção de licitação interceptada",
     detalhes: "Tentativa de comprar 15x Monitor Dell 24' - Trava sistêmica evitou compra",
-    tipo: "trava",
-    badgeColor: "bg-warning text-black font-semibold"
+    tipo: "TRAVA SISTÊMICA",
+    badgeColor: "bg-amber-100 text-amber-900 border border-amber-300 font-bold"
   },
   {
     id: "tx-004",
@@ -71,8 +71,8 @@ const TRANSACOES_SISTEMA = [
     secretaria: "Secretaria Municipal de Finanças (SEF)",
     acao: "Disponibilizou excedente no estoque",
     detalhes: "140x Resma de Papel A4 disponibilizadas para reuso",
-    tipo: "cadastro",
-    badgeColor: "bg-success text-white"
+    tipo: "CESSÃO ESTOQUE",
+    badgeColor: "bg-emerald-100 text-emerald-900 border border-emerald-200"
   },
   {
     id: "tx-005",
@@ -82,8 +82,8 @@ const TRANSACOES_SISTEMA = [
     secretaria: "Secretaria Municipal de Saúde (SMS)",
     acao: "Cessão aprovada e homologada",
     detalhes: "Processo PMF-34912/2026 homologado e concluído com sucesso",
-    tipo: "aprovacao",
-    badgeColor: "bg-success text-white"
+    tipo: "HOMOLOGADO",
+    badgeColor: "bg-emerald-100 text-emerald-900 border border-emerald-200"
   }
 ];
 
@@ -187,45 +187,49 @@ export default function Relatorios({ requisicoes, loggedUser }: RelatoriosProps)
         </div>
       </div>
 
-      {/* PAINEL EXCLUSIVO DO GESTOR ADMIN: LOG DE TRANSAÇÕES E AUDITORIA GERAL */}
+      {/* PAINEL EXCLUSIVO DO GESTOR ADMIN: LOG DE TRANSAÇÕES E AUDITORIA GERAL (GOV.BR DS COMPLIANT) */}
       {isAdmin && (
-        <div className="br-card bg-gradient-to-r from-slate-900 to-primary text-white rounded-xl p-6 shadow-md flex flex-col gap-5 border border-slate-800">
-          <div className="flex flex-col md:flex-row justify-between md:items-center border-b border-white/10 pb-4 gap-3">
+        <div className="br-card bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex flex-col gap-5">
+          <div className="flex flex-col md:flex-row justify-between md:items-center border-b border-gray-200 pb-4 gap-3">
             <div>
-              <span className="text-[10px] uppercase tracking-widest font-mono text-emerald-400 font-bold flex items-center gap-1">
-                <Activity className="h-3.5 w-3.5" /> Painel de Gerenciamento & Auditoria Geral
+              <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                <Activity className="h-3.5 w-3.5" /> Auditoria & Governança Pública
               </span>
-              <h3 className="text-lg font-bold font-display text-white mt-1">
-                Demonstração em Tempo Real de Transações dos Usuários
+              <h3 className="text-lg font-bold font-display text-primary mt-1.5 flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-primary" aria-hidden="true" />
+                Painel de Controle e Registro de Transações dos Servidores
               </h3>
             </div>
-            <div className="flex items-center gap-3 text-xs bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 font-mono">
-              <UserCheck className="h-4 w-4 text-emerald-400" />
+            <div className="flex items-center gap-2 text-xs bg-blue-50 text-primary px-3 py-1.5 rounded-lg border border-blue-200 font-mono">
+              <UserCheck className="h-4 w-4 text-primary" />
               <span>Sessão Gestor: <strong>{loggedUser?.name}</strong></span>
             </div>
           </div>
 
-          {/* Timeline de Transações */}
+          {/* Log de Auditoria em Formato Institucional Gov.br */}
           <div className="flex flex-col gap-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-gray-300 flex items-center gap-1.5">
-              <History className="h-4 w-4 text-amber-400" />
-              Histórico Recente de Ações dos Servidores
-            </h4>
+            <div className="flex justify-between items-center">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-700 flex items-center gap-1.5">
+                <History className="h-4 w-4 text-amber-600" />
+                Histórico Recente de Ações Intersecretaria
+              </h4>
+              <span className="text-[11px] font-mono text-gray-500">Transparência Ativa • Lei 14.133/2021</span>
+            </div>
 
-            <div className="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
               {TRANSACOES_SISTEMA.map((tx) => (
-                <div key={tx.id} className="bg-white/5 border border-white/10 hover:bg-white/10 rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors text-xs">
+                <div key={tx.id} className="bg-gray-50/80 border border-gray-200 hover:bg-gray-100/80 rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors text-xs">
                   <div className="flex items-start sm:items-center gap-3">
-                    <span className="font-mono text-[11px] text-amber-300 font-bold shrink-0">{tx.hora}</span>
+                    <span className="font-mono text-xs text-primary font-bold bg-blue-100/70 border border-blue-200 px-2 py-0.5 rounded shrink-0">{tx.hora}</span>
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <strong className="text-white">{tx.usuario}</strong>
-                        <span className="text-[10px] text-gray-300 bg-white/10 px-1.5 py-0.5 rounded font-mono">{tx.secretaria}</span>
+                        <strong className="text-gray-900 font-bold">{tx.usuario}</strong>
+                        <span className="text-[10px] text-gray-600 bg-white border border-gray-200 px-1.5 py-0.5 rounded font-mono">{tx.secretaria}</span>
                       </div>
-                      <p className="text-gray-200 mt-0.5">{tx.acao}: <span className="text-amber-200 font-semibold">{tx.detalhes}</span></p>
+                      <p className="text-gray-700 mt-0.5">{tx.acao}: <span className="text-primary font-semibold">{tx.detalhes}</span></p>
                     </div>
                   </div>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0 ${tx.badgeColor}`}>
+                  <span className={`text-[10px] px-2.5 py-1 rounded-full font-mono uppercase tracking-wide shrink-0 ${tx.badgeColor}`}>
                     {tx.tipo}
                   </span>
                 </div>

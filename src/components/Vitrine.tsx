@@ -108,23 +108,13 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
       )}
 
       {/* Seção Superior - Boas-vindas e Visão da Plataforma */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-xl md:text-2xl font-bold font-display text-primary tracking-tight">
-            Catálogo de Bens Ociosos
-          </h2>
-          <p className="text-sm text-gray-600 mt-1 max-w-2xl">
-            Evite novas compras públicas! Solicite o remanejamento direto de itens disponíveis, ociosos ou sem giro parados em outras secretarias de Florianópolis.
-          </p>
-        </div>
-        <Button
-          variant="tertiary"
-          size="small"
-          onClick={clearFilters}
-          icon={<RefreshCw className="h-3 w-3" aria-hidden="true" />}
-        >
-          Resetar Busca
-        </Button>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+        <h2 className="text-xl md:text-2xl font-bold font-display text-primary tracking-tight">
+          Catálogo de Bens Ociosos
+        </h2>
+        <p className="text-sm text-gray-600 mt-1 max-w-2xl">
+          Evite novas compras públicas! Solicite o remanejamento direto de itens disponíveis, ociosos ou sem giro parados em outras secretarias de Florianópolis.
+        </p>
       </div>
 
       {/* Grid de Busca e Shortcuts Rápidos */}
@@ -142,30 +132,44 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
           icon={<Search className="h-4 w-4" aria-hidden="true" />}
         />
 
-        {/* Atalhos Rápidos */}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Atalhos Rápidos:</span>
-          {['Cadeira', 'Mesa', 'Monitor', 'Armário', 'Computador', 'Ar Condicionado'].map((termo) => (
+        {/* Atalhos Rápidos e Botão de Limpar Busca */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-gray-100">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Atalhos Rápidos:</span>
+            {['Cadeira', 'Mesa', 'Monitor', 'Armário', 'Computador', 'Ar Condicionado'].map((termo) => (
+              <Button
+                key={termo}
+                variant="secondary"
+                size="small"
+                onClick={() => {
+                  setSearchTerm(termo);
+                  setDisplayLimit(6);
+                }}
+              >
+                {termo}
+              </Button>
+            ))}
+          </div>
+
+          {hasActiveFilters && (
             <Button
-              key={termo}
-              variant="secondary"
+              variant="tertiary"
               size="small"
-              onClick={() => {
-                setSearchTerm(termo);
-                setDisplayLimit(6);
-              }}
+              onClick={clearFilters}
+              icon={<RefreshCw className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
+              className="text-red-700 hover:bg-red-50"
             >
-              {termo}
+              Limpar Filtros & Busca
             </Button>
-          ))}
+          )}
         </div>
       </div>
 
       {/* Layout de Filtro Lateral + Grid Central */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
         
-        {/* Sidebar de Filtros Lateral */}
-        <aside className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm lg:sticky lg:top-24 flex flex-col gap-5">
+        {/* Sidebar de Filtros Lateral (Scroll Independente + Ajuste de Altura) */}
+        <aside className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto flex flex-col gap-4">
           <div className="flex justify-between items-center pb-3 border-b border-gray-100">
             <h3 className="font-bold text-sm text-primary flex items-center gap-2">
               <Filter className="h-4 w-4 text-emerald-600" />

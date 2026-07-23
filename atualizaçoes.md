@@ -8,12 +8,12 @@ Este arquivo documenta todas as implementações e melhorias recentes realizadas
   - A visualização padrão dos itens na vitrine é em **lista horizontal**, com foto na lateral e detalhes à direita.
   - Adicionamos um **alternador de exibição (Lista vs Grade)** no topo dos resultados utilizando os botões circulares padronizados do **Gov.BR DS** (`Button circle size="small"`).
   - Corrigimos o layout no **Modo Grade** para que nenhum botão ou valor monetário ("Economia Estimada") seja cortado na tela, reorganizando as estatísticas e os botões em duas linhas limpas e bem distribuídas.
-- **Filtros Interativos em Botões (Pills):**
-  - Antigas caixas de seleção (dropdowns) foram substituídas por botões (tags/pills) para um clique mais ágil.
-  - O estilo visual dos botões inativos foi ajustado para ter contorno (variante *secundária* do Gov.BR), garantindo uma estética muito mais profissional e organizada, com quebras de linha responsivas.
-- **Decomposição do Lote (Detalhamento por Estado de Conservação):**
-  - Agora o sistema exibe não apenas a quantidade total disponível, mas a **decomposição detalhada dos estados do lote** (ex: *15 un. (10 Boas, 5 Regulares)* ou *140 Novas*).
-  - Essa informação é destacada tanto nos cards da Vitrine (Modo Lista e Modo Grade) quanto dentro do modal de detalhes do produto.
+- **Filtros Interativos em Botões (Pills) & Scroll Independente:**
+  - Substituímos os selects por botões (tags/pills) com contorno oficial.
+  - Corrigido o problema onde os últimos botões de "Estado de Conservação" ficavam escondidos no final da página: a barra de filtros lateral agora possui **altura ajustada à tela (`max-h`) e rolagem própria e independente (`overflow-y-auto`)**, sem exigir a rolagem da página toda.
+- **Reorganização do Botão de Resetar Busca:**
+  - Removido o botão solitário "Resetar Busca" que ficava perdido no card de apresentação superior.
+  - O botão **"Limpar Filtros & Busca"** agora aparece de forma muito mais intuitiva diretamente na **seção da barra de pesquisa e atalhos rápidos**, aparecendo somente quando há algum filtro ou busca ativa.
 - **Atalhos Rápidos de Busca:**
   - Inserida uma barra de atalhos rápidos logo abaixo da pesquisa principal com termos altamente procurados (ex: Cadeira, Mesa, Monitor, Armário), bastando um clique para filtrar toda a lista.
 
@@ -21,9 +21,9 @@ Este arquivo documenta todas as implementações e melhorias recentes realizadas
 
 - **Criação do Perfil de Administrador:**
   - Adicionado suporte nativo à role `admin` no sistema.
-- **Painel de Gerenciamento & Auditoria de Transações (Gestor Admin):**
-  - Adicionado um painel exclusivo de **Auditoria em Tempo Real** na aba de *Placar & Relatórios* visível ao logar como **Gestor Central (SMA)**.
-  - Exibe a linha do tempo completa das ações dos servidores no sistema: logons, requisições de remanejamento, cadastros de excedentes no estoque, liberações e interceptações de intenção de compra pela Trava Sistêmica.
+- **Painel de Gerenciamento & Auditoria de Transações (Padrão Gov.BR DS):**
+  - O painel exclusivo de auditoria do **Gestor Central (SMA)** foi completamente redesenhado para seguir estritamente o **Gov.BR Design System** (`br-card bg-white`, tipografia institucional, cores de marca `#002F5A` e tags semânticas eMAG/WCAG 2.1 AA).
+  - Exibe a tabela institucional com carimbo de data/hora, órgão municipal solicitante, ações realizadas e status oficial (Trava Sistêmica, Cessão, Requisição, Homologação).
 - **Novo Login de Teste:**
   - Criado o usuário **Gestor Central (SMA)** na tela inicial de Login, que simula o perfil de Administrador.
 - **Acesso Global aos Dados:**
