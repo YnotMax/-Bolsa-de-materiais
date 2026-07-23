@@ -369,6 +369,7 @@ export default function App() {
           {activeTab === 'placar' && (
             <Relatorios
               requisicoes={requisicoes}
+              loggedUser={loggedUser}
             />
           )}
 

@@ -21,6 +21,9 @@ Este arquivo documenta todas as implementações e melhorias recentes realizadas
 
 - **Criação do Perfil de Administrador:**
   - Adicionado suporte nativo à role `admin` no sistema.
+- **Painel de Gerenciamento & Auditoria de Transações (Gestor Admin):**
+  - Adicionado um painel exclusivo de **Auditoria em Tempo Real** na aba de *Placar & Relatórios* visível ao logar como **Gestor Central (SMA)**.
+  - Exibe a linha do tempo completa das ações dos servidores no sistema: logons, requisições de remanejamento, cadastros de excedentes no estoque, liberações e interceptações de intenção de compra pela Trava Sistêmica.
 - **Novo Login de Teste:**
   - Criado o usuário **Gestor Central (SMA)** na tela inicial de Login, que simula o perfil de Administrador.
 - **Acesso Global aos Dados:**

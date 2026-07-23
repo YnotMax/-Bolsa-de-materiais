@@ -4,12 +4,13 @@
  */
 
 import React, { useMemo } from 'react';
-import { BarChart3, TrendingUp, Leaf, Award, Sparkles, Lock } from 'lucide-react';
+import { BarChart3, TrendingUp, Leaf, Award, Sparkles, Lock, ShieldCheck, History, UserCheck, Activity, CheckCircle2, AlertTriangle } from 'lucide-react';
 import Message from './Message';
-import { Requisicao } from '../types';
+import { Requisicao, User } from '../types';
 
 interface RelatoriosProps {
   requisicoes: Requisicao[];
+  loggedUser?: User | null;
 }
 
 // requisicoes is hydrated from localStorage with no runtime schema check, so a stale or
@@ -28,7 +29,67 @@ function formatInt(value: number): string {
   return Math.round(value).toLocaleString('pt-BR');
 }
 
-export default function Relatorios({ requisicoes }: RelatoriosProps) {
+const TRANSACOES_SISTEMA = [
+  {
+    id: "tx-001",
+    hora: "10:42",
+    data: "22/07/2026",
+    usuario: "Thiago Barbosa",
+    secretaria: "Secretaria Municipal de Saúde (SMS)",
+    acao: "Requisitou remanejamento de material",
+    detalhes: "2x Mesa de Escritório em L (Processo PMF-48291/2026)",
+    tipo: "requisicao",
+    badgeColor: "bg-info text-white"
+  },
+  {
+    id: "tx-002",
+    hora: "10:15",
+    data: "22/07/2026",
+    usuario: "Gestor Central (SMA)",
+    secretaria: "Secretaria Municipal de Administração (SMA)",
+    acao: "Sessão iniciada como Administrador",
+    detalhes: "Autenticação via SSO Municipal com acesso a auditoria global",
+    tipo: "login",
+    badgeColor: "bg-purple-600 text-white"
+  },
+  {
+    id: "tx-003",
+    hora: "09:58",
+    data: "22/07/2026",
+    usuario: "Maurício Alexandre",
+    secretaria: "Secretaria Municipal de Educação (SME)",
+    acao: "Intenção de licitação interceptada",
+    detalhes: "Tentativa de comprar 15x Monitor Dell 24' - Trava sistêmica evitou compra",
+    tipo: "trava",
+    badgeColor: "bg-warning text-black font-semibold"
+  },
+  {
+    id: "tx-004",
+    hora: "09:30",
+    data: "22/07/2026",
+    usuario: "Alex Silva",
+    secretaria: "Secretaria Municipal de Finanças (SEF)",
+    acao: "Disponibilizou excedente no estoque",
+    detalhes: "140x Resma de Papel A4 disponibilizadas para reuso",
+    tipo: "cadastro",
+    badgeColor: "bg-success text-white"
+  },
+  {
+    id: "tx-005",
+    hora: "09:12",
+    data: "22/07/2026",
+    usuario: "Thiago Barbosa",
+    secretaria: "Secretaria Municipal de Saúde (SMS)",
+    acao: "Cessão aprovada e homologada",
+    detalhes: "Processo PMF-34912/2026 homologado e concluído com sucesso",
+    tipo: "aprovacao",
+    badgeColor: "bg-success text-white"
+  }
+];
+
+export default function Relatorios({ requisicoes, loggedUser }: RelatoriosProps) {
+  const isAdmin = loggedUser?.rule === 'admin';
+
   // Calculate stats based on approved/transferred requisitions + mock seed values
   const stats = useMemo(() => {
     // Standard mock base values to make the dashboard look populated and real
@@ -52,8 +113,6 @@ export default function Relatorios({ requisicoes }: RelatoriosProps) {
       baseProjetosImpedidos += 1;
     });
 
-    // Impact metrics reported on a public transparency panel should never read negative,
-    // even if a malformed record drags the running total below zero.
     return {
       economia: Math.max(0, baseEconomia),
       co2: Math.max(0, baseCO2),
@@ -112,14 +171,69 @@ export default function Relatorios({ requisicoes }: RelatoriosProps) {
     <div className="flex flex-col gap-6">
       
       {/* Page Title */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <h2 className="text-xl md:text-2xl font-bold font-display text-primary tracking-tight">
-          Placar de Economia & Eficiência
-        </h2>
-        <p className="text-sm text-gray-600 mt-1 max-w-2xl">
-          Painel de transparência ativa que consolida a economia do erário de Florianópolis e os ganhos de sustentabilidade ambiental por meio do reuso.
-        </p>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-xl md:text-2xl font-bold font-display text-primary tracking-tight flex items-center gap-2">
+            Placar de Economia & Eficiência
+            {isAdmin && (
+              <span className="text-xs bg-purple-100 text-purple-800 border border-purple-200 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider flex items-center gap-1">
+                <ShieldCheck className="h-3.5 w-3.5" /> Visão Gestor Central
+              </span>
+            )}
+          </h2>
+          <p className="text-sm text-gray-600 mt-1 max-w-2xl">
+            Painel de transparência ativa que consolida a economia do erário de Florianópolis e os ganhos de sustentabilidade ambiental por meio do reuso.
+          </p>
+        </div>
       </div>
+
+      {/* PAINEL EXCLUSIVO DO GESTOR ADMIN: LOG DE TRANSAÇÕES E AUDITORIA GERAL */}
+      {isAdmin && (
+        <div className="br-card bg-gradient-to-r from-slate-900 to-primary text-white rounded-xl p-6 shadow-md flex flex-col gap-5 border border-slate-800">
+          <div className="flex flex-col md:flex-row justify-between md:items-center border-b border-white/10 pb-4 gap-3">
+            <div>
+              <span className="text-[10px] uppercase tracking-widest font-mono text-emerald-400 font-bold flex items-center gap-1">
+                <Activity className="h-3.5 w-3.5" /> Painel de Gerenciamento & Auditoria Geral
+              </span>
+              <h3 className="text-lg font-bold font-display text-white mt-1">
+                Demonstração em Tempo Real de Transações dos Usuários
+              </h3>
+            </div>
+            <div className="flex items-center gap-3 text-xs bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 font-mono">
+              <UserCheck className="h-4 w-4 text-emerald-400" />
+              <span>Sessão Gestor: <strong>{loggedUser?.name}</strong></span>
+            </div>
+          </div>
+
+          {/* Timeline de Transações */}
+          <div className="flex flex-col gap-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-gray-300 flex items-center gap-1.5">
+              <History className="h-4 w-4 text-amber-400" />
+              Histórico Recente de Ações dos Servidores
+            </h4>
+
+            <div className="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+              {TRANSACOES_SISTEMA.map((tx) => (
+                <div key={tx.id} className="bg-white/5 border border-white/10 hover:bg-white/10 rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors text-xs">
+                  <div className="flex items-start sm:items-center gap-3">
+                    <span className="font-mono text-[11px] text-amber-300 font-bold shrink-0">{tx.hora}</span>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <strong className="text-white">{tx.usuario}</strong>
+                        <span className="text-[10px] text-gray-300 bg-white/10 px-1.5 py-0.5 rounded font-mono">{tx.secretaria}</span>
+                      </div>
+                      <p className="text-gray-200 mt-0.5">{tx.acao}: <span className="text-amber-200 font-semibold">{tx.detalhes}</span></p>
+                    </div>
+                  </div>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0 ${tx.badgeColor}`}>
+                    {tx.tipo}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bento Grid - Métricas de Impacto */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
