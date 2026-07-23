@@ -39,4 +39,11 @@ Para enriquecer a experiência visual da vitrine e validar os novos filtros com 
 4. **Quadro Branco Magnético** (Categoria: Materiais de Escritório | Estado: Bom)
 5. **Mouse Óptico USB** (Categoria: Informática | Estado: Novo)
 
+## 🛒 Funcionalidades Avançadas de Remanejamento
 
+- **Matriz de Reservas por Secretaria e Estado (Disponibilidade Consolidada):**
+  - O Modal de Detalhes do Produto foi reescrito para substituir a simples aprovação de um "lote isolado" por uma poderosa **Tabela de Matriz de Disponibilidade**.
+  - O sistema agora agrupa automaticamente **todos os itens com o mesmo código CATMAT** da prefeitura inteira e apresenta uma visão cruzada entre:
+    - **Linhas:** Órgão/Secretaria Cedente (ex: SME, SMS, SMA).
+    - **Colunas:** Estado de Conservação simplificado em 3 categorias operacionais: **Novo** (NOVO), **Usado** (BOM, REGULAR) e **Danificado** (PESSIMO, SUCATA).
+  - **Carrinho Inteligente por Célula:** O usuário clica na célula desejada, seleciona precisamente a quantidade que deseja através do controle interativo `[-] [+]` e clica em **Adicionar**. É possível reservar múltiplos itens idênticos de diferentes secretarias e estados, tudo na mesma tela!
