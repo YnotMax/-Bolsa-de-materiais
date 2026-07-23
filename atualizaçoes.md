@@ -9,8 +9,9 @@ Este arquivo documenta todas as implementações e melhorias recentes realizadas
   - Adicionamos um **alternador de exibição (Lista vs Grade)** no topo dos resultados utilizando os botões circulares padronizados do **Gov.BR DS** (`Button circle size="small"`).
   - Corrigimos o layout no **Modo Grade** para que nenhum botão ou valor monetário ("Economia Estimada") seja cortado na tela, reorganizando as estatísticas e os botões em duas linhas limpas e bem distribuídas.
 - **Filtros Interativos em Botões (Pills) & Scroll Independente:**
-  - Substituímos os selects por botões (tags/pills) com contorno oficial.
-  - Corrigido o problema onde os últimos botões de "Estado de Conservação" ficavam escondidos no final da página: a barra de filtros lateral agora possui **altura ajustada à tela (`max-h`) e rolagem própria e independente (`overflow-y-auto`)**, sem exigir a rolagem da página toda.
+  - Substituímos os selects por botões (tags/pills) interativos.
+  - **Filtro de Conservação Colorido:** Os filtros de "Estado de Conservação" agora utilizam o exato mesmo design visual (cores institucionais e badges) presentes na Matriz de Reservas e nas fotos dos produtos, permitindo uma associação mental imediata pelo usuário (ex: botão verde para Novo/Bom, amarelo para Regular, vermelho para Péssimo). Os botões inativos ficam mais opacos e, ao serem clicados, ganham destaque completo na cor.
+  - Corrigido o problema onde os últimos botões ficavam escondidos no final da página: a barra de filtros lateral agora possui altura ajustada à tela (`max-h`) e rolagem própria independente.
 - **Reorganização do Botão de Resetar Busca:**
   - Removido o botão solitário "Resetar Busca" que ficava perdido no card de apresentação superior.
   - O botão **"Limpar Filtros & Busca"** agora aparece de forma muito mais intuitiva diretamente na **seção da barra de pesquisa e atalhos rápidos**, aparecendo somente quando há algum filtro ou busca ativa.

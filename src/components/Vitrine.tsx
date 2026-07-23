@@ -367,30 +367,28 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
           <div className="flex flex-col gap-2">
             <label className="text-xs font-bold text-gray-700">Estado de Conservação</label>
             <div className="flex flex-wrap gap-2">
-              {[
-                { value: 'NOVO', label: 'Novo' },
-                { value: 'BOM', label: 'Bom' },
-                { value: 'REGULAR', label: 'Regular' },
-                { value: 'PESSIMO', label: 'Péssimo' },
-                { value: 'SUCATA', label: 'Sucata' }
-              ].map(estado => {
-                const isActive = selectedEstado.includes(estado.value);
+              {(['NOVO', 'BOM', 'REGULAR', 'PESSIMO', 'SUCATA'] as EstadoConservacao[]).map(estadoVal => {
+                const isActive = selectedEstado.includes(estadoVal);
+                const badgeStyle = getEstadoInfo(estadoVal).tone;
+                const labelMap: Record<EstadoConservacao, string> = {
+                  NOVO: 'Novo', BOM: 'Bom', REGULAR: 'Regular', PESSIMO: 'Péssimo', SUCATA: 'Sucata'
+                };
+                const label = labelMap[estadoVal];
                 return (
-                  <Button
-                    key={estado.value}
-                    variant={isActive ? 'primary' : 'secondary'}
-                    size="small"
+                  <button
+                    key={estadoVal}
                     onClick={() => {
                       setSelectedEstado(prev => 
-                        prev.includes(estado.value) 
-                          ? prev.filter(e => e !== estado.value) 
-                          : [...prev, estado.value]
+                        prev.includes(estadoVal) 
+                          ? prev.filter(e => e !== estadoVal) 
+                          : [...prev, estadoVal]
                       );
                       setDisplayLimit(6);
                     }}
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${badgeStyle} ${isActive ? 'ring-2 ring-offset-2 ring-primary shadow-md scale-105' : 'opacity-70 hover:opacity-100 hover:scale-105'}`}
                   >
-                    {estado.label}
-                  </Button>
+                    {label}
+                  </button>
                 );
               })}
             </div>
