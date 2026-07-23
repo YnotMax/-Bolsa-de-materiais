@@ -3,26 +3,29 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Landmark, ShieldCheck, Scale, Globe, ChevronDown } from 'lucide-react';
-import BRFooter from '@govbr-ds/core/dist/components/footer/footer.js';
 
 export default function Footer() {
-  const footerRef = useRef<HTMLElement>(null);
-  const dsInitialized = useRef(false);
+  // BRFooter's built-in accordion (@govbr-ds/core/dist/components/footer/footer.js)
+  // finds its column wrapper by climbing ancestors for a literal `col-2` class match,
+  // which only exists in the library's own 6-column reference markup. This footer uses
+  // a 3-column `col-4` layout, so that check always fails and the library ends up
+  // toggling display on the wrong ancestor (sometimes the whole .br-list.horizontal
+  // wrapper), hiding the entire footer nav. Managing collapse state in React instead
+  // sidesteps that vendor DOM-climbing bug entirely.
+  const [openColumn, setOpenColumn] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (dsInitialized.current) return;
-    if (!footerRef.current) return;
-    dsInitialized.current = true;
-    // Wires up BRFooter's built-in mobile accordion: below 992px each column's
-    // .br-item.header collapses its sibling .br-list until tapped, so the footer
-    // doesn't dump all three columns' content on the page at once on small screens.
-    new BRFooter('footer', footerRef.current);
-  }, []);
+  const toggleColumn = (idx: number) => setOpenColumn((prev) => (prev === idx ? null : idx));
+  const handleHeaderKeyDown = (idx: number) => (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleColumn(idx);
+    }
+  };
 
   return (
-    <footer ref={footerRef} className="br-footer mt-auto">
+    <footer className="br-footer mt-auto">
       <div className="container-lg">
         <div className="logo flex items-center gap-2">
           <Landmark className="h-5 w-5" aria-hidden="true" />
@@ -30,11 +33,21 @@ export default function Footer() {
         </div>
         <div className="br-list horizontal">
           <div className="col-4">
-            <div className="br-item header justify-between cursor-pointer lg:cursor-auto lg:pointer-events-none" role="button" tabIndex={0} aria-expanded={false}>
+            <div
+              className="br-item header justify-between cursor-pointer lg:cursor-auto lg:pointer-events-none"
+              role="button"
+              tabIndex={0}
+              aria-expanded={openColumn === 0}
+              onClick={() => toggleColumn(0)}
+              onKeyDown={handleHeaderKeyDown(0)}
+            >
               <div className="content text-down-01 text-bold text-uppercase">Prefeitura</div>
-              <ChevronDown className="h-4 w-4 lg:hidden" aria-hidden="true" />
+              <ChevronDown
+                className={`h-4 w-4 lg:hidden transition-transform ${openColumn === 0 ? 'rotate-180' : ''}`}
+                aria-hidden="true"
+              />
             </div>
-            <div className="br-list">
+            <div className={`br-list ${openColumn === 0 ? 'block' : 'hidden'} lg:block`}>
               <div className="br-item">
                 <div className="content text-down-01">
                   Secretaria Municipal de Administração (SMA)<br />
@@ -47,11 +60,21 @@ export default function Footer() {
             </div>
           </div>
           <div className="col-4">
-            <div className="br-item header justify-between cursor-pointer lg:cursor-auto lg:pointer-events-none" role="button" tabIndex={0} aria-expanded={false}>
+            <div
+              className="br-item header justify-between cursor-pointer lg:cursor-auto lg:pointer-events-none"
+              role="button"
+              tabIndex={0}
+              aria-expanded={openColumn === 1}
+              onClick={() => toggleColumn(1)}
+              onKeyDown={handleHeaderKeyDown(1)}
+            >
               <div className="content text-down-01 text-bold text-uppercase">Marco Regulatório</div>
-              <ChevronDown className="h-4 w-4 lg:hidden" aria-hidden="true" />
+              <ChevronDown
+                className={`h-4 w-4 lg:hidden transition-transform ${openColumn === 1 ? 'rotate-180' : ''}`}
+                aria-hidden="true"
+              />
             </div>
-            <div className="br-list">
+            <div className={`br-list ${openColumn === 1 ? 'block' : 'hidden'} lg:block`}>
               <div className="br-item">
                 <span className="icon"><ShieldCheck className="h-4 w-4" aria-hidden="true" /></span>
                 <div className="content text-down-01">Lei Federal nº 14.133/2021 (Nova Lei de Licitações)</div>
@@ -67,11 +90,21 @@ export default function Footer() {
             </div>
           </div>
           <div className="col-4">
-            <div className="br-item header justify-between cursor-pointer lg:cursor-auto lg:pointer-events-none" role="button" tabIndex={0} aria-expanded={false}>
+            <div
+              className="br-item header justify-between cursor-pointer lg:cursor-auto lg:pointer-events-none"
+              role="button"
+              tabIndex={0}
+              aria-expanded={openColumn === 2}
+              onClick={() => toggleColumn(2)}
+              onKeyDown={handleHeaderKeyDown(2)}
+            >
               <div className="content text-down-01 text-bold text-uppercase">Links de Transparência</div>
-              <ChevronDown className="h-4 w-4 lg:hidden" aria-hidden="true" />
+              <ChevronDown
+                className={`h-4 w-4 lg:hidden transition-transform ${openColumn === 2 ? 'rotate-180' : ''}`}
+                aria-hidden="true"
+              />
             </div>
-            <div className="br-list">
+            <div className={`br-list ${openColumn === 2 ? 'block' : 'hidden'} lg:block`}>
               <a className="br-item" href="#" onClick={(e) => e.preventDefault()}>
                 <div className="content text-down-01">Acessibilidade</div>
               </a>
