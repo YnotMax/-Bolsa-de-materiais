@@ -11,8 +11,9 @@ Este arquivo documenta todas as implementações e melhorias recentes realizadas
 - **Filtros Interativos em Botões (Pills):**
   - Antigas caixas de seleção (dropdowns) foram substituídas por botões (tags/pills) para um clique mais ágil.
   - O estilo visual dos botões inativos foi ajustado para ter contorno (variante *secundária* do Gov.BR), garantindo uma estética muito mais profissional e organizada, com quebras de linha responsivas.
-- **Card 100% Clicável (Abertura de Detalhes):**
-  - Agora o **card inteiro** (imagem, título, fundo e área de texto) responde ao clique para abrir o modal de detalhes do produto, melhorando significativamente a usabilidade e a área de toque no mobile (o botão de *Reservar Item* continua com ação isolada para não conflitar).
+- **Decomposição do Lote (Detalhamento por Estado de Conservação):**
+  - Agora o sistema exibe não apenas a quantidade total disponível, mas a **decomposição detalhada dos estados do lote** (ex: *15 un. (10 Boas, 5 Regulares)* ou *140 Novas*).
+  - Essa informação é destacada tanto nos cards da Vitrine (Modo Lista e Modo Grade) quanto dentro do modal de detalhes do produto.
 - **Atalhos Rápidos de Busca:**
   - Inserida uma barra de atalhos rápidos logo abaixo da pesquisa principal com termos altamente procurados (ex: Cadeira, Mesa, Monitor, Armário), bastando um clique para filtrar toda a lista.
 

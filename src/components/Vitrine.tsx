@@ -392,6 +392,11 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
                             <div>
                               <span className="text-[10px] text-gray-400 uppercase font-bold block">Disponível</span>
                               <span className="text-base font-bold text-primary">{produto.quantidade} <span className="text-xs text-gray-500 font-normal">un.</span></span>
+                              {produto.detalhamentoEstado && (
+                                <span className="text-[10px] text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold block mt-0.5 max-w-[140px] truncate" title={produto.detalhamentoEstado}>
+                                  {produto.detalhamentoEstado}
+                                </span>
+                              )}
                             </div>
                             
                             <div className="text-right">
@@ -434,6 +439,11 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
                             <div>
                               <span className="text-[10px] text-gray-400 uppercase font-bold block">Disponível</span>
                               <span className="text-xl font-bold text-primary">{produto.quantidade} <span className="text-sm text-gray-500 font-normal">un.</span></span>
+                              {produto.detalhamentoEstado && (
+                                <span className="text-[11px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded font-semibold block mt-0.5">
+                                  {produto.detalhamentoEstado}
+                                </span>
+                              )}
                             </div>
                             
                             <div>
@@ -560,7 +570,7 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
               </div>
 
               <div className="border border-gray-150 rounded-lg p-3 bg-gray-200 flex flex-col gap-1">
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Impacto do Reuso</span>
+                <span className="text-[10px] text-gray-400 uppercase font-bold block">Impacto do Reuso</span>
                 <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
                   <Coins className="h-3.5 w-3.5" aria-hidden="true" />
                   Economia B2B: R$ {detailProduct.valorEstimadoNovo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
@@ -572,10 +582,15 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
               </div>
             </div>
 
-            <div className="flex items-center pt-4 border-t border-gray-150 mt-2">
+            <div className="flex items-center justify-between pt-4 border-t border-gray-150 mt-2">
               <div>
-                <span className="text-[10px] text-gray-400 uppercase font-bold block">Físico Disponível</span>
+                <span className="text-[10px] text-gray-400 uppercase font-bold block">Físico Disponível no Lote</span>
                 <span className="text-lg font-bold text-primary">{detailProduct.quantidade} unidades</span>
+                {detailProduct.detalhamentoEstado && (
+                  <span className="text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md font-medium block mt-1">
+                    Decomposição do Lote: <strong>{detailProduct.detalhamentoEstado}</strong>
+                  </span>
+                )}
               </div>
             </div>
           </div>
