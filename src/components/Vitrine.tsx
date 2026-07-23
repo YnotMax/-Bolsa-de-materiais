@@ -377,6 +377,7 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
                 return (
                   <button
                     key={estadoVal}
+                    type="button"
                     onClick={() => {
                       setSelectedEstado(prev => 
                         prev.includes(estadoVal) 
@@ -385,8 +386,13 @@ export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: V
                       );
                       setDisplayLimit(6);
                     }}
-                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${badgeStyle} ${isActive ? 'ring-2 ring-offset-2 ring-primary shadow-md scale-105' : 'opacity-70 hover:opacity-100 hover:scale-105'}`}
+                    className={`px-3 py-1 rounded-full text-xs font-bold border-0 outline-none transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${badgeStyle} ${
+                      isActive 
+                        ? 'opacity-100 scale-105 shadow-md' 
+                        : 'opacity-45 hover:opacity-90'
+                    }`}
                   >
+                    {isActive && <Check className="h-3 w-3 stroke-[3]" />}
                     {label}
                   </button>
                 );

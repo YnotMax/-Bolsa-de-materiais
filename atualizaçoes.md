@@ -10,7 +10,7 @@ Este arquivo documenta todas as implementações e melhorias recentes realizadas
   - Corrigimos o layout no **Modo Grade** para que nenhum botão ou valor monetário ("Economia Estimada") seja cortado na tela, reorganizando as estatísticas e os botões em duas linhas limpas e bem distribuídas.
 - **Filtros Interativos em Botões (Pills) & Scroll Independente:**
   - Substituímos os selects por botões (tags/pills) interativos.
-  - **Filtro de Conservação Colorido:** Os filtros de "Estado de Conservação" agora utilizam o exato mesmo design visual (cores institucionais e badges) presentes na Matriz de Reservas e nas fotos dos produtos, permitindo uma associação mental imediata pelo usuário (ex: botão verde para Novo/Bom, amarelo para Regular, vermelho para Péssimo). Os botões inativos ficam mais opacos e, ao serem clicados, ganham destaque completo na cor.
+  - **Filtro de Conservação em Badges Institucionais:** Todos os botões de filtro de "Estado de Conservação" na barra lateral agora exibem permanentemente o mesmo design visual (cores vibrantes dos badges: Verde para Novo/Bom, Amarelo para Regular, Vermelho para Péssimo, Cinza para Sucata) presente nos cabeçalhos da Matriz e nas fotos dos produtos. Quando inativos, exibem uma opacidade suave; ao serem ativados, assumem cor total, sombra e um ícone de *check* (✓).
   - Corrigido o problema onde os últimos botões ficavam escondidos no final da página: a barra de filtros lateral agora possui altura ajustada à tela (`max-h`) e rolagem própria independente.
 - **Reorganização do Botão de Resetar Busca:**
   - Removido o botão solitário "Resetar Busca" que ficava perdido no card de apresentação superior.
@@ -34,13 +34,10 @@ Este arquivo documenta todas as implementações e melhorias recentes realizadas
 
 ## 📦 Variedade de Itens e Banco de Dados (Mock)
 
-Para enriquecer a experiência visual da vitrine e validar os novos filtros com consistência, injetamos uma série de novos materiais ociosos tanto no backend (`server.ts`) quanto no mock do frontend (`data.ts`):
+Para enriquecer a experiência visual da vitrine e preencher a **Matriz de Reservas** com dados ricos e realistas de múltiplos almoxarifados municipais, expandimos o mock de dados (`data.ts`) com múltiplas entradas por `CATMAT`:
 
-1. **Armário de Aço 2 Portas** (Categoria: Mobiliário | Estado: Bom)
-2. **Fragmentadora de Papel Secreta** (Categoria: Outros | Estado: Sucata)
-3. **Mesa de Reunião Redonda** (Categoria: Mobiliário | Estado: Regular)
-4. **Quadro Branco Magnético** (Categoria: Materiais de Escritório | Estado: Bom)
-5. **Mouse Óptico USB** (Categoria: Informática | Estado: Novo)
+- **Expansão Multisserial de Estoque:** Todos os produtos (Monitores, Cadeiras, Mesas em L, Papel A4, Notebooks, Ar Condicionado, Impressoras, etc.) agora possuem lotes distribuídos em **diferentes Secretarias** (SMS, SME, SMA, SEF, SEMAS, IPUF, SCTC) e em **diferentes Estados de Conservação** (Novo, Bom, Regular, Péssimo, Sucata).
+- **Mesa de Escritório em L (Exemplo do Usuário):** A SMS agora possui 10 Novas, 9 Boas, 12 Regulares e 2 Péssimas em estoque real na tabela da Matriz, além de lotes adicionais na SME.
 
 ## 🛒 Funcionalidades Avançadas de Remanejamento
 

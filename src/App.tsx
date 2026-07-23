@@ -29,7 +29,13 @@ export default function App() {
   // Produtos carregados do Backend Express / MongoDB / Fallback em memória
   const [produtos, setProdutos] = useState<Produto[]>(() => {
     const saved = localStorage.getItem('bolsa_produtos');
-    return saved ? JSON.parse(saved) : MOCK_PRODUTOS;
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length >= MOCK_PRODUTOS.length) {
+        return parsed;
+      }
+    }
+    return MOCK_PRODUTOS;
   });
 
   // Reallocation Cart state
