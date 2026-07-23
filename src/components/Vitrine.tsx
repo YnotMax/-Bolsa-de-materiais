@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, ShoppingCart, RefreshCw, Layers, Check, ChevronRight, Eye, Building2, Info, ClipboardCopy, Leaf, Coins } from 'lucide-react';
+import { Search, Filter, ShoppingCart, RefreshCw, Layers, Check, ChevronRight, Eye, Building2, Info, ClipboardCopy, Leaf, Coins, LayoutGrid, List } from 'lucide-react';
 import { Produto } from '../types';
 import { MOCK_PRODUTOS, MOCK_CATEGORIAS, MOCK_SECRETARIAS, fuzzySearch, getEstadoInfo, getCategoriaTone } from '../data';
 import Button from './Button';
@@ -14,14 +14,25 @@ import Modal from './Modal';
 interface VitrineProps {
   onAddToCart: (produto: Produto) => void;
   cartProductIds: string[];
+  produtosData?: Produto[];
 }
 
-export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
+export default function Vitrine({ onAddToCart, cartProductIds, produtosData }: VitrineProps) {
+  // View mode state (list or grid, defaults to list)
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>(() => {
+    return (localStorage.getItem('bolsa_view_mode') as 'list' | 'grid') || 'list';
+  });
+
+  const handleSetViewMode = (mode: 'list' | 'grid') => {
+    setViewMode(mode);
+    localStorage.setItem('bolsa_view_mode', mode);
+  };
+
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSecretaria, setSelectedSecretaria] = useState('');
-  const [selectedEstado, setSelectedEstado] = useState('');
+  const [selectedEstado, setSelectedEstado] = useState<string[]>([]);
   
   // Pagination limit (Load More)
   const [displayLimit, setDisplayLimit] = useState(6);
@@ -48,9 +59,11 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
     return [...MOCK_CATEGORIAS].sort((a, b) => a.localeCompare(b));
   }, []);
 
+  const currentProductsList = produtosData && produtosData.length > 0 ? produtosData : MOCK_PRODUTOS;
+
   // Filter products incrementally in real-time
   const filteredProducts = useMemo(() => {
-    return MOCK_PRODUTOS.filter((item) => {
+    return currentProductsList.filter((item) => {
       const matchSearch = fuzzySearch(searchTerm, item.nome) || 
                           fuzzySearch(searchTerm, item.categoria) ||
                           fuzzySearch(searchTerm, item.codigoCatmat) ||
@@ -58,11 +71,11 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
       
       const matchCategory = selectedCategory ? item.categoria === selectedCategory : true;
       const matchSecretaria = selectedSecretaria ? item.secretariaOrigem === selectedSecretaria : true;
-      const matchEstado = selectedEstado ? item.estadoConservacao === selectedEstado : true;
+      const matchEstado = selectedEstado.length > 0 ? selectedEstado.includes(item.estadoConservacao) : true;
 
       return matchSearch && matchCategory && matchSecretaria && matchEstado;
     });
-  }, [searchTerm, selectedCategory, selectedSecretaria, selectedEstado]);
+  }, [searchTerm, selectedCategory, selectedSecretaria, selectedEstado, currentProductsList]);
 
   // Handle adding product to cart
   const handleAddToCart = (e: React.MouseEvent, produto: Produto) => {
@@ -75,11 +88,11 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
     setSearchTerm('');
     setSelectedCategory('');
     setSelectedSecretaria('');
-    setSelectedEstado('');
+    setSelectedEstado([]);
     setDisplayLimit(6);
   };
 
-  const hasActiveFilters = searchTerm || selectedCategory || selectedSecretaria || selectedEstado;
+  const hasActiveFilters = searchTerm || selectedCategory || selectedSecretaria || selectedEstado.length > 0;
 
   return (
     <div className="flex flex-col gap-6">
@@ -129,27 +142,20 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
           icon={<Search className="h-4 w-4" aria-hidden="true" />}
         />
 
-        {/* Categoria Shortcuts */}
+        {/* Atalhos Rápidos */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Atalhos Rápidos:</span>
-          <Button
-            variant={!selectedCategory ? 'primary' : 'tertiary'}
-            size="small"
-            onClick={() => setSelectedCategory('')}
-          >
-            Todos os Itens
-          </Button>
-          {sortedCategorias.map((cat) => (
+          {['Cadeira', 'Mesa', 'Monitor', 'Armário', 'Computador', 'Ar Condicionado'].map((termo) => (
             <Button
-              key={cat}
-              variant={selectedCategory === cat ? 'primary' : 'tertiary'}
+              key={termo}
+              variant="secondary"
               size="small"
               onClick={() => {
-                setSelectedCategory(selectedCategory === cat ? '' : cat);
+                setSearchTerm(termo);
                 setDisplayLimit(6);
               }}
             >
-              {cat}
+              {termo}
             </Button>
           ))}
         </div>
@@ -173,62 +179,85 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
           </div>
 
           {/* Filtro: Categoria */}
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-2">
             <label className="text-xs font-bold text-gray-700">Categoria</label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => {
-                setSelectedCategory(e.target.value);
-                setDisplayLimit(6);
-              }}
-              id="filter-category"
-              className="w-full bg-background border border-gray-200 rounded-lg text-xs py-2 px-3 text-on-surface-variant focus:outline-none focus:ring-1 focus:ring-primary"
-            >
-              <option value="">Todas as categorias</option>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={!selectedCategory ? 'primary' : 'secondary'}
+                size="small"
+                onClick={() => { setSelectedCategory(''); setDisplayLimit(6); }}
+              >
+                Todas
+              </Button>
               {sortedCategorias.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
+                <Button
+                  key={cat}
+                  variant={selectedCategory === cat ? 'primary' : 'secondary'}
+                  size="small"
+                  onClick={() => { setSelectedCategory(prev => prev === cat ? '' : cat); setDisplayLimit(6); }}
+                >
+                  {cat}
+                </Button>
               ))}
-            </select>
+            </div>
           </div>
 
           {/* Filtro: Secretaria Cedente */}
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-2">
             <label className="text-xs font-bold text-gray-700">Secretaria Cedente</label>
-            <select
-              value={selectedSecretaria}
-              onChange={(e) => {
-                setSelectedSecretaria(e.target.value);
-                setDisplayLimit(6);
-              }}
-              id="filter-secretaria"
-              className="w-full bg-background border border-gray-200 rounded-lg text-xs py-2 px-3 text-on-surface-variant focus:outline-none focus:ring-1 focus:ring-primary"
-            >
-              <option value="">Todas as secretarias</option>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={!selectedSecretaria ? 'primary' : 'secondary'}
+                size="small"
+                onClick={() => { setSelectedSecretaria(''); setDisplayLimit(6); }}
+              >
+                Todas
+              </Button>
               {sortedSecretarias.map((sec) => (
-                <option key={sec} value={sec}>{sec}</option>
+                <Button
+                  key={sec}
+                  variant={selectedSecretaria === sec ? 'primary' : 'secondary'}
+                  size="small"
+                  onClick={() => { setSelectedSecretaria(prev => prev === sec ? '' : sec); setDisplayLimit(6); }}
+                  title={sec}
+                >
+                  {sec.split('(')[1]?.replace(')','') || sec}
+                </Button>
               ))}
-            </select>
+            </div>
           </div>
 
           {/* Filtro: Estado de Conservação */}
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-2">
             <label className="text-xs font-bold text-gray-700">Estado de Conservação</label>
-            <select
-              value={selectedEstado}
-              onChange={(e) => {
-                setSelectedEstado(e.target.value);
-                setDisplayLimit(6);
-              }}
-              id="filter-estado"
-              className="w-full bg-background border border-gray-200 rounded-lg text-xs py-2 px-3 text-on-surface-variant focus:outline-none focus:ring-1 focus:ring-primary"
-            >
-              <option value="">Todos os estados</option>
-              <option value="NOVO">Novo (Sem uso)</option>
-              <option value="BOM">Bom estado</option>
-              <option value="REGULAR">Regular estado</option>
-              <option value="PESSIMO">Péssimo estado</option>
-              <option value="SUCATA">Sucata / Doação peças</option>
-            </select>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { value: 'NOVO', label: 'Novo' },
+                { value: 'BOM', label: 'Bom' },
+                { value: 'REGULAR', label: 'Regular' },
+                { value: 'PESSIMO', label: 'Péssimo' },
+                { value: 'SUCATA', label: 'Sucata' }
+              ].map(estado => {
+                const isActive = selectedEstado.includes(estado.value);
+                return (
+                  <Button
+                    key={estado.value}
+                    variant={isActive ? 'primary' : 'secondary'}
+                    size="small"
+                    onClick={() => {
+                      setSelectedEstado(prev => 
+                        prev.includes(estado.value) 
+                          ? prev.filter(e => e !== estado.value) 
+                          : [...prev, estado.value]
+                      );
+                      setDisplayLimit(6);
+                    }}
+                  >
+                    {estado.label}
+                  </Button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Informativo de Acessibilidade */}
@@ -245,15 +274,39 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
 
         {/* Grid Central de Bens */}
         <section className="lg:col-span-3 flex flex-col gap-6">
-          <div className="flex justify-between items-center">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-              Bens encontrados: {filteredProducts.length}
-            </span>
-            {hasActiveFilters && (
-              <span className="text-xs text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-md">
-                Filtros ativos
+          <div className="flex justify-between items-center bg-white border border-gray-200 p-3.5 rounded-xl shadow-xs">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">
+                Bens encontrados: <strong className="text-primary font-mono text-sm">{filteredProducts.length}</strong>
               </span>
-            )}
+              {hasActiveFilters && (
+                <span className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-semibold">
+                  Filtros ativos
+                </span>
+              )}
+            </div>
+
+            {/* Alternador de Modo de Visualização (Lista vs Grade) - gov.br DS padrão */}
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant={viewMode === 'list' ? 'primary' : 'secondary'}
+                circle
+                size="small"
+                onClick={() => handleSetViewMode('list')}
+                title="Modo Lista (Padrão AliExpress)"
+                aria-label="Alternar para Modo Lista"
+                icon={<List className="h-4 w-4" aria-hidden="true" />}
+              />
+              <Button
+                variant={viewMode === 'grid' ? 'primary' : 'secondary'}
+                circle
+                size="small"
+                onClick={() => handleSetViewMode('grid')}
+                title="Modo Grade (Cards Tradicionais)"
+                aria-label="Alternar para Modo Grade"
+                icon={<LayoutGrid className="h-4 w-4" aria-hidden="true" />}
+              />
+            </div>
           </div>
 
           {filteredProducts.length === 0 ? (
@@ -268,7 +321,7 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6" id="vitrine-products-grid">
+            <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "flex flex-col gap-4"} id="vitrine-products-grid">
               {filteredProducts.slice(0, displayLimit).map((produto) => {
                 const badge = getEstadoInfo(produto.estadoConservacao);
                 const isAlreadyInCart = cartProductIds.includes(produto.id);
@@ -277,10 +330,17 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
                   <article
                     key={produto.id}
                     id={`product-card-${produto.id}`}
-                    className="br-card hover bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg hover:border-primary transition-all duration-300 flex flex-col justify-between"
+                    onClick={() => setDetailProduct(produto)}
+                    className={`br-card hover bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg hover:border-primary transition-all duration-300 flex cursor-pointer group ${
+                      viewMode === 'grid' ? 'flex-col justify-between' : 'flex-col md:flex-row justify-between'
+                    }`}
                   >
-                    {/* Foto sem cortes - horizontal */}
-                    <div className="relative h-44 w-full bg-gray-100 overflow-hidden">
+                    {/* Foto sem cortes - lateral no modo lista, topo no modo grade/mobile */}
+                    <div className={`relative bg-gray-100 overflow-hidden shrink-0 ${
+                      viewMode === 'grid' 
+                        ? 'h-48 w-full border-b border-gray-200' 
+                        : 'h-44 md:h-auto md:w-64 border-b md:border-b-0 md:border-r border-gray-200'
+                    }`}>
                       <img
                         src={produto.fotoUrl}
                         alt={produto.nome}
@@ -296,7 +356,7 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
                     </div>
 
                     {/* Conteúdo */}
-                    <div className="p-4 flex flex-col flex-grow justify-between gap-4">
+                    <div className="p-4 md:p-5 flex flex-col flex-grow justify-between gap-3">
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center justify-between text-[11px] text-gray-500 font-mono">
                           <span>CATMAT: {produto.codigoCatmat}</span>
@@ -309,60 +369,106 @@ export default function Vitrine({ onAddToCart, cartProductIds }: VitrineProps) {
                         <a
                           href={`#detalhes-${produto.id}`}
                           onClick={(e) => {
-                            // Let Ctrl+Click open in a simulated new screen, standard click opens detail
                             if (!e.ctrlKey && !e.metaKey) {
                               e.preventDefault();
                               setDetailProduct(produto);
                             }
                           }}
-                          className="font-display font-bold text-primary hover:text-emerald-600 hover:underline leading-snug line-clamp-2 text-base mt-1 block"
+                          className="font-display font-bold text-primary hover:text-emerald-600 hover:underline leading-snug line-clamp-2 text-base md:text-lg mt-1 block"
                         >
                           {produto.nome}
                         </a>
                         
-                        <p className="text-xs text-gray-600 flex items-start gap-1 mt-2">
-                          <Building2 className="h-3.5 w-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
+                        <p className="text-xs md:text-sm text-gray-600 flex items-start gap-1 mt-1">
+                          <Building2 className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
                           <span className="line-clamp-2">Cedente: <strong>{produto.secretariaOrigem}</strong></span>
                         </p>
                       </div>
 
-                      <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-2">
-                        <div>
-                          <span className="text-[10px] text-gray-400 uppercase font-bold block">Disponível</span>
-                          <span className="text-lg font-bold text-primary">{produto.quantidade} <span className="text-xs text-gray-500">un.</span></span>
-                        </div>
-                        
-                        <div className="text-right">
-                          <span className="text-[10px] text-gray-400 uppercase font-bold block">Economia Estimada</span>
-                          <span className="text-sm font-bold text-emerald-600 font-mono">R$ {produto.valorEstimadoNovo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                        </div>
-                      </div>
+                      {viewMode === 'grid' ? (
+                        /* Layout Otimizado para Modo Grade (Previne texto cortado) */
+                        <div className="flex flex-col gap-3 pt-3 border-t border-gray-100 mt-1">
+                          <div className="flex items-center justify-between text-xs">
+                            <div>
+                              <span className="text-[10px] text-gray-400 uppercase font-bold block">Disponível</span>
+                              <span className="text-base font-bold text-primary">{produto.quantidade} <span className="text-xs text-gray-500 font-normal">un.</span></span>
+                            </div>
+                            
+                            <div className="text-right">
+                              <span className="text-[10px] text-gray-400 uppercase font-bold block">Economia Estimada</span>
+                              <span className="text-sm font-bold text-emerald-600 font-mono">R$ {produto.valorEstimadoNovo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            </div>
+                          </div>
 
-                      {/* Botões de Ação */}
-                      <div className="grid grid-cols-2 gap-2 mt-2 pt-1">
-                        <Button
-                          variant="tertiary"
-                          size="small"
-                          onClick={() => setDetailProduct(produto)}
-                          icon={<Eye className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
-                        >
-                          Ver Detalhes
-                        </Button>
+                          <div className="grid grid-cols-2 gap-2 mt-1">
+                            <Button
+                              variant="tertiary"
+                              size="small"
+                              onClick={() => setDetailProduct(produto)}
+                              icon={<Eye className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
+                              className="w-full justify-center"
+                            >
+                              Detalhes
+                            </Button>
 
-                        <Button
-                          variant={isAlreadyInCart ? 'secondary' : 'primary'}
-                          size="small"
-                          onClick={(e) => handleAddToCart(e, produto)}
-                          disabled={isAlreadyInCart}
-                          icon={
-                            isAlreadyInCart
-                              ? <Check className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
-                              : <ShoppingCart className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
-                          }
-                        >
-                          {isAlreadyInCart ? 'Adicionado' : 'Reservar Item'}
-                        </Button>
-                      </div>
+                            <Button
+                              variant={isAlreadyInCart ? 'secondary' : 'primary'}
+                              size="small"
+                              onClick={(e) => handleAddToCart(e, produto)}
+                              disabled={isAlreadyInCart}
+                              icon={
+                                isAlreadyInCart
+                                  ? <Check className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
+                                  : <ShoppingCart className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
+                              }
+                              className="w-full justify-center"
+                            >
+                              {isAlreadyInCart ? 'Reservado' : 'Reservar'}
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        /* Layout Expandido para Modo Lista */
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-gray-100 mt-2 gap-4">
+                          <div className="flex gap-6">
+                            <div>
+                              <span className="text-[10px] text-gray-400 uppercase font-bold block">Disponível</span>
+                              <span className="text-xl font-bold text-primary">{produto.quantidade} <span className="text-sm text-gray-500 font-normal">un.</span></span>
+                            </div>
+                            
+                            <div>
+                              <span className="text-[10px] text-gray-400 uppercase font-bold block">Economia Estimada</span>
+                              <span className="text-base font-bold text-emerald-600 font-mono">R$ {produto.valorEstimadoNovo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            </div>
+                          </div>
+
+                          {/* Botões de Ação */}
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="tertiary"
+                              size="small"
+                              onClick={() => setDetailProduct(produto)}
+                              icon={<Eye className="h-4 w-4 mr-1" aria-hidden="true" />}
+                            >
+                              Ver Detalhes
+                            </Button>
+
+                            <Button
+                              variant={isAlreadyInCart ? 'secondary' : 'primary'}
+                              size="small"
+                              onClick={(e) => handleAddToCart(e, produto)}
+                              disabled={isAlreadyInCart}
+                              icon={
+                                isAlreadyInCart
+                                  ? <Check className="h-4 w-4 mr-1" aria-hidden="true" />
+                                  : <ShoppingCart className="h-4 w-4 mr-1" aria-hidden="true" />
+                              }
+                            >
+                              {isAlreadyInCart ? 'Adicionado' : 'Reservar Item'}
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </article>
                 );

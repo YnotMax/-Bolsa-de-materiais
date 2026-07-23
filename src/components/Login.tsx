@@ -29,7 +29,12 @@ export default function Login({ onLogin }: LoginProps) {
             className="br-card hover bg-white border border-gray-200 rounded-xl p-4 hover:shadow-lg hover:border-primary transition-all duration-300 flex items-center gap-4 w-72"
           >
             <img src={user.image_url} alt="" className="h-14 w-14 rounded-full object-cover shrink-0" />
-            <span className="text-sm font-medium text-on-background">{user.name}</span>
+            <div className="flex flex-col flex-1 text-left">
+              <span className="text-sm font-medium text-on-background">{user.name}</span>
+              <span className="text-xs text-gray-500 capitalize">
+                {user.rule === 'admin' ? 'Administrador' : user.rule === 'manager' ? 'Gestor/Cedente' : 'Requisitante Padrão'}
+              </span>
+            </div>
           </button>
         ))}
       </div>

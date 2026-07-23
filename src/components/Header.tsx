@@ -19,6 +19,7 @@ interface HeaderProps {
 }
 
 function getRuleLabel(rule: UserRule): string {
+  if (rule === 'admin') return 'Administrador';
   return rule === 'manager' ? 'Gestor' : 'Requisitante / Cedente';
 }
 
